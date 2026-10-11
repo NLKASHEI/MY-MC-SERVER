@@ -14,6 +14,7 @@ import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
+import io.papermc.paper.event.player.PlayerArmSwingEvent;
 import fr.xephi.authme.api.v3.AuthMeApi;
 import fr.xephi.authme.events.LoginEvent;
 import org.geysermc.floodgate.api.FloodgateApi;
@@ -28,6 +29,7 @@ final class MiaoInterface implements Listener {
     private final Map<String,String> aliases = new HashMap<>();
     private final Location initialLobbySpawn;
     private boolean dirty;
+    private final Map<UUID,Integer> noTeleportUntil = new HashMap<>();
     static final LinkedHashMap<String,String> FIELDS = new LinkedHashMap<>();
     static final List<String> DEFAULT = List.of("player","online","ping","total","session","tps","world","team","balance","placed","mined","kills","fishing");
     static final Material[] FAVORITES = {Material.STONE,Material.COBBLESTONE,Material.OAK_LOG,Material.OAK_PLANKS,Material.DIRT,Material.IRON_ORE,Material.DIAMOND_ORE,Material.DEEPSLATE_DIAMOND_ORE,Material.REDSTONE_ORE,Material.WHEAT};
@@ -102,7 +104,7 @@ final class MiaoInterface implements Listener {
         if(!authenticated(p)) {say(p,"请先完成登录。");return true;}
         String sub=a.length==0?"toggle":a[0].toLowerCase(Locale.ROOT);
         switch(sub) {
-            case "settings"->{if(bedrock(p))settingsForm(p);else settingsInventory(p);return true;}
+            case "settings"->{Bukkit.getScheduler().runTaskLater(plugin,()->{if(p.isOnline()&&authenticated(p)){if(bedrock(p))settingsForm(p);else settingsInventory(p);}},2L);return true;}
             case "on","off","toggle"->{boolean v=sub.equals("on")||(!sub.equals("off")&&!enabled(p));prefs.set(path(p)+".sidebar.enabled",v);dirty=true;if(!v)plugin.detach(p);say(p,v?"侧边栏已打开。":"侧边栏已关闭，重启和重登仍保留设置。");}
             case "field"->{if(a.length!=2||!FIELDS.containsKey(a[1])){say(p,"选择数据：/sidebar settings");return true;}toggleField(p,a[1]);}
             case "preset"->{if(a.length!=2)return true;List<String> fields=a[1].equals("progress")?List.of("player","total","session","balance","placed","mined","block","kills","fishing","deaths","distance","team"):List.of("player","online","ping","total","session","tps","world","team","balance");prefs.set(path(p)+".sidebar.fields",fields);dirty=true;say(p,"已应用显示方案。");}
@@ -144,10 +146,10 @@ final class MiaoInterface implements Listener {
     }
     boolean command(Player p,String[] a) {
         if(!authenticated(p)){say(p,"请先完成登录。");return true;}
-        if(a.length==0){if(bedrock(p))openMenu(p,"survival");else p.performCommand("menu");return true;}
+        if(a.length==0){openServiceMenu(p,"survival");return true;}
         if(a[0].equals("link")){link(p,Arrays.copyOfRange(a,1,a.length));return true;}
         if(a[0].equals("sidebar"))return sidebar(p,Arrays.copyOfRange(a,1,a.length));
-        if(a[0].equals("menu")){if(bedrock(p))openMenu(p,a.length>1?a[1]:"survival");else p.performCommand("menu");return true;}
+        if(a[0].equals("menu")){openServiceMenu(p,a.length>1?a[1]:"survival");return true;}
         return true;
     }
     private void linkHelp(Player p) {
@@ -190,6 +192,18 @@ final class MiaoInterface implements Listener {
             }
         }
     }
+    private void openServiceMenu(Player p,String name) {
+        main(p,()->{
+            if(bedrock(p)){openMenu(p,name);return;}
+            try {
+                var menus=Bukkit.getPluginManager().getPlugin("DeluxeMenus");
+                Class<?> api=Class.forName("com.extendedclip.deluxemenus.menu.Menu",true,menus.getClass().getClassLoader());
+                Optional<?> menu=(Optional<?>)api.getMethod("getMenuByName",String.class).invoke(null,name);
+                if(menu.isEmpty()){say(p,"菜单未加载，请联系管理员。");return;}
+                api.getMethod("openMenu",Player.class).invoke(menu.get(),p);
+            }catch(Exception e){plugin.getLogger().log(java.util.logging.Level.SEVERE,"打开服务中心菜单失败",e);say(p,"菜单打开失败，请联系管理员查看日志。");}
+        });
+    }
     private void openMenu(Player p,String name) {
         if(!name.matches("[a-z_]+"))return;
         File f=new File(plugin.getDataFolder().getParentFile(),"DeluxeMenus/gui_menus/"+name+".yml");if(!f.isFile()){say(p,"菜单不存在，请联系管理员。");return;}
@@ -212,6 +226,9 @@ final class MiaoInterface implements Listener {
         if(!(e.getView().getTopInventory().getHolder() instanceof Holder h))return;e.setCancelled(true);
         if(!(e.getWhoClicked() instanceof Player p)||!h.owner.equals(p.getUniqueId())||!authenticated(p))return;
         String action=h.actions.get(e.getRawSlot());if(action==null)return;
+        main(p,()->clicked(p,h,action));
+    }
+    private void clicked(Player p,Holder h,String action) {
         if(h.type.equals("link")) {
             Player target=Bukkit.getPlayer(UUID.fromString(action));p.closeInventory();
             if(target==null||!bedrock(target)||!authenticated(target)){say(p,"该手机账号已离线，请重新选择。");return;}
@@ -220,24 +237,44 @@ final class MiaoInterface implements Listener {
             p.performCommand("linkaccount \""+gamertag+"\"");return;
         }
         if(action.equals("blocks")){blockInventory(p);return;}
-        if(action.equals("menu")){p.closeInventory();p.performCommand("menu");return;}
+        if(action.equals("menu")){p.closeInventory();openServiceMenu(p,"survival");return;}
         sidebar(p,action.split(" "));if(!action.equals("settings"))settingsInventory(p);
     }
     @EventHandler(priority=EventPriority.HIGHEST) public void drag(InventoryDragEvent e) { if(e.getView().getTopInventory().getHolder() instanceof Holder)e.setCancelled(true); }
+    private boolean guide(ItemStack item) {
+        return item!=null&&item.getType()==Material.COMPASS&&item.hasItemMeta()
+            &&"生存指南针".equals(ChatColor.stripColor(item.getItemMeta().getDisplayName()));
+    }
     @EventHandler(priority=EventPriority.LOWEST) public void compass(PlayerInteractEvent e) {
-        ItemStack item=e.getItem();if(item==null||item.getType()!=Material.COMPASS||!item.hasItemMeta()||!item.getItemMeta().getDisplayName().equals("§a生存指南针"))return;
+        if(!guide(e.getItem())||e.getHand()!=EquipmentSlot.HAND)return;
         e.setCancelled(true);e.setUseInteractedBlock(Event.Result.DENY);e.setUseItemInHand(Event.Result.DENY);
-        Player p=e.getPlayer();if(!authenticated(p)||e.getHand()!=EquipmentSlot.HAND)return;
-        if(e.getAction()==Action.RIGHT_CLICK_AIR||e.getAction()==Action.RIGHT_CLICK_BLOCK){if(bedrock(p))openMenu(p,"survival");else p.performCommand("menu");}
-        else if((e.getAction()==Action.LEFT_CLICK_AIR||e.getAction()==Action.LEFT_CLICK_BLOCK)&&p.hasPermission("miao.compass.teleport")) {
-            Block b=p.getTargetBlockExact(100);if(b==null){say(p,"一百格内没有目标方块。");return;}
-            for(int y=b.getY()+1;y<=Math.min(b.getY()+12,b.getWorld().getMaxHeight()-2);y++) {
-                if(b.getWorld().getBlockAt(b.getX(),y,b.getZ()).isPassable()&&b.getWorld().getBlockAt(b.getX(),y+1,b.getZ()).isPassable()) {
-                    Location dest=new Location(b.getWorld(),b.getX()+.5,y,b.getZ()+.5,p.getLocation().getYaw(),p.getLocation().getPitch());
-                    if(b.getWorld().getWorldBorder().isInside(dest)){p.teleport(dest);return;}
-                }
-            }say(p,"目标上方没有安全空间。");
+        Player p=e.getPlayer();if(!authenticated(p))return;
+        // DROP_ITEM can synthesize LEFT_CLICK_AIR. Only the actual swing event teleports.
+        if(e.getAction()==Action.RIGHT_CLICK_AIR||e.getAction()==Action.RIGHT_CLICK_BLOCK){
+            noTeleportUntil.put(p.getUniqueId(),Bukkit.getCurrentTick()+2);
+            openServiceMenu(p,"survival");
         }
+    }
+    @EventHandler(priority=EventPriority.MONITOR) public void dropCompass(PlayerDropItemEvent e) {
+        noTeleportUntil.put(e.getPlayer().getUniqueId(),Bukkit.getCurrentTick()+2);
+    }
+    @EventHandler(priority=EventPriority.MONITOR) public void swingCompass(PlayerArmSwingEvent e) {
+        Player p=e.getPlayer();
+        if(e.getHand()!=EquipmentSlot.HAND||!guide(p.getInventory().getItemInMainHand())||!p.hasPermission("miao.compass.teleport"))return;
+        main(p,()->{
+            if(Bukkit.getCurrentTick()<=noTeleportUntil.getOrDefault(p.getUniqueId(),-1)||!guide(p.getInventory().getItemInMainHand()))return;
+            noTeleportUntil.put(p.getUniqueId(),Bukkit.getCurrentTick()+2);
+            teleportCompass(p);
+        });
+    }
+    private void teleportCompass(Player p) {
+        Block b=p.getTargetBlockExact(100);if(b==null){say(p,"一百格内没有目标方块。");return;}
+        for(int y=b.getY()+1;y<=Math.min(b.getY()+12,b.getWorld().getMaxHeight()-2);y++) {
+            if(b.getWorld().getBlockAt(b.getX(),y,b.getZ()).isPassable()&&b.getWorld().getBlockAt(b.getX(),y+1,b.getZ()).isPassable()) {
+                Location dest=new Location(b.getWorld(),b.getX()+.5,y,b.getZ()+.5,p.getLocation().getYaw(),p.getLocation().getPitch());
+                if(b.getWorld().getWorldBorder().isInside(dest)){p.teleport(dest);return;}
+            }
+        }say(p,"目标上方没有安全空间。");
     }
     @EventHandler public void login(LoginEvent e) {
         Player p=e.getPlayer();Bukkit.getScheduler().runTaskLater(plugin,()->{
@@ -258,7 +295,7 @@ final class MiaoInterface implements Listener {
         if(initialLobbySpawn!=null&&e.isNewPlayer())e.setSpawnLocation(initialLobbySpawn.clone());
     }
     @EventHandler(priority=EventPriority.HIGHEST) public void world(PlayerChangedWorldEvent e) { if(LobbyGuard.lobby(e.getPlayer().getWorld()))e.getPlayer().setGameMode(GameMode.ADVENTURE); }
-    @EventHandler public void quit(PlayerQuitEvent e) {Player p=e.getPlayer();flushTime(p);started.remove(p.getUniqueId());checkpoint.remove(p.getUniqueId());save();}
+    @EventHandler public void quit(PlayerQuitEvent e) {Player p=e.getPlayer();flushTime(p);started.remove(p.getUniqueId());checkpoint.remove(p.getUniqueId());noTeleportUntil.remove(p.getUniqueId());save();}
     private void progress(Player p,Material material,String kind) {
         if(!authenticated(p)||p.getGameMode()!=GameMode.SURVIVAL||java.util.Set.of("flat","lobby").contains(p.getWorld().getName()))return;
         for(String key:List.of(path(p)+".progress."+kind,path(p)+".blocks."+material+"."+kind))prefs.set(key,prefs.getLong(key)+1);dirty=true;

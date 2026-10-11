@@ -60,8 +60,43 @@ public class MiaoSmoke extends JavaPlugin {
    var desired=before.equals(com.sk89q.worldedit.world.block.BlockTypes.DIAMOND_BLOCK.getDefaultState())?com.sk89q.worldedit.world.block.BlockTypes.EMERALD_BLOCK.getDefaultState():com.sk89q.worldedit.world.block.BlockTypes.DIAMOND_BLOCK.getDefaultState();
    try(var edit=we.newEditSession(world)){edit.setBlock(target,desired);}
    ok(world.getBlock(target).equals(before),"WorldEdit left map unchanged");
+   compassCheck(m);
    getLogger().info("MIAO_SMOKE_PASS: sidebar disable/enable, OP lobby guard, WorldEdit readonly;  share, leave, original trust, disband, claim preservation, sidebar Chinese/ping/time");
   }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"MIAO_SMOKE_FAIL",e);}
   finally{try{if(claim!=null)GriefPrevention.instance.dataStore.deleteClaim(claim);if(original!=null){f.set(m,original);Method save=MiaoServer.class.getDeclaredMethod("save");save.setAccessible(true);save.invoke(m);}}catch(Exception e){throw new RuntimeException(e);}}
  }
+ void compassCheck(MiaoServer m) throws Exception {
+  Object ui=get(m,"ui");
+  var cache=(fr.xephi.authme.data.auth.PlayerCache)get(fr.xephi.authme.api.v3.AuthMeApi.getInstance(),"playerCache");
+  String name="MiaoCompassFixture";UUID id=UUID.randomUUID();cache.updatePlayer(fr.xephi.authme.data.auth.PlayerAuth.builder().name(name.toLowerCase()).build());
+  var guide=new org.bukkit.inventory.ItemStack(Material.COMPASS);var meta=guide.getItemMeta();meta.setDisplayName("§r§a生存指南针");guide.setItemMeta(meta);
+  var inventory=(org.bukkit.inventory.PlayerInventory)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{org.bukkit.inventory.PlayerInventory.class},(o,method,args)->method.getName().equals("getItemInMainHand")?guide:null);
+  org.bukkit.inventory.Inventory[] opened={null};int[] targets={0};
+  Player p=(Player)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{Player.class},(o,method,args)->switch(method.getName()){
+   case "getUniqueId"->id;case "getName"->name;case "isOnline","hasPermission"->true;case "hasMetadata"->false;
+   case "getInventory"->inventory;case "openInventory"->{opened[0]=(org.bukkit.inventory.Inventory)args[0];yield null;}
+   case "getTargetBlockExact"->{targets[0]++;yield null;}case "sendMessage"->null;
+   default->{Class<?> t=method.getReturnType();yield t==boolean.class?false:t==int.class?0:null;}
+  });
+  Method interact=ui.getClass().getDeclaredMethod("compass",org.bukkit.event.player.PlayerInteractEvent.class);interact.setAccessible(true);
+  var dropInteract=new org.bukkit.event.player.PlayerInteractEvent(p,org.bukkit.event.block.Action.LEFT_CLICK_AIR,guide,null,org.bukkit.block.BlockFace.SELF,org.bukkit.inventory.EquipmentSlot.HAND);
+  interact.invoke(ui,dropInteract);ok(targets[0]==0,"synthetic drop interact never teleports");
+  var item=(org.bukkit.entity.Item)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{org.bukkit.entity.Item.class},(o,method,args)->method.getName().equals("getItemStack")?guide:null);
+  Method drop=ui.getClass().getDeclaredMethod("dropCompass",org.bukkit.event.player.PlayerDropItemEvent.class);drop.setAccessible(true);drop.invoke(ui,new org.bukkit.event.player.PlayerDropItemEvent(p,item));
+  Method swing=ui.getClass().getDeclaredMethod("swingCompass",io.papermc.paper.event.player.PlayerArmSwingEvent.class);swing.setAccessible(true);swing.invoke(ui,new io.papermc.paper.event.player.PlayerArmSwingEvent(p,org.bukkit.inventory.EquipmentSlot.HAND));
+  Method sidebar=ui.getClass().getDeclaredMethod("sidebar",Player.class,String[].class);sidebar.setAccessible(true);sidebar.invoke(ui,p,new String[]{"settings"});
+  Bukkit.getScheduler().runTaskLater(this,()->{
+   try{
+    ok(targets[0]==0,"drop-associated swing suppressed");ok(opened[0]!=null&&opened[0].getSize()==45,"growth settings opens after menu click tick");
+    var menu=com.extendedclip.deluxemenus.menu.Menu.getMenuByName("survival");ok(menu.isPresent(),"native DeluxeMenus API resolves service center");
+    swing.invoke(ui,new io.papermc.paper.event.player.PlayerArmSwingEvent(p,org.bukkit.inventory.EquipmentSlot.HAND));
+    Bukkit.getScheduler().runTaskLater(this,()->{
+     try{ok(targets[0]==1,"real main-hand swing reaches teleport target lookup");getLogger().info("COMPASS_SMOKE_PASS: synthetic Q/drop suppressed, real swing accepted, delayed growth GUI opened, native menu resolved");}
+     catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"COMPASS_SMOKE_FAIL",e);}
+     finally{cache.removePlayer(name);}
+    },3);
+   }catch(Throwable e){cache.removePlayer(name);getLogger().log(java.util.logging.Level.SEVERE,"COMPASS_SMOKE_FAIL",e);}
+  },4);
+ }
+
 }

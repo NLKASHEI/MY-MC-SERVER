@@ -1,5 +1,5 @@
 name: MiaoServer
-version: 0.9.0
+version: 0.9.1
 main: cn.nankexi.MiaoServer
 api-version: '26.2'
 depend: [GriefPrevention, AuthMe, floodgate, WorldEdit, Vault]

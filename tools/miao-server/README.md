@@ -9,3 +9,5 @@
 服务器列表图标来自本次 imagegen 生成的温馨 MC 小屋图；原图位于 `assets/branding/cozy-server.png`，机械导出为 64×64 PNG 后嵌入插件。完整包包含原图；增量更新通过 JAR 分发图标。
 
 `tests/miao-smoke` 是临时启动检查插件，仅用于本地组装验证，不发布。其测试使用真实 GP 数据存储和临时领地，结束清理领地并恢复原队伍数据。
+
+指南针 Java 入口通过 DeluxeMenus 自身加载器调用 `Menu.getMenuByName(...).openMenu(player)`，PE 继续原生表单。设置界面在点击事件结束后打开。传送只从 Paper `PlayerArmSwingEvent` 发起，并排除最近右键与丢弃动作，不从 `LEFT_CLICK_AIR` 发起；该交互会在 Q 丢弃时被合成。回归覆盖临时 AuthMe 内存会话、伪左键、丢弃关联挥手、真实挥手目标查询、延后打开侧边栏设置和原生菜单解析，不创建玩家账号数据库记录。实际客户端点击仍需上云确认。
