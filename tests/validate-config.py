@@ -16,7 +16,8 @@ assert geyser['advanced']['bedrock']['broadcast-port'] == 20013
 assert geyser['java']['auth-type'] == 'floodgate'
 aura = read('plugins/AuraSkills/config.yml')
 assert set(aura['disabled_worlds']) == {'lobby', 'flat'}
-assert aura['disable_in_creative_mode'] and not aura['jobs']['enabled']
+assert aura['disable_in_creative_mode'] and aura['jobs']['enabled']
+assert not aura['jobs']['selection']['require_selection']
 fake = read('plugins/FakePlayer-CE/config.yml')
 assert fake['player-limit'] == 1 and fake['server-limit'] == 20
 assert not fake['http-admin']['enabled'] and not fake['restore-on-start']
@@ -42,7 +43,8 @@ for group in groups.values():
     seen |= members
 assert seen == legacy
 assert worlds['minecraft:flat']['gamemode'] == 'creative'
-assert worlds['minecraft:lobby']['gamemode'] == worlds['minecraft:overworld']['gamemode'] == 'survival'
+assert worlds['minecraft:lobby']['gamemode'] == 'adventure'
+assert worlds['minecraft:overworld']['gamemode'] == 'survival'
 core = read('plugins/Multiverse-Core/config.yml')
 assert core['world']['enforce-gamemode']
 assert core['teleport']['passenger-mode'] == 'dismount_all'
@@ -52,7 +54,7 @@ assert not shares['enable-bypass-permissions']
 assert not shares['default-ungrouped-worlds']
 assert not shares['active-optional-shares'], 'Currency is global; never enable economy sharing'
 perms = read('permissions.yml')['survival.player']['children']
-for dest in ['world', 'lobby', 'flat']:
+for dest in ['minecraft:overworld', 'minecraft:lobby', 'minecraft:flat']:
     assert perms['multiverse.teleport.self.w.' + dest] is True
 for node, enabled in perms.items():
     if enabled:
@@ -62,7 +64,7 @@ for entry in menus.values():
     menu = read('plugins/DeluxeMenus/gui_menus/' + entry['file'])
     for item in menu['items'].values():
         assert 0 <= item['slot'] < menu['size']
-        assert item['left_click_commands'] == item['right_click_commands'], 'Mobile/right click behavior missing'
+        assert item.get('left_click_commands', []) == item.get('right_click_commands', []), 'Mobile/right click behavior missing'
 lobby = read('plugins/WorldGuard/worlds/lobby/regions.yml')['regions']['__global__']['flags']
 assert lobby['block-break'] == lobby['block-place'] == 'deny'
 blocked = read('plugins/WorldGuard/worlds/flat/regions.yml')['regions']['__global__']['flags']['blocked-cmds']

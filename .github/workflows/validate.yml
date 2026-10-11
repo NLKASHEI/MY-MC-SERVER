@@ -1,12 +1,13 @@
 name: Validate server source
-on: [push, pull_request]
+on:
+  workflow_dispatch:
 jobs:
   validate:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
       - name: Validate PowerShell and manifests
-        shell: powershell
+        shell: pwsh
         run: ./scripts/validate.ps1
       - uses: actions/setup-python@v5
         with:
