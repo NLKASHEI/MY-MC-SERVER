@@ -79,10 +79,10 @@ items:
     display_name: '&f返回指南针'
     left_click_commands:
     - '[close]'
-    - '[player] menu'
+    - '[player] miao menu survival'
     right_click_commands:
     - '[close]'
-    - '[player] menu'
+    - '[player] miao menu survival'
   market:
     material: BARREL
     slot: 23

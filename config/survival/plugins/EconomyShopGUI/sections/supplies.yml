@@ -3,7 +3,7 @@ slot: 13
 title: '&2基础物资商店'
 bedrock-title: '基础物资商店'
 hidden: false
-display-item: false
+display-item: true
 economy: VAULT
 item:
   material: CHEST

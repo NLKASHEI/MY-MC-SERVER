@@ -22,3 +22,5 @@
 已完成实际启动、收入来源解析与 PVP 零收入检查；真人挖矿到账、商店交易和 PE 操作仍需云服客户端验收。
 
 配置依据：[AuraSkills 收入与放置检查](https://wiki.aurelium.dev/auraskills/main-config/)、[来源收入](https://wiki.aurelium.dev/auraskills/sources)、[系统商店命令](https://wiki.gpplugins.com/economyshopgui/basics/commands)。
+
+0.9.9 修复分类页面的返回参数：商品分类可以返回原生四分类首页；指南针商店首页的返回按钮直接打开指南针主菜单。旧服自动迁移分类显示和相关返回动作，商品价格与余额保持原值。

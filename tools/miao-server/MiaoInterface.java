@@ -225,7 +225,8 @@ final class MiaoInterface implements Listener {
                 Object category=shop.getClass().getMethod("getSection",String.class).invoke(shop,section);
                 if(category==null)throw new IllegalStateException("Missing shop section: "+section);
                 Class<?> api=Class.forName("me.gypopo.economyshopgui.objects.shops.ShopSection",true,shop.getClass().getClassLoader());
-                api.getMethod("openShopSection",Player.class,int.class,boolean.class).invoke(category,p,1,true);
+                // The final argument disables BACK on both Java inventories and Bedrock forms.
+                api.getMethod("openShopSection",Player.class,int.class,boolean.class).invoke(category,p,1,false);
             }catch(Exception e){plugin.getLogger().log(java.util.logging.Level.SEVERE,"打开系统商店失败",e);say(p,"商店暂时无法打开，请联系管理员查看日志。");}
         });
     }

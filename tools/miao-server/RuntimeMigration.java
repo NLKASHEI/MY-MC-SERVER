@@ -16,6 +16,7 @@ final class RuntimeMigration {
         EconomySetup.apply(plugin);
         ClaimsSetup.apply(plugin);
         TeamInviteSetup.apply(plugin);
+        ShopBackSetup.apply(plugin);
         File marker = new File(plugin.getDataFolder(), "ui-fixes-v080.done");
         if (marker.exists()) return;
         try {

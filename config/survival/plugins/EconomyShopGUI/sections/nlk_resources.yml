@@ -3,7 +3,7 @@ slot: 11
 title: '&8系统商店 · 矿产交易'
 bedrock-title: 系统商店 · 矿产交易
 hidden: false
-display-item: false
+display-item: true
 economy: VAULT
 item:
   material: IRON_INGOT
