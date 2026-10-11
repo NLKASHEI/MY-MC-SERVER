@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
 parser.add_argument('--base', required=True, help='Extracted prior full deployment directory')
 parser.add_argument('--package', default=str(ROOT / 'release/MY-MC-SERVER-update-v0.5.0.zip'))
+parser.add_argument('--rescue', action='store_true', help='Verify repair of an old installed updater after success')
 args = parser.parse_args()
 BASE = Path(args.base)
 work = Path(tempfile.mkdtemp(prefix='updater-test-', dir=ROOT / 'downloads'))
@@ -38,7 +39,10 @@ for folder in ('scripts', 'docs', 'skills', 'config', 'manifests'):
 for name in ('README.md', 'AGENTS.md', 'GLOSSARY.md', 'CHANGELOG.md', 'server-settings.json'):
     shutil.copy2(BASE / name, server / name)
 shutil.copytree(server / 'config/survival', server / 'servers/survival')
-shutil.copy2(ROOT / 'scripts/update-release.ps1', server / 'scripts/update-release.ps1')
+engine = server / ('scripts/update-release-fixed.ps1' if args.rescue else 'scripts/update-release.ps1')
+shutil.copy2(ROOT / 'scripts/update-release.ps1', engine)
+if not args.rescue:
+    shutil.copy2(ROOT / 'scripts/update-release.ps1', payload / 'scripts/update-release.ps1')
 jar = b'offline component fixture'
 jar_hash = hashlib.sha256(jar).hexdigest()
 for name in ('plugins', 'extensions'):
@@ -81,7 +85,7 @@ for file in index['files']:
     file['baseSha256'] = text_digest(old) if old.exists() else None
 
 def make_package(name):
-    write(payload / 'update-index.json', json.dumps(index))
+    write(payload / 'update-index.json', json.dumps(index, ensure_ascii=False))
     path = work / name
     with zipfile.ZipFile(path, 'w', zipfile.ZIP_DEFLATED) as z:
         for file in payload.rglob('*'):
@@ -92,7 +96,7 @@ def make_package(name):
 env = dict(os.environ)
 env.pop('PSModulePath', None)
 def run(package, checksum=None):
-    return subprocess.run(['powershell.exe', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', str(server / 'scripts/update-release.ps1'), '-Package', str(package), '-ExpectedSha256', checksum or digest(package)], capture_output=True, env=env)
+    return subprocess.run(['powershell.exe', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', str(engine), '-Package', str(package), '-ExpectedSha256', checksum or digest(package)], capture_output=True, env=env)
 
 package = make_package('normal.zip')
 result = run(package)
@@ -106,6 +110,12 @@ assert all(digest(server / 'servers/survival' / p) == h for p, h in before.items
 state = json.loads((server / '.update-state.json').read_text(encoding='utf-8-sig'))
 assert (Path(state['pendingDirectory']) / ('servers/survival/' + modified + '.new')).exists()
 assert (Path(state['backup']) / 'survival/world/level.dat').exists()
+assert (server / '一键更新.bat').read_bytes() == (payload / '一键更新.bat').read_bytes()
+if args.rescue:
+    assert digest(server / 'scripts/update-release.ps1') == digest(ROOT / 'scripts/update-release.ps1')
+    assert (server / 'scripts/update-release.ps1.before-fast-update').exists()
+    print('PASS: rescue entry repairs the normal updater after applying old release payload')
+print('PASS: UTF-8 manifest with literal Chinese BAT names under PS5.1')
 print('PASS: PS5.1 update, unchanged menu replaced, modified menu/ports/data retained, full backup')
 
 before_state = digest(server / '.update-state.json')
@@ -127,6 +137,7 @@ for path in ('scripts/created-for-test.ps1', 'scripts/collision/new.ps1'):
 write(server / 'scripts/collision', 'existing file blocks directory creation')
 result = run(make_package('rollback.zip'))
 assert result.returncode != 0
+assert '更新失败，已回退'.encode('utf-8') in result.stderr or '更新失败，已回退'.encode('gbk') in result.stderr
 assert digest(server / 'README.md') == readme_before
 assert not (server / 'scripts/created-for-test.ps1').exists()
 assert digest(server / '.update-state.json') == before_state

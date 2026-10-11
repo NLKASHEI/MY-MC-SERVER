@@ -4,6 +4,16 @@
 
 首次部署选最新完整 ZIP，以后在控制台输入 `stop`，待退出后双击根目录 **一键更新.bat**。无需 Git、Python 或 GitHub 账号。它使用公开 GitHub Release API 获取最新正式版（[官方接口说明](https://docs.github.com/en/rest/releases/releases#get-the-latest-release)）。需要云服务器能访问 GitHub 和发生变化的插件下载源，网络失败不会开始替换。
 
+### 0.9.0 旧入口的临时修复
+
+如果出现 `Disallowed update file` 且文件名乱码，原因是旧脚本在 PowerShell 5.1 下按系统编码读取 UTF-8 更新清单。不是下载没有完成，也不能通过放宽路径检查处理。修复后的脚本显式按 UTF-8 读取所有 JSON；回归测试清单保留实际中文字符，覆盖中文 `.bat` 文件名。
+
+从 0.9.0 Release 下载 `MY-MC-SERVER-fast-update-v0.9.0.zip`，停服后把全部内容解压到**现有服务端根目录**，合并 `scripts`，双击 `update-fast.bat`。该入口包含修复后的独立引擎，固定到 0.9.0 和已发布更新包的 SHA256；优先使用 [GH-Proxy 官方说明](https://gh-proxy.com/docs/github-accelerator) 的 `https://gh-proxy.org/` 转发公开 API 和 Release 下载，失败或组件校验不一致尝试直连。其他插件官方源保持直连，不上传任何存档或凭据。
+
+成功后恢复普通入口的兼容性：将修复引擎复制为 `scripts/update-release.ps1`，旧脚本另存 `.before-fast-update`。本临时入口不会被旧更新包替换，后续版本继续使用普通中文“一键更新.bat”。新版引擎也支持 `-GitHubProxy https://gh-proxy.org/`，方便指定加速；普通入口默认直连。停服、完整备份、世界/数据库保护、配置冲突、校验及失败回退均保留。
+
+维护者用 `scripts/build-update-rescue.ps1 -ReleaseTag v0.9.0` 从当前修复引擎构建救援 ZIP；固定 SHA 必须取已经发布的原更新包，不能重打包并替换旧 Release 资产。只需上传新救援 ZIP 与校验文件，不重新上传大型完整服务端。
+
 程序下载小型 `MY-MC-SERVER-update-v版本.zip`，包含维护脚本、说明、锁定清单和配置，不包含 Java、大型地图或运行数据；Paper 和插件只在 SHA256 不同时下载。压缩包及每个文件核验后创建完整停服备份，再按单文件清单替换。启动依赖由原启动流程管理。
 
 以下文件保留：世界区块、`level.dat`、玩家存档/背包、经济/登录/绑定/圈地数据库、权限数据、密钥、EULA、白名单、封禁列表、`server-settings.json` 及云端自行添加的插件。不会删除旧文件或解压初始主城。端口/MOTD 的 `server.properties`、出生点、Multiverse 世界表/背包分组及 WorldGuard 现有区域，即使没有改过也不自动覆盖；如本版调整这些内容，会提供新版供人工迁移。
