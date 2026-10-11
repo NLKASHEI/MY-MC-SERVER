@@ -52,6 +52,14 @@ public class MiaoSmoke extends JavaPlugin {
    String title=board[0].getObjective(DisplaySlot.SIDEBAR).getDisplayName();
    ok(title.contains("欢迎游玩"),"welcome sidebar title");
    Object ui=get(m,"ui");YamlConfiguration preferences=(YamlConfiguration)get(ui,"prefs");
+   YamlConfiguration menu=YamlConfiguration.loadConfiguration(new java.io.File(m.getDataFolder().getParentFile(),"DeluxeMenus/gui_menus/survival.yml"));
+   ok(menu.getInt("size")==45,"compact compass menu size");
+   Set<Integer> menuSlots=new HashSet<>();
+   for(String key:menu.getConfigurationSection("items").getKeys(false)) {
+     int slot=menu.getInt("items."+key+".slot");ok(slot>=0&&slot<45&&menuSlots.add(slot),"unique valid compass slot: "+key);
+   }
+   ok(menuSlots.size()==45&&menu.getInt("items.sidebar.slot")==33,"complete grid and growth button");
+   ok(menu.getStringList("items.sidebar.left_click_commands").contains("[player] sidebar settings"),"growth action preserved");
    String setting="players."+owner+".sidebar.enabled";
    preferences.set(setting,false);render.invoke(m,p);ok(board[0].getObjective(DisplaySlot.SIDEBAR)==null,"sidebar disable detaches");
    preferences.set(setting,true);render.invoke(m,p);ok(board[0].getObjective(DisplaySlot.SIDEBAR)!=null,"sidebar enabled again");preferences.set(setting,null);

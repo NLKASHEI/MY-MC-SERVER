@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 final class RuntimeMigration {
     static void apply(MiaoServer plugin) {
         branding(plugin);
+        menuLayout(plugin);
         File marker = new File(plugin.getDataFolder(), "ui-fixes-v080.done");
         if (marker.exists()) return;
         try {
@@ -87,6 +88,52 @@ final class RuntimeMigration {
             plugin.getDataFolder().mkdirs();Files.writeString(marker.toPath(),"Default branding migrated; local settings and player data preserved\n");
             plugin.getLogger().info("提示与侧边栏已更新；完整服名保持南可熙的神奇妙妙服。");
         }catch(Exception e){throw new IllegalStateException("Cannot migrate NLK branding",e);}
+    }
+    private static void menuLayout(MiaoServer plugin) {
+        File marker=new File(plugin.getDataFolder(),"menu-layout-v094.done");
+        File file=new File(plugin.getDataFolder().getParentFile(),"DeluxeMenus/gui_menus/survival.yml");
+        if(marker.exists()||!file.isFile())return;
+        try(InputStream in=plugin.getResource("menu-layout.yml")) {
+            if(in==null)throw new IOException("Missing menu layout resource");
+            YamlConfiguration layout=YamlConfiguration.loadConfiguration(new InputStreamReader(in,java.nio.charset.StandardCharsets.UTF_8));
+            YamlConfiguration y=new YamlConfiguration();y.load(file);
+            var expected=layout.getConfigurationSection("items");
+            var current=y.getConfigurationSection("items");
+            if(expected==null||current==null)throw new IOException("Menu items are missing");
+            // Unknown custom buttons may occupy the new slots. Leave them for a reviewed merge.
+            for(String key:current.getKeys(false)) {
+                if(!expected.contains(key)&&!key.startsWith("frame_")&& !key.startsWith("layout_")) {
+                    plugin.getLogger().warning("指南针含自定义按钮 "+key+"，保留现有布局，请按新版模板合并。");
+                    return;
+                }
+            }
+            for(String key:new ArrayList<>(current.getKeys(false))) {
+                if(key.startsWith("frame_")||key.startsWith("layout_")) {
+                    if(!y.getStringList("items."+key+".left_click_commands").isEmpty()||!y.getStringList("items."+key+".right_click_commands").isEmpty()) {
+                        plugin.getLogger().warning("指南针装饰格含自定义动作，保留现有布局。");return;
+                    }
+                }
+            }
+            for(String key:new ArrayList<>(current.getKeys(false)))if(key.startsWith("frame_")||key.startsWith("layout_"))y.set("items."+key,null);
+            y.set("size",45);
+            for(String key:expected.getKeys(false)) {
+                String path="items."+key;
+                if(key.startsWith("layout_")||!y.contains(path))y.set(path,expected.getConfigurationSection(key).getValues(true));
+                else y.set(path+".slot",expected.getInt(key+".slot"));
+            }
+            // Replace only the old default heading/duplicate clock icon, retaining custom labels and actions.
+            if("&b&l生存指南 · 玩家中心".equals(y.getString("items.heading.display_name"))) {
+                y.set("items.heading.display_name",expected.getString("heading.display_name"));
+                y.set("items.heading.lore",expected.getStringList("heading.lore"));
+            }
+            if("CLOCK".equals(y.getString("items.sidebar.material")))y.set("items.sidebar.material","SPYGLASS");
+            File prior=new File(file.getParentFile(),file.getName()+".before-layout-v094");
+            if(!prior.exists())Files.copy(file.toPath(),prior.toPath());
+            File temp=new File(file.getParentFile(),file.getName()+".layout-tmp");y.save(temp);
+            Files.move(temp.toPath(),file.toPath(),StandardCopyOption.REPLACE_EXISTING);
+            plugin.getDataFolder().mkdirs();Files.writeString(marker.toPath(),"Compact 5x3 layout; existing button actions preserved\n");
+            plugin.getLogger().info("指南针已重排为五列三排，保留原有按钮功能与本地文案。");
+        }catch(Exception e){throw new IllegalStateException("Cannot migrate compass menu layout",e);}
     }
     private static void patch(MiaoServer p, String name, Map<String, Object> values) throws Exception {
         File file = new File(p.getDataFolder().getParentFile(), name);

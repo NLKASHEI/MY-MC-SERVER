@@ -2,7 +2,7 @@ menu_title: '&8南可熙的神奇妙妙服'
 open_command:
 - menu
 - cd
-size: 54
+size: 45
 items:
   lobby:
     material: BEACON
@@ -20,7 +20,7 @@ items:
     - '[player] mv tp w:lobby'
   survival:
     material: GRASS_BLOCK
-    slot: 13
+    slot: 12
     display_name: '&a自由生存'
     lore:
     - '&7探索、建造与原版冒险'
@@ -34,7 +34,7 @@ items:
     - '[player] mv tp w:world'
   flat:
     material: BRICKS
-    slot: 15
+    slot: 13
     display_name: '&d创造工坊'
     lore:
     - '&7超平坦自由建造'
@@ -48,7 +48,7 @@ items:
     - '[player] mv tp w:flat'
   homes:
     material: RED_BED
-    slot: 20
+    slot: 14
     display_name: '&f家园与传送点'
     lore:
     - '&7回家、设置家园、查看说明'
@@ -61,7 +61,7 @@ items:
     - '[player] homes-menu'
   travel:
     material: ENDER_PEARL
-    slot: 22
+    slot: 15
     display_name: '&b好友传送'
     lore:
     - '&7申请、接受与拒绝传送'
@@ -74,7 +74,7 @@ items:
     - '[player] travel-menu'
   claims:
     material: GOLDEN_SHOVEL
-    slot: 24
+    slot: 20
     display_name: '&e领地管家'
     lore:
     - '&7圈地、查看格数、授权好友'
@@ -88,7 +88,7 @@ items:
     - '[player] claims-menu'
   shop:
     material: EMERALD
-    slot: 29
+    slot: 22
     display_name: '&6交易中心 · 玩家集市'
     lore:
     - '&7补给商店与玩家箱子交易'
@@ -100,7 +100,7 @@ items:
     right_click_commands: *id001
   skills:
     material: EXPERIENCE_BOTTLE
-    slot: 31
+    slot: 29
     display_name: '&b技能成长'
     lore:
     - '&7挖矿、伐木、钓鱼与战斗升级'
@@ -114,7 +114,7 @@ items:
     - '[player] skills'
   fishing:
     material: FISHING_ROD
-    slot: 33
+    slot: 30
     display_name: '&3钓鱼图鉴'
     lore:
     - '&7海洋资源、实用装备、海底珍藏'
@@ -128,7 +128,7 @@ items:
     - '[player] fishing-menu'
   rewards:
     material: CLOCK
-    slot: 38
+    slot: 31
     display_name: '&6每日在线礼物'
     lore:
     - '&7活跃 30 / 60 / 120 分钟'
@@ -142,7 +142,7 @@ items:
     - '[player] reward'
   technical:
     material: REDSTONE
-    slot: 40
+    slot: 24
     display_name: '&c生电工具箱'
     lore:
     - '&7假人、背包、持续动作与停止'
@@ -156,7 +156,7 @@ items:
     - '[player] technical-menu'
   fun:
     material: OAK_STAIRS
-    slot: 42
+    slot: 32
     display_name: '&d休闲互动'
     lore:
     - '&7坐下、躺下、骑头与小动作'
@@ -169,7 +169,7 @@ items:
     - '[player] fun'
   guide:
     material: WRITABLE_BOOK
-    slot: 47
+    slot: 39
     display_name: '&f新手手册'
     lore:
     - '&7查看常用命令与玩法说明'
@@ -181,7 +181,7 @@ items:
     - '[player] guide'
   account:
     material: NAME_TAG
-    slot: 49
+    slot: 41
     display_name: '&b账号与双端绑定'
     lore:
     - '&7PC / PE 共用身份、改密说明'
@@ -193,7 +193,7 @@ items:
     - '[player] account-menu'
   balance:
     material: GOLD_INGOT
-    slot: 51
+    slot: 23
     display_name: '&e我的钱包'
     lore:
     - '&7查看余额与转账说明'
@@ -206,155 +206,16 @@ items:
   heading:
     material: BOOK
     slot: 4
-    display_name: '&b&l生存指南 · 玩家中心'
+    display_name: '&6&l生存指南针'
     lore:
-    - '&7点击图标使用功能'
-    - '&8生存指南 · 简单而自在'
-    left_click_commands: []
-    right_click_commands: []
-  frame_0:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 0
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_1:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 1
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_2:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 2
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_3:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 3
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_5:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 5
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_6:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 6
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_7:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 7
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_8:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 8
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_9:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 9
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_17:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 17
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_18:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 18
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_26:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 26
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_27:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 27
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_35:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 35
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_36:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 36
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_44:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 44
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_48:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 48
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_50:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 50
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_52:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 52
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_53:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 53
-    display_name: ' '
-    lore: []
+    - '&7南可熙的神奇妙妙服'
+    - '&7世界与传送 · 建设与经营 · 成长与休闲'
+    - '&e点击下方图标，开启你的旅程'
     left_click_commands: []
     right_click_commands: []
   teams:
     material: CAMPFIRE
-    slot: 45
+    slot: 21
     display_name: '&6伙伴小队'
     lore:
     - '&7组队建造 · 队内聊天 · 共享领地'
@@ -365,8 +226,8 @@ items:
     right_click_commands:
     - '[openguimenu] teams'
   sidebar:
-    material: CLOCK
-    slot: 46
+    material: SPYGLASS
+    slot: 33
     display_name: '&d我的成长 · 侧边栏'
     lore:
     - '&7开关侧边栏，选择喜欢的数据'
@@ -377,3 +238,201 @@ items:
     right_click_commands:
     - '[close]'
     - '[player] sidebar settings'
+  close:
+    material: BARRIER
+    slot: 40
+    display_name: '&c返回游戏'
+    lore:
+    - '&7收起指南针菜单'
+    left_click_commands:
+    - '[close]'
+    right_click_commands:
+    - '[close]'
+  layout_0:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 0
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_1:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 1
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_2:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 2
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_3:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 3
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_5:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 5
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_6:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 6
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_7:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 7
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_8:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 8
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_9:
+    material: LIME_STAINED_GLASS_PANE
+    slot: 9
+    display_name: '&a世界与传送'
+    lore:
+    - '&7选择世界 · 家园 · 好友传送'
+    left_click_commands: []
+    right_click_commands: []
+  layout_10:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 10
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_16:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 16
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_17:
+    material: LIME_STAINED_GLASS_PANE
+    slot: 17
+    display_name: '&a世界与传送'
+    lore:
+    - '&7选择世界 · 家园 · 好友传送'
+    left_click_commands: []
+    right_click_commands: []
+  layout_18:
+    material: ORANGE_STAINED_GLASS_PANE
+    slot: 18
+    display_name: '&6建设与经营'
+    lore:
+    - '&7领地 · 小队 · 交易 · 钱包 · 生电'
+    left_click_commands: []
+    right_click_commands: []
+  layout_19:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 19
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_25:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 25
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_26:
+    material: ORANGE_STAINED_GLASS_PANE
+    slot: 26
+    display_name: '&6建设与经营'
+    lore:
+    - '&7领地 · 小队 · 交易 · 钱包 · 生电'
+    left_click_commands: []
+    right_click_commands: []
+  layout_27:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 27
+    display_name: '&b成长与休闲'
+    lore:
+    - '&7技能 · 钓鱼 · 礼物 · 互动 · 侧边栏'
+    left_click_commands: []
+    right_click_commands: []
+  layout_28:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 28
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_34:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 34
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_35:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 35
+    display_name: '&b成长与休闲'
+    lore:
+    - '&7技能 · 钓鱼 · 礼物 · 互动 · 侧边栏'
+    left_click_commands: []
+    right_click_commands: []
+  layout_36:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 36
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_37:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 37
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_38:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 38
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_42:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 42
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_43:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 43
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_44:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 44
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []

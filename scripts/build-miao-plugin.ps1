@@ -24,6 +24,7 @@ try {
   } else {
     Copy-Item tools/miao-server/plugin.yml "$folder/plugin.yml"
     Copy-Item config/survival/plugins/MiaoServer/config.yml "$folder/config.yml"
+    Copy-Item config/survival/plugins/DeluxeMenus/gui_menus/survival.yml "$folder/menu-layout.yml"
     Copy-Item assets/branding/server-icon.png "$folder/server-icon.png"
   }
   & (Join-Path $jdk 'jar.exe') --create --file $output -C $folder .
