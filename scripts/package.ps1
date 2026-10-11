@@ -18,6 +18,14 @@ foreach ($name in @('libraries','cache','versions')) {
   if (Test-Path $path) { Copy-Item $path $server -Recurse }
 }
 Copy-Item (Join-Path $root 'config/survival/*') $server -Recurse -Force
+# Public item/texture mappings only; never copy account or skull caches.
+$icons = Join-Path $root 'servers/survival/plugins/EconomyShopGUI/cache'
+$iconTarget = Join-Path $server 'plugins/EconomyShopGUI/cache'
+New-Item -ItemType Directory -Force $iconTarget | Out-Null
+foreach ($name in @('blocks.json','geyser-items.json','item_texture.json','terrain_texture.json')) {
+  $path = Join-Path $icons $name
+  if (Test-Path $path) { Copy-Item $path $iconTarget }
+}
 Set-Content (Join-Path $server 'eula.txt') 'eula=false' -Encoding ASCII
 $zip = "$release.zip"
 Compress-Archive -Path (Join-Path $release '*') -DestinationPath $zip -CompressionLevel Optimal

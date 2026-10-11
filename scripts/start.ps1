@@ -1,4 +1,7 @@
 ﻿$ErrorActionPreference = 'Stop'
+[Console]::InputEncoding = New-Object System.Text.UTF8Encoding($false)
+[Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false)
+$OutputEncoding = [Console]::OutputEncoding
 $root = Split-Path $PSScriptRoot -Parent
 $settings = Get-Content (Join-Path $root 'server-settings.json') -Raw | ConvertFrom-Json
 $java = @(Get-ChildItem (Join-Path $root 'runtime') -Filter java.exe -Recurse)[0].FullName
