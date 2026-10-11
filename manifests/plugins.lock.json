@@ -1,0 +1,127 @@
+[
+  {
+    "name": "EssentialsX",
+    "version": "2.22.1-dev+27-e70bdb8",
+    "url": "https://ci.ender.zone/job/EssentialsX/1832/artifact/jars/EssentialsX-2.22.1-dev+27-e70bdb8.jar",
+    "sha256": "a79eeeff1d628cd14aaf646b3a3fe9627efb6bc641890ef4bb71fca0ec65633c"
+  },
+  {
+    "name": "EssentialsXSpawn",
+    "version": "2.22.1-dev+27-e70bdb8",
+    "url": "https://ci.ender.zone/job/EssentialsX/1832/artifact/jars/EssentialsXSpawn-2.22.1-dev+27-e70bdb8.jar",
+    "sha256": "bb386f1fdd9f80bf243177a0f686617e945c81a5a8b54721cf88e0c1ed52b3a0"
+  },
+  {
+    "name": "EssentialsXChat",
+    "version": "2.22.1-dev+27-e70bdb8",
+    "url": "https://ci.ender.zone/job/EssentialsX/1832/artifact/jars/EssentialsXChat-2.22.1-dev+27-e70bdb8.jar",
+    "sha256": "fccab8d4fc659484a53ef62f64390910507f061d04f02d0bc759676b4cf5e555"
+  },
+  {
+    "name": "AuthMe",
+    "version": "6.0.1",
+    "url": "https://github.com/AuthMe/AuthMeReloaded/releases/download/6.0.1/AuthMe-6.0.1-Paper.jar",
+    "sha256": "7704335e9e73a634d9d926344f77897f4c74f78f82453a59f5aa0f8d2722450a"
+  },
+  {
+    "name": "Vault",
+    "version": "1.7.3",
+    "url": "https://github.com/MilkBowl/Vault/releases/download/1.7.3/Vault.jar",
+    "sha256": "a6b5ed97f43a5cf5bbaf00a7c8cd23c5afc9bd003f849875af8b36e6cf77d01d"
+  },
+  {
+    "name": "PlaceholderAPI",
+    "version": "2.12.3",
+    "url": "https://github.com/PlaceholderAPI/PlaceholderAPI/releases/download/2.12.3/PlaceholderAPI-2.12.3.jar",
+    "sha256": "fde03259f5af6938f3c33eeb4d814000a1adabf1d2304ce14970be81f609a437"
+  },
+  {
+    "name": "Skript",
+    "version": "2.16.2",
+    "url": "https://github.com/SkriptLang/Skript/releases/download/2.16.2/Skript-2.16.2.jar",
+    "sha256": "14cf743ee2c7cdd014bc63993c9092965edec3bdecff93ae47626fdef5d23b10"
+  },
+  {
+    "name": "luckperms",
+    "version": "v5.5.71-bukkit",
+    "url": "https://cdn.modrinth.com/data/Vebnzrzj/versions/b0mk8uS6/LuckPerms-Bukkit-5.5.71.jar",
+    "sha256": "49cecb66fa1fd22a133039a490e9c1e5095a238e7cd66eb9d2a16fe6c897550d"
+  },
+  {
+    "name": "deluxemenus",
+    "version": "1.14.1-Release",
+    "url": "https://cdn.modrinth.com/data/kKZkPgJ7/versions/PNKQ6RMs/DeluxeMenus-1.14.1-Release.jar",
+    "sha256": "ec10a1317152aa57d76eec8cb3e1e7dc7f52e45c7a5d742c0baa1e394496ec20"
+  },
+  {
+    "name": "griefprevention",
+    "version": "16.18.7",
+    "url": "https://cdn.modrinth.com/data/O4o4mKaq/versions/dGfCZHqk/GriefPrevention.jar",
+    "sha256": "45e9907c61222e559ed2e099ffee0ede706a21243a31d7db549baf678708fdf0"
+  },
+  {
+    "name": "coreprotect",
+    "version": "24.1",
+    "url": "https://cdn.modrinth.com/data/Lu3KuzdV/versions/3sehX6Sg/CoreProtect-CE-24.1.jar",
+    "sha256": "a2acef7c06ef201355cef07d591a6055dfed358ad768faaaaaf4e276865ecc97"
+  },
+  {
+    "name": "chunky",
+    "version": "1.5.3",
+    "url": "https://cdn.modrinth.com/data/fALzjamp/versions/MdY6JATr/Chunky-Bukkit-1.5.3.jar",
+    "sha256": "530d2c7430a96a39957391b7088be144daa3108f7665896d1c23aa8dd4af32f3"
+  },
+  {
+    "name": "multiverse-core",
+    "version": "5.8.1",
+    "url": "https://cdn.modrinth.com/data/3wmN97b8/versions/YZ2Ji4IS/multiverse-core-5.8.1.jar",
+    "sha256": "bc3f34e2d747fdf024f44868747bb016b08fa11d98ccb4ffcac958f083151a83"
+  },
+  {
+    "name": "gsit",
+    "version": "3.7.0",
+    "url": "https://cdn.modrinth.com/data/GOHbQGyX/versions/gnY5Flgo/GSit-3.7.0.jar",
+    "sha256": "143d38509f49c40b214887ad3c682c8db7fdd81c610787d0186d65f51256f4d2"
+  },
+  {
+    "name": "geyser",
+    "version": "2.11.3-1251",
+    "url": "https://download.geysermc.org/v2/projects/geyser/versions/2.11.3/builds/1251/downloads/spigot",
+    "sha256": "0bd00484f688c49e45f84f7c8bf9326f52d48a4c697d72a28526f2fe3f55dc36"
+  },
+  {
+    "name": "floodgate",
+    "version": "2.2.5-141",
+    "url": "https://download.geysermc.org/v2/projects/floodgate/versions/2.2.5/builds/141/downloads/spigot",
+    "sha256": "21570aff9ce17d6983928e8552777760e1ede5050026b04c686b0ae112e6fd7e"
+  },
+  {
+    "name": "EconomyShopGUI",
+    "version": "7.3.2",
+    "url": "https://gpplugins.com/plugin/track-download",
+    "method": "POST",
+    "body": {
+      "version_id": "1247",
+      "plugin_id": "1"
+    },
+    "sha256": "dca1d3fa5774edfa346ddb060a278d93b3b7654cc90fe14444eda548440e72e3"
+  },
+  {
+    "name": "ViaVersion",
+    "version": "5.12.1",
+    "url": "https://github.com/ViaVersion/ViaVersion/releases/download/5.12.1/ViaVersion-5.12.1.jar",
+    "sha256": "b8033807e7182c35003a45962352dd642c1e91880ca281da3a43cb6f481a95a2"
+  },
+  {
+    "name": "ViaBackwards",
+    "version": "5.12.1",
+    "url": "https://github.com/ViaVersion/ViaBackwards/releases/download/5.12.1/ViaBackwards-5.12.1.jar",
+    "sha256": "29d94d3a26c85c8a327574b2322db4078992ae457f0173325431a12aac384911"
+  },
+  {
+    "name": "SkinsRestorer",
+    "version": "15.12.6",
+    "url": "https://github.com/SkinsRestorer/SkinsRestorer/releases/download/15.12.6/SkinsRestorer.jar",
+    "sha256": "a85b4a370f988741c9a38f4d0498262edacbf3220314790ac1c127461996359c"
+  }
+]

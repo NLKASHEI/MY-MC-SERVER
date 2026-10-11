@@ -1,0 +1,10 @@
+{
+  "name": "my-mc-server",
+  "version": "0.1.0",
+  "description": "Windows Minecraft survival server maintenance skills",
+  "skills": [
+    "./skills/engineering/configure-minecraft",
+    "./skills/engineering/update-minecraft",
+    "./skills/productivity/localize-minecraft"
+  ]
+}

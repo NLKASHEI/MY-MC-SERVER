@@ -1,0 +1,69 @@
+menu_title: '&2生存服务中心'
+open_command:
+  - menu
+  - cd
+size: 27
+items:
+  shop:
+    material: EMERALD
+    slot: 10
+    display_name: '&a物资商店'
+    lore:
+      - '&7购买常用物资，收购物品暂不开启'
+    left_click_commands:
+      - '[close]'
+      - '[player] shop'
+    right_click_commands:
+      - '[close]'
+      - '[player] shop'
+  homes:
+    material: RED_BED
+    slot: 11
+    display_name: '&e返回家园'
+    lore:
+      - '&7点击查看或返回已设置的家'
+      - '&7使用 /sethome 家名 设置家'
+    left_click_commands:
+      - '[close]'
+      - '[player] home'
+  rewards:
+    material: CLOCK
+    slot: 12
+    display_name: '&6在线奖励'
+    lore:
+      - '&7活跃在线 30 / 60 / 120 分钟'
+      - '&7每天各领一次，挂机不累计'
+    left_click_commands:
+      - '[close]'
+      - '[player] reward'
+  balance:
+    material: GOLD_INGOT
+    slot: 14
+    display_name: '&e账户余额'
+    left_click_commands:
+      - '[close]'
+      - '[player] balance'
+  claims:
+    material: GOLDEN_SHOVEL
+    slot: 15
+    display_name: '&b家园圈地'
+    lore:
+      - '&7用金铲右键选择两个对角'
+      - '&7使用 /trust 玩家 授权朋友'
+    left_click_commands:
+      - '[close]'
+      - '[player] guide claims'
+  guide:
+    material: BOOK
+    slot: 16
+    display_name: '&f新手指南'
+    left_click_commands:
+      - '[close]'
+      - '[player] guide'
+  spawn:
+    material: COMPASS
+    slot: 22
+    display_name: '&a返回出生点'
+    left_click_commands:
+      - '[close]'
+      - '[player] spawn'

@@ -1,0 +1,30 @@
+survival.player:
+  description: 普通生存玩家的基础权限
+  default: true
+  children:
+    survival.guide: true
+    survival.reward: true
+    essentials.help: true
+    essentials.motd: true
+    essentials.rules: true
+    essentials.balance: true
+    essentials.pay: true
+    essentials.home: true
+    essentials.sethome: true
+    essentials.sethome.multiple: true
+    essentials.delhome: true
+    essentials.tpa: true
+    essentials.tpaccept: true
+    essentials.tpdeny: true
+    essentials.spawn: true
+    essentials.msg: true
+    essentials.reply: true
+    essentials.ignore: true
+    essentials.afk: true
+    essentials.afk.auto: true
+    economyshopgui.shop: true
+    economyshopgui.shop.supplies: true
+    authme.player.*: true
+    griefprevention.createclaims: true
+    gsit.sit: true
+    skinsrestorer.player: true

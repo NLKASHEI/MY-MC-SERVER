@@ -1,0 +1,12 @@
+enable: true
+slot: 13
+title: '&2基础物资商店'
+bedrock-title: '基础物资商店'
+hidden: false
+display-item: false
+economy: VAULT
+item:
+  material: CHEST
+  name: '&a基础物资'
+  lore:
+    - '&7少量常用物资，不出售稀有装备'

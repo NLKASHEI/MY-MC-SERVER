@@ -1,0 +1,77 @@
+# 原生 Skript + Vault。变量由 Skript 持久化，重启不会重置已领取奖励。
+options:
+    prefix: &2[生存服]&r
+
+command /guide [<text>]:
+    permission: survival.guide
+    executable by: players
+    trigger:
+        if arg-1 is "claims":
+            send "{@prefix} &e金铲右键选择两角圈地，木棍右键查看归属。"
+            send "&7/trust 玩家：授权建造；/untrust 玩家：撤销；/claimslist：查看圈地。"
+            send "&7/abandonclaim：放弃当前位置圈地；初始 500 格，每小时增加 100 格。"
+        else if arg-1 is "compass":
+            if player has compass named "&a生存指南针":
+                send "{@prefix} &7你已拥有指南针。"
+            else:
+                give player compass named "&a生存指南针" with lore "&7右键打开服务中心"
+        else:
+            send "{@prefix} &a欢迎来到原版生存！"
+            send "&7/menu：服务中心；/guide compass：领取菜单指南针。"
+            send "&7/sethome 家名：设家；/home 家名：回家；/delhome 家名：删除。"
+            send "&7/tpa 玩家：申请传送；/tpaccept：接受；/tpdeny：拒绝。"
+            send "&7/shop：物资商店；/balance：余额；/pay 玩家 金额：转账。"
+            send "&7/reward：领取在线奖励；/guide claims：圈地说明。"
+            send "&7/msg 玩家 内容：私聊；/spawn：出生点；/changepassword：改密。"
+
+on right click:
+    if player's tool is compass named "&a生存指南针":
+        cancel event
+        make player execute command "menu"
+
+on join:
+    set {survival.last-location::%uuid of player%} to location of player
+
+on quit:
+    delete {survival.last-location::%uuid of player%}
+
+every 1 minute:
+    set {_day} to now formatted as "yyyy-MM-dd"
+    loop all players:
+        set {_id} to uuid of loop-player
+        if {survival.day::%{_id}%} is not {_day}:
+            set {survival.day::%{_id}%} to {_day}
+            set {survival.minutes::%{_id}%} to 0
+            delete {survival.claimed::%{_id}%::*}
+        if {survival.last-location::%{_id}%} is set:
+            if distance between location of loop-player and {survival.last-location::%{_id}%} is greater than 1:
+                add 1 to {survival.minutes::%{_id}%}
+        set {survival.last-location::%{_id}%} to location of loop-player
+
+command /reward:
+    permission: survival.reward
+    executable by: players
+    trigger:
+        set {_id} to uuid of player
+        set {_day} to now formatted as "yyyy-MM-dd"
+        if {survival.day::%{_id}%} is not {_day}:
+            set {survival.day::%{_id}%} to {_day}
+            set {survival.minutes::%{_id}%} to 0
+            delete {survival.claimed::%{_id}%::*}
+        set {_minutes} to {survival.minutes::%{_id}%}
+        set {_paid} to 0
+        loop 30, 60 and 120:
+            if {_minutes} is greater than or equal to loop-value:
+                if {survival.claimed::%{_id}%::%loop-value%} is not true:
+                    set {survival.claimed::%{_id}%::%loop-value%} to true
+                    if loop-value is 30:
+                        add 50 to player's balance
+                        add 50 to {_paid}
+                    else if loop-value is 60:
+                        add 100 to player's balance
+                        add 100 to {_paid}
+                    else:
+                        add 200 to player's balance
+                        add 200 to {_paid}
+        send "{@prefix} &e今日活跃在线：%{_minutes}% 分钟，本次领取：%{_paid}% 金币。"
+        send "&7每天 30 / 60 / 120 分钟奖励 50 / 100 / 200 金币；每分钟检测位移。"

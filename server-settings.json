@@ -1,0 +1,6 @@
+{
+  "memoryMin": "2G",
+  "memoryMax": "6G",
+  "minecraftVersion": "26.2",
+  "serverDirectory": "servers/survival"
+}

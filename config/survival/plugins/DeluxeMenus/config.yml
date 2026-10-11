@@ -1,0 +1,5 @@
+debug: LOWEST
+check_updates: true
+gui_menus:
+  survival:
+    file: survival.yml

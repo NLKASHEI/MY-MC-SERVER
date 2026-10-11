@@ -1,0 +1,14 @@
+/runtime/
+/downloads/
+/backups/
+/release/
+/servers/
+*.zip
+*.jar
+*.db
+*.db-shm
+*.db-wal
+*.pem
+*.key
+.env
+secrets/
