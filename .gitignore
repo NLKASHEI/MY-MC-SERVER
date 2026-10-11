@@ -13,3 +13,5 @@
 *.key
 .env
 secrets/
+/.update-state.json
+/.update-state.json.tmp

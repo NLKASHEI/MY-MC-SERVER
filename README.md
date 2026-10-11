@@ -10,6 +10,8 @@ Windows 云服务器使用的 Paper 26.2 原版生存辅助服务端。Java 离�
 
 完整部署包：从 [GitHub Release](https://github.com/NLKASHEI/MY-MC-SERVER/releases/latest) 下载 ZIP 和 SHA256 校验文件。GitHub 自动生成的 Source code 仅是源码，不包含 Java 和插件。
 
+以后更新：服务器控制台输入 `stop`，退出后双击 **一键更新.bat**，程序自动获取我们发布的正式更新包、核验 SHA256、完整备份并替换变化的文件。存档、玩家数据、密钥、内存设置保留；本地改过的配置保留，冲突新版另存为 `.new`，详见 [更新指南](docs/operations/update-guide.md)。无需安装 Git、Python 或登录 GitHub。
+
 下载完整部署包并解压到 Windows 服务器。阅读 Minecraft EULA，将 `servers/survival/eula.txt` 改为 `eula=true`，双击 `启动服务器.bat`。内存在 `server-settings.json` 中修改。云端放行 Java TCP 25565 和基岩 UDP 8585。
 
 按现有映射填写：Java `s9-4.yxjsmc.cn:20005` → TCP 25565；基岩 `s9-4.yxjsmc.cn:20013` → UDP 8585。用户已向云商确认映射支持 TCP+UDP，公网实际入服仍需部署后验收。3389 的远程桌面映射保持原用途。

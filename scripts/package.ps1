@@ -1,11 +1,15 @@
 ﻿$ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
+Add-Type -AssemblyName System.IO.Compression.FileSystem
 $running = Get-CimInstance Win32_Process -Filter "Name='java.exe'" | Where-Object { $_.ExecutablePath -like "$root\runtime\*" }
 if ($running) { throw 'Stop the local server before packaging.' }
+$version = Get-Content (Join-Path $root 'release-version.json') -Raw | ConvertFrom-Json
+$updateZip = Join-Path $root "release/MY-MC-SERVER-update-v$($version.version).zip"
+if (!(Test-Path $updateZip)) { & (Join-Path $PSScriptRoot 'build-update.ps1') }
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $release = Join-Path $root "release/MY-MC-SERVER-26.2-$stamp"
 New-Item -ItemType Directory -Force $release | Out-Null
-foreach ($name in @('scripts','runtime','manifests','config','docs','skills','assets','server-settings.json','README.md','AGENTS.md','GLOSSARY.md','CHANGELOG.md')) {
+foreach ($name in @('scripts','runtime','manifests','config','docs','skills','assets','server-settings.json','release-version.json','README.md','AGENTS.md','GLOSSARY.md','CHANGELOG.md')) {
   Copy-Item (Join-Path $root $name) $release -Recurse
 }
 Get-ChildItem $root -Filter *.bat | Copy-Item -Destination $release
@@ -43,6 +47,17 @@ foreach ($name in @('blocks.json','geyser-items.json','item_texture.json','terra
   if (Test-Path $path) { Copy-Item $path $iconTarget }
 }
 Set-Content (Join-Path $server 'eula.txt') 'eula=false' -Encoding ASCII
+$updateArchive = [IO.Compression.ZipFile]::OpenRead($updateZip)
+try {
+  $reader = New-Object IO.StreamReader($updateArchive.GetEntry('update-index.json').Open())
+  try { $updateIndex = $reader.ReadToEnd() | ConvertFrom-Json } finally { $reader.Dispose() }
+} finally { $updateArchive.Dispose() }
+$baseline = @{}
+foreach ($file in $updateIndex.files) {
+  $baseline[$file.path] = $file.contentSha256
+  if ($file.path.StartsWith('config/survival/')) { $baseline['servers/survival/' + $file.path.Substring(16)] = $file.contentSha256 }
+}
+@{ version=$version.version; baseline=$baseline; pendingDirectory=$null } | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $release '.update-state.json') -Encoding UTF8
 $zip = "$release.zip"
 Compress-Archive -Path (Join-Path $release '*') -DestinationPath $zip -CompressionLevel Optimal
 $hash = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
