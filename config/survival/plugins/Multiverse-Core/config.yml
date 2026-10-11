@@ -24,9 +24,9 @@ spawn:
   first-spawn-location: w:lobby
   enable-join-destination: false
   join-destination: ''
-  default-respawn-in-overworld: true
+  default-respawn-in-overworld: false
   default-respawn-within-same-world: true
-  enforce-respawn-at-world-spawn: true
+  enforce-respawn-at-world-spawn: false
 portal:
   use-custom-portal-search: false
   custom-portal-search-radius: 128

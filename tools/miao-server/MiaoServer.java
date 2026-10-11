@@ -11,6 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.*;
 import org.bukkit.util.CachedServerIcon;
@@ -23,6 +25,8 @@ public final class MiaoServer extends JavaPlugin implements Listener {
     private final Map<UUID, Invitation> invites = new HashMap<>();
     private final Map<UUID, Scoreboard> boards = new HashMap<>();
     private final Set<UUID> hidden = new HashSet<>();
+    private final Map<UUID, World> deathWorlds = new HashMap<>();
+    private final Map<UUID, Location> endPortalSpawns = new HashMap<>();
     private CachedServerIcon icon;
     private String motd;
     private volatile int online;
@@ -83,6 +87,28 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         getLogger().info("中文侧边栏、组队共享领地、中文服务器列表已启用。");
     }
     private static boolean dummy(Player p) { return p.hasMetadata("fakeplayer:spawned_at"); }
+    @EventHandler(priority=EventPriority.MONITOR)
+    public void rememberDeathWorld(PlayerDeathEvent event) {
+        deathWorlds.put(event.getEntity().getUniqueId(),event.getEntity().getWorld());
+    }
+    @EventHandler(priority=EventPriority.HIGHEST)
+    public void respawnInDeathWorld(PlayerRespawnEvent event) {
+        if(event.getRespawnReason()==PlayerRespawnEvent.RespawnReason.END_PORTAL) {
+            Location original=endPortalSpawns.remove(event.getPlayer().getUniqueId());
+            if(original!=null)event.setRespawnLocation(original);
+            return;
+        }
+        if(event.getRespawnReason()!=PlayerRespawnEvent.RespawnReason.DEATH)return;
+        World world=deathWorlds.remove(event.getPlayer().getUniqueId());
+        if(world==null)world=event.getPlayer().getWorld();
+        // Valid beds/anchors or a custom spawn in this world remain intact.
+        if(!world.equals(event.getRespawnLocation().getWorld()))event.setRespawnLocation(world.getSpawnLocation());
+    }
+    @EventHandler(priority=EventPriority.LOWEST)
+    public void rememberEndPortalSpawn(PlayerRespawnEvent event) {
+        if(event.getRespawnReason()==PlayerRespawnEvent.RespawnReason.END_PORTAL)
+            endPortalSpawns.put(event.getPlayer().getUniqueId(),event.getRespawnLocation().clone());
+    }
     private static String color(String s) { return ChatColor.translateAlternateColorCodes('&', s); }
     private void say(CommandSender p, String s) { p.sendMessage(color("&6南可熙提醒您： &f" + s)); }
     private void save() {
@@ -260,7 +286,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         Scoreboard b = boards.remove(p.getUniqueId());
         if (b != null && p.getScoreboard() == b) p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
     }
-    @EventHandler public void quit(PlayerQuitEvent e) { boards.remove(e.getPlayer().getUniqueId()); hidden.remove(e.getPlayer().getUniqueId()); invites.remove(e.getPlayer().getUniqueId()); }
+    @EventHandler public void quit(PlayerQuitEvent e) { boards.remove(e.getPlayer().getUniqueId()); hidden.remove(e.getPlayer().getUniqueId()); invites.remove(e.getPlayer().getUniqueId()); deathWorlds.remove(e.getPlayer().getUniqueId()); endPortalSpawns.remove(e.getPlayer().getUniqueId()); }
     @EventHandler public void ping(ServerListPingEvent e) {
         e.setMotd(motd);
         if (e instanceof com.destroystokyo.paper.event.server.PaperServerListPingEvent paper) paper.setNumPlayers(online);

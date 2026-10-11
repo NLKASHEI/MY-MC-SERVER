@@ -1,6 +1,6 @@
 name: MiaoServer
 prefix: NLK
-version: 0.9.6
+version: 0.9.7
 main: cn.nankexi.MiaoServer
 api-version: '26.2'
 depend: [GriefPrevention, AuthMe, floodgate, WorldEdit, Vault]

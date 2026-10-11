@@ -71,6 +71,27 @@ public class MiaoSmoke extends JavaPlugin {
    ok(permissionFile.getBoolean("survival.player|children|veinminer.command.toggle"),"permission migration keeps literal dotted keys");
    ok(w.getViewDistance()==20,"runtime view distance 20");
    ok(w.getSimulationDistance()==15,"runtime simulation distance 15");
+   @SuppressWarnings("unchecked") Map<UUID,World> deaths=(Map<UUID,World>)get(m,"deathWorlds");
+   var reason=org.bukkit.event.player.PlayerRespawnEvent.RespawnReason.DEATH;
+   World lobbyWorld=Bukkit.getWorld("lobby");
+   for(String name:List.of("world","flat","world_nether","world_the_end","lobby")) {
+     World deathWorld=Bukkit.getWorld(name);ok(deathWorld!=null,"respawn fixture world loaded");deaths.put(owner,deathWorld);
+     var respawn=new org.bukkit.event.player.PlayerRespawnEvent(p,lobbyWorld.getSpawnLocation(),false,false,false,reason);
+     m.respawnInDeathWorld(respawn);ok(respawn.getRespawnLocation().getWorld().equals(deathWorld),"death remains in "+name);
+   }
+   Location bed=w.getSpawnLocation().clone().add(3,0,3);deaths.put(owner,w);
+   var bedEvent=new org.bukkit.event.player.PlayerRespawnEvent(p,bed,true,false,false,reason);m.respawnInDeathWorld(bedEvent);
+   ok(bedEvent.getRespawnLocation().equals(bed),"same-world bed retained");
+   World nether=Bukkit.getWorld("world_nether");Location anchor=nether.getSpawnLocation().clone().add(2,0,2);deaths.put(owner,nether);
+   var anchorEvent=new org.bukkit.event.player.PlayerRespawnEvent(p,anchor,false,true,false,reason);m.respawnInDeathWorld(anchorEvent);
+   ok(anchorEvent.getRespawnLocation().equals(anchor),"same-world anchor retained");
+   deaths.put(owner,nether);var crossBed=new org.bukkit.event.player.PlayerRespawnEvent(p,bed,true,false,false,reason);m.respawnInDeathWorld(crossBed);
+   ok(crossBed.getRespawnLocation().getWorld().equals(nether),"bed in another world does not override death world");
+   var exit=new org.bukkit.event.player.PlayerRespawnEvent(p,bed,false,false,false,org.bukkit.event.player.PlayerRespawnEvent.RespawnReason.END_PORTAL);
+   m.rememberEndPortalSpawn(exit);exit.setRespawnLocation(Bukkit.getWorld("world_the_end").getSpawnLocation());m.respawnInDeathWorld(exit);
+   ok(exit.getRespawnLocation().equals(bed),"end portal exit destination restored");
+   var essentialsConfig=YamlConfiguration.loadConfiguration(new java.io.File(m.getDataFolder().getParentFile(),"Essentials/config.yml"));
+   ok(essentialsConfig.getString("respawn-listener-priority").equals("none"),"Essentials respawn override disabled");
    String setting="players."+owner+".sidebar.enabled";
    preferences.set(setting,false);render.invoke(m,p);ok(board[0].getObjective(DisplaySlot.SIDEBAR)==null,"sidebar disable detaches");
    preferences.set(setting,true);render.invoke(m,p);ok(board[0].getObjective(DisplaySlot.SIDEBAR)!=null,"sidebar enabled again");preferences.set(setting,null);

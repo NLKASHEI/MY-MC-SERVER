@@ -12,6 +12,7 @@ final class RuntimeMigration {
         menuLayout(plugin);
         veinAndDistance(plugin);
         simulationDistance(plugin);
+        respawnRules(plugin);
         File marker = new File(plugin.getDataFolder(), "ui-fixes-v080.done");
         if (marker.exists()) return;
         try {
@@ -209,11 +210,31 @@ final class RuntimeMigration {
             plugin.getLogger().info("模拟距离已设为 15；其他服务端参数保持本地设置。");
         }catch(Exception e){throw new IllegalStateException("Cannot apply requested simulation distance",e);}
     }
+    private static void respawnRules(MiaoServer plugin) {
+        File marker=new File(plugin.getDataFolder(),"respawn-world-v097.done");
+        if(marker.exists())return;
+        try {
+            File plugins=plugin.getDataFolder().getParentFile();
+            File essentials=new File(plugins,"Essentials/config.yml");
+            var y=YamlConfiguration.loadConfiguration(essentials);
+            y.set("respawn-listener-priority","none");writeVersion(essentials,y,"v097");
+            File core=new File(plugins,"Multiverse-Core/config.yml");
+            y=YamlConfiguration.loadConfiguration(core);
+            y.set("spawn.default-respawn-in-overworld",false);
+            y.set("spawn.default-respawn-within-same-world",true);
+            y.set("spawn.enforce-respawn-at-world-spawn",false);writeVersion(core,y,"v097");
+            plugin.getDataFolder().mkdirs();Files.writeString(marker.toPath(),"Death respawns stay in their world; same-world bed and anchor retained\n");
+            plugin.getLogger().info("死亡重生已按所在世界处理，保留同世界床和重生锚；首次入服仍进主城。");
+        }catch(Exception e){throw new IllegalStateException("Cannot migrate death respawn settings",e);}
+    }
     private static boolean ySlot(File file,String key,int expected) {
         return YamlConfiguration.loadConfiguration(file).getInt("items."+key+".slot",-1)==expected;
     }
     private static void write095(File file,YamlConfiguration y)throws IOException {
-        File backup=new File(file.getParentFile(),file.getName()+".before-v095");
+        writeVersion(file,y,"v095");
+    }
+    private static void writeVersion(File file,YamlConfiguration y,String version)throws IOException {
+        File backup=new File(file.getParentFile(),file.getName()+".before-"+version);
         if(file.exists()&&!backup.exists())Files.copy(file.toPath(),backup.toPath());
         File tmp=new File(file.getParentFile(),file.getName()+".nlk-tmp");y.save(tmp);
         Files.move(tmp.toPath(),file.toPath(),StandardCopyOption.REPLACE_EXISTING);
