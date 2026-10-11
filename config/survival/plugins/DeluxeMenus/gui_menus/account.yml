@@ -3,6 +3,19 @@ open_command:
 - account-menu
 size: 27
 items:
+  player_names:
+    material: NAME_TAG
+    slot: 20
+    display_name: '&b昵称与私人备注'
+    lore:
+    - '&7修改自己的公开显示名，不改账号'
+    - '&7给朋友备注，仅自己可见'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao names'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao names'
   link:
     material: IRON_BARS
     slot: 10
@@ -156,13 +169,6 @@ items:
   frame_19:
     material: LIGHT_BLUE_STAINED_GLASS_PANE
     slot: 19
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_20:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 20
     display_name: ' '
     lore: []
     left_click_commands: []

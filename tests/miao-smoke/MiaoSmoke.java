@@ -63,6 +63,7 @@ public class MiaoSmoke extends JavaPlugin {
    UUID owner=UUID.randomUUID(), member=UUID.randomUUID(), manual=UUID.randomUUID();
    World w=Bukkit.getWorld("world");
    cuboidCheck(m,test,w);
+   namesCheck(m,w);
    claim=GriefPrevention.instance.dataStore.createClaim(w,1000000,1000010,-60,319,1000000,1000010,owner,null,null,null).claim;
    ok(claim!=null,"fixture claim");
    claim.setPermission(member.toString(),ClaimPermission.Container);
@@ -223,6 +224,41 @@ public class MiaoSmoke extends JavaPlugin {
    case "getUniqueId"->id;case "getName"->name;case "getWorld"->world;case "getLocation"->location;case "isOp"->op;case "hasPermission"->true;case "hasMetadata"->false;case "sendMessage"->null;case "getServer"->Bukkit.getServer();
    default->{Class<?> c=method.getReturnType();yield c==boolean.class?false:c==int.class?0:null;}
   });
+ }
+ void namesCheck(MiaoServer m,World world)throws Exception {
+  Object ui=get(m,"ui"),names=get(ui,"names");Class<?> type=names.getClass();
+  Method set=type.getDeclaredMethod("set",Player.class,UUID.class,String.class);set.setAccessible(true);
+  Method label=type.getDeclaredMethod("label",UUID.class,UUID.class,String.class);label.setAccessible(true);
+  Method valid=type.getDeclaredMethod("valid",String.class);valid.setAccessible(true);
+  Method chat=type.getDeclaredMethod("chat",io.papermc.paper.event.player.AsyncChatEvent.class);chat.setAccessible(true);
+  var data=(YamlConfiguration)get(names,"data");String original=data.saveToString();var file=(java.io.File)get(names,"file");boolean existed=file.exists();
+  UUID author=UUID.randomUUID(),viewerId=UUID.randomUUID(),otherId=UUID.randomUUID();
+  Player viewer=actor(viewerId,"NamesViewerFixture",world,world.getSpawnLocation(),false),other=actor(otherId,"NamesOtherFixture",world,world.getSpawnLocation(),false);
+  var cache=(fr.xephi.authme.data.auth.PlayerCache)get(fr.xephi.authme.api.v3.AuthMeApi.getInstance(),"playerCache");cache.updatePlayer(fr.xephi.authme.data.auth.PlayerAuth.builder().name("namesauthorfixture").build());
+  net.kyori.adventure.text.Component[] display={net.kyori.adventure.text.Component.text("NamesAuthorFixture")};
+  Player p=(Player)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{Player.class},(o,method,args)->switch(method.getName()){
+   case "getUniqueId"->author;case "getName"->"NamesAuthorFixture";case "hasMetadata"->false;case "displayName"->{if(args==null||args.length==0)yield display[0];display[0]=(net.kyori.adventure.text.Component)args[0];yield null;}
+   case "setDisplayName"->{display[0]=net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize((String)args[0]);yield null;}
+   case "sendMessage","setPlayerListName"->null;default->{Class<?> t=method.getReturnType();yield t==boolean.class?false:t==int.class?0:null;}
+  });
+  try {
+   ok((boolean)set.invoke(names,p,null,"南可熙好友"),"self nickname set");ok(p.getName().equals("NamesAuthorFixture")&&p.getUniqueId().equals(author),"real identity unchanged");
+   ok((boolean)set.invoke(names,viewer,author,"矿工搭子"),"private note set");
+   ok(label.invoke(names,viewerId,author,"原名").equals("矿工搭子"),"setter sees private note");ok(label.invoke(names,otherId,author,"原名").equals("南可熙好友"),"other viewer sees public nickname");
+   ok(!(boolean)valid.invoke(null,"§c管理员")&&!(boolean)valid.invoke(null,"a\nb")&&!(boolean)valid.invoke(null,"x".repeat(17)),"formatting and overlength rejected");
+   var disk=YamlConfiguration.loadConfiguration(file);ok(disk.getString("players."+viewerId+".notes."+author).equals("矿工搭子"),"private note persisted by both UUIDs");
+   var message=net.kyori.adventure.text.Component.text("你好");Set<net.kyori.adventure.audience.Audience> viewers=new HashSet<>(List.of(viewer,other));
+   var event=new io.papermc.paper.event.player.AsyncChatEvent(false,p,viewers,io.papermc.paper.chat.ChatRenderer.defaultRenderer(),message,message,net.kyori.adventure.chat.SignedMessage.system("你好",null));chat.invoke(names,event);
+   var plain=net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText();
+   ok(plain.serialize(event.renderer().render(p,p.displayName(),message,viewer)).contains("矿工搭子"),"private chat renderer");
+   String publicChat=plain.serialize(event.renderer().render(p,p.displayName(),message,other));ok(publicChat.contains("南可熙好友")&&!publicChat.contains("矿工搭子"),"private note never leaks to another viewer");
+   var handlers=io.papermc.paper.event.player.AsyncChatEvent.getHandlerList().getRegisteredListeners();int own=-1,ess=-1;for(int i=0;i<handlers.length;i++)if(handlers[i].getPriority()==org.bukkit.event.EventPriority.HIGHEST){if(handlers[i].getPlugin()==m)own=i;if(handlers[i].getPlugin().getName().equals("EssentialsChat"))ess=i;}ok(own>ess&&ess>=0,"names wraps EssentialsChat after formatting");
+   set.invoke(names,viewer,author,"");ok(label.invoke(names,viewerId,author,"原名").equals("南可熙好友"),"delete note restores public nickname");set.invoke(names,p,null,"");ok(label.invoke(names,otherId,author,"原名").equals("原名"),"clear nickname restores original fallback");
+   getLogger().info("NAMES_SMOKE_PASS: unchanged account/UUID, private per-viewer chat, persistence, input validation, clearing and EssentialsChat ordering");
+  }finally {
+   ((Map<?,?>)get(names,"nicknames")).remove(author);((Map<?,?>)get(names,"notes")).remove(viewerId);data.loadFromString(original);Method save=type.getDeclaredMethod("save");save.setAccessible(true);save.invoke(names);if(!existed)java.nio.file.Files.deleteIfExists(file.toPath());
+   for(String account:List.of("namesauthorfixture","namesviewerfixture","namesotherfixture"))cache.removePlayer(account);
+  }
  }
  void compassCheck(MiaoServer m) throws Exception {
   Object ui=get(m,"ui");

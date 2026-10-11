@@ -23,6 +23,7 @@ import org.geysermc.cumulus.form.*;
 /** Mobile native forms, private preferences, onboarding and progress. */
 final class MiaoInterface implements Listener {
     private final MiaoServer plugin;
+    final PlayerNames names;
     private final YamlConfiguration prefs = new YamlConfiguration();
     private final File file;
     private final Map<UUID, Long> started = new HashMap<>(), checkpoint = new HashMap<>();
@@ -44,17 +45,18 @@ final class MiaoInterface implements Listener {
         plugin=p; file=new File(p.getDataFolder(),"preferences.yml");
         World lobby=Bukkit.getWorld("lobby");initialLobbySpawn=lobby==null?null:lobby.getSpawnLocation().clone();
         try { if (file.exists()) prefs.load(file); } catch(Exception e) { throw new IllegalStateException("Cannot read sidebar preferences",e); }
+        names=new PlayerNames(p,this);
         scanMenus(); Bukkit.getPluginManager().registerEvents(this,p);
-        Bukkit.getScheduler().runTaskTimer(p,()->{ for(Player player:Bukkit.getOnlinePlayers()) { flushTime(player); if(authenticated(player)&&bedrock(player)) decorate(player); } save(); },1200,1200);
+        Bukkit.getScheduler().runTaskTimer(p,()->{ for(Player player:Bukkit.getOnlinePlayers()) { flushTime(player); if(authenticated(player)) decorate(player); } save(); },1200,1200);
     }
     boolean authenticated(Player p) { return !p.hasMetadata("fakeplayer:spawned_at") && AuthMeApi.getInstance().isAuthenticated(p); }
     boolean bedrock(Player p) { return FloodgateApi.getInstance().isFloodgatePlayer(p.getUniqueId()); }
     String display(Player p) {
-        if (!bedrock(p)) return p.getName();
+        if (!bedrock(p)) return names.nickname(p.getUniqueId(),p.getName());
         var f=FloodgateApi.getInstance().getPlayer(p.getUniqueId());
-        return "[PE]"+(f!=null && !f.isLinked()?f.getUsername():p.getName());
+        return "[PE]"+names.nickname(p.getUniqueId(),f!=null && !f.isLinked()?f.getUsername():p.getName());
     }
-    private void decorate(Player p) { p.setDisplayName("§b"+display(p)+"§r"); p.setPlayerListName("§b"+display(p)+"§r"); }
+    void decorate(Player p) { p.setDisplayName("§b"+display(p)+"§r"); p.setPlayerListName("§b"+display(p)+"§r"); }
     private String path(Player p) { return "players."+p.getUniqueId(); }
     private void say(Player p,String s) { p.sendMessage("§6南可熙提醒您： §f"+s); }
     private void main(Player p,Runnable r) { Bukkit.getScheduler().runTask(plugin,()->{ if(p.isOnline()&&authenticated(p)) r.run(); }); }
@@ -160,6 +162,7 @@ final class MiaoInterface implements Listener {
         if(a[0].equals("land"))return plugin.land(p,Arrays.copyOfRange(a,1,a.length));
         if(a[0].equals("teaminvite")){inviteMenu(p,0);return true;}
         if(a[0].equals("map")){mapLink(p);return true;}
+        if(a[0].equals("names")){names.command(p,Arrays.copyOfRange(a,1,a.length));return true;}
         return true;
     }
     private void linkHelp(Player p) {
@@ -317,7 +320,7 @@ final class MiaoInterface implements Listener {
         int page=Math.max(0,Math.min(requestedPage,Math.max(0,(players.size()-1)/28))),start=page*28,end=Math.min(start+28,players.size());
         if(bedrock(p)) {
             List<? extends Player> shown=players.subList(start,end);var form=SimpleForm.builder().title("邀请伙伴 · "+(page+1)+"页").content(players.isEmpty()?"暂时没有可邀请的在线玩家。":"点击玩家发送邀请，对方接受后才会加入。");
-            for(Player target:shown)form.button("§e"+target.getName()+"\n§7点击发送队伍邀请");
+            for(Player target:shown)form.button("§e"+names.label(p,target)+"\n§7账号："+target.getName());
             if(page>0)form.button("上一页");if(end<players.size())form.button("下一页");form.button("返回伙伴小队");
             form.validResultHandler(result->main(p,()->{int choice=result.clickedButtonId();if(choice<shown.size()){inviteTarget(p,shown.get(choice).getUniqueId());return;}int cursor=shown.size();if(page>0&&choice==cursor++){inviteMenu(p,page-1);return;}if(end<players.size()&&choice==cursor++){inviteMenu(p,page+1);return;}openServiceMenu(p,"teams");}));
             FloodgateApi.getInstance().sendForm(p.getUniqueId(),form.build());return;
@@ -326,7 +329,7 @@ final class MiaoInterface implements Listener {
         for(int slot=0;slot<54;slot++){ItemStack frame=new ItemStack(Material.GRAY_STAINED_GLASS_PANE);var meta=frame.getItemMeta();meta.setDisplayName(" ");frame.setItemMeta(meta);h.inventory.setItem(slot,frame);}
         for(int index=start;index<end;index++) {
             Player target=players.get(index);int offset=index-start,slot=10+(offset/7)*9+offset%7;
-            put(h,slot,Material.PLAYER_HEAD,"§e"+target.getName(),target.getUniqueId().toString(),"§7点击邀请加入你的队伍","§7对方接受后加入，五分钟有效");
+            put(h,slot,Material.PLAYER_HEAD,"§e"+names.label(p,target),target.getUniqueId().toString(),"§7账号："+target.getName(),"§7对方接受后加入，五分钟有效");
             ItemStack head=h.inventory.getItem(slot);var meta=(org.bukkit.inventory.meta.SkullMeta)head.getItemMeta();meta.setOwningPlayer(target);head.setItemMeta(meta);
         }
         put(h,4,Material.BOOK,"§6一起安家 · 选择伙伴","back",players.isEmpty()?"§7暂时没有可邀请玩家":"§7已过滤自己、假人、未登录及已组队玩家");
@@ -376,7 +379,7 @@ final class MiaoInterface implements Listener {
             if(!prefs.getBoolean(path(p)+".arrived-v080")) {
                 World lobby=Bukkit.getWorld("lobby");if(lobby!=null){p.teleport(lobby.getSpawnLocation());p.setGameMode(GameMode.ADVENTURE);prefs.set(path(p)+".arrived-v080",true);dirty=true;}
             }
-            if(bedrock(p))decorate(p);
+            decorate(p);
             boolean compass=false;for(ItemStack i:p.getInventory().getContents())if(i!=null&&i.getType()==Material.COMPASS&&i.hasItemMeta()&&i.getItemMeta().getDisplayName().equals("§a生存指南针"))compass=true;
             if(!compass){ItemStack i=new ItemStack(Material.COMPASS);ItemMeta meta=i.getItemMeta();meta.setDisplayName("§a生存指南针");meta.setLore(List.of("§7右键打开服务中心","§7管理员左键传送，普通玩家左键无操作"));i.setItemMeta(meta);p.getInventory().addItem(i);}
             say(p,"欢迎来到 §6南可熙的神奇妙妙服§f！右键指南针选择世界。");

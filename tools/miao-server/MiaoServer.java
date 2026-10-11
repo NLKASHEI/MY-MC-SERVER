@@ -270,7 +270,8 @@ public final class MiaoServer extends JavaPlugin implements Listener {
             }
             case "chat" -> {
                 if (t == null || a.length < 2) { say(p, "队内聊天：/team chat 消息。"); break; }
-                notifyTeam(t, "&b[队内] &f" + p.getName() + "：" + ChatColor.stripColor(String.join(" ", Arrays.copyOfRange(a, 1, a.length))).replace('&', '＆'));
+                String message=ChatColor.stripColor(String.join(" ", Arrays.copyOfRange(a,1,a.length))).replace('&','＆');
+                for(String id:members(t)){Player viewer=Bukkit.getPlayer(UUID.fromString(id));if(viewer!=null&&authenticated(viewer))say(viewer,"&b[队内] &f"+ui.names.label(viewer,p)+"："+message);}
             }
             default -> {
                 say(p, "&b队伍：&f" + title(t));
