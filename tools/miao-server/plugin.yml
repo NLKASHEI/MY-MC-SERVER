@@ -4,7 +4,7 @@ version: 0.9.9
 main: cn.nankexi.MiaoServer
 api-version: '26.2'
 depend: [GriefPrevention, AuthMe, floodgate, WorldEdit, WorldGuard, Vault]
-loadbefore: [Backuper, DeluxeMenus, VeinMiner, AuraSkills, EconomyShopGUI]
+loadbefore: [Backuper, DeluxeMenus, VeinMiner, AuraSkills, EconomyShopGUI, BlueMap]
 commands:
   land:
     description: 立体领地与扩大申请

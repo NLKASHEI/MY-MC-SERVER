@@ -159,13 +159,22 @@ final class MiaoInterface implements Listener {
         if(a[0].equals("deathback")){deathBack(p);return true;}
         if(a[0].equals("land"))return plugin.land(p,Arrays.copyOfRange(a,1,a.length));
         if(a[0].equals("teaminvite")){inviteMenu(p,0);return true;}
+        if(a[0].equals("map")){mapLink(p);return true;}
         return true;
     }
     private void linkHelp(Player p) {
+        // Account identity stays separate from the public web map.
         say(p,"绑定后固定使用 Java 身份，与谁先输入命令无关。先转移旧 PE 物品，绑定不自动合并存档。");
         say(p,"Java：/linkaccount 手机Xbox名（不带 . 或 [PE]，空格用引号包住）。");
         say(p,"PE：/linkaccount Java账号名 验证码；然后重连，使用 Java 账号的服内密码。");
         say(p,"想保留旧 PE 进度作为基础，请先联系管理员迁移，不要直接绑定。");
+    }
+    private void mapLink(Player p) {
+        String url=plugin.getConfig().getString("online-map.url","");
+        try {var uri=java.net.URI.create(url);if(!Set.of("http","https").contains(uri.getScheme())||uri.getHost()==null||uri.getUserInfo()!=null)throw new IllegalArgumentException();}
+        catch(Exception e){say(p,"在线地图地址尚未配置，请联系管理员。");return;}
+        p.sendMessage(net.kyori.adventure.text.Component.text("南可熙提醒您：点击查看在线地图 → "+url,net.kyori.adventure.text.format.NamedTextColor.AQUA).clickEvent(net.kyori.adventure.text.event.ClickEvent.openUrl(url)));
+        if(bedrock(p))FloodgateApi.getInstance().sendForm(p.getUniqueId(),SimpleForm.builder().title("南可熙 · 在线地图").content("浏览器可查看三维地图和建筑。\n\n"+url+"\n\n若手机无法点击聊天链接，请复制地址到浏览器。地图更新有渲染延迟。").button("返回指南针").validResultHandler(r->main(p,()->openServiceMenu(p,"survival"))).build());
     }
     private void link(Player p,String[] args) {
         linkHelp(p);

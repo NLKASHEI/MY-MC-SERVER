@@ -17,6 +17,7 @@ final class RuntimeMigration {
         ClaimsSetup.apply(plugin);
         TeamInviteSetup.apply(plugin);
         ShopBackSetup.apply(plugin);
+        BlueMapSetup.apply(plugin);
         File marker = new File(plugin.getDataFolder(), "ui-fixes-v080.done");
         if (marker.exists()) return;
         try {

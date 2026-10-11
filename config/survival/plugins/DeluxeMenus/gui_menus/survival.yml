@@ -314,13 +314,20 @@ items:
     - '&7选择世界 · 家园 · 好友传送'
     left_click_commands: []
     right_click_commands: []
-  layout_10:
-    material: GRAY_STAINED_GLASS_PANE
+  online_map:
+    material: FILLED_MAP
     slot: 10
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
+    display_name: '&b在线地图 · 三维世界'
+    lore:
+    - '&7查看主城、生存和各维度建筑'
+    - '&7电脑与手机浏览器均可访问'
+    - '&f点击获取地图链接'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao map'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao map'
   layout_16:
     material: GRAY_STAINED_GLASS_PANE
     slot: 16

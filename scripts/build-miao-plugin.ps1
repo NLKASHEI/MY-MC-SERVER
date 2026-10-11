@@ -36,6 +36,7 @@ try {
       Copy-Item "config/survival/plugins/DeluxeMenus/gui_menus/$menu.yml" "$folder/claims-3d-$menu.yml"
     }
     Copy-Item config/survival/plugins/DeluxeMenus/gui_menus/teams.yml "$folder/team-invite-menu.yml"
+    Copy-Item config/survival/plugins/BlueMap "$folder/bluemap" -Recurse
     foreach ($skill in @('mining','fighting','archery')) {
       Copy-Item "config/survival/plugins/AuraSkills/sources/$skill.yml" "$folder/income-$skill.yml"
     }

@@ -185,7 +185,7 @@
     "name": "MiaoServer",
     "version": "0.9.9",
     "url": "https://github.com/NLKASHEI/MY-MC-SERVER/releases/download/v0.9.9/MiaoServer-0.9.9.jar",
-    "sha256": "ef5bc128b22bc41595b7f66c51f08c2e9cc43c2de7b568232b65278069789a3a"
+    "sha256": "6a4b8a49a041a7c283ef00360dfdee67c00a76a985eabf460924086e25704f71"
   },
   {
     "name": "PacketEvents",
@@ -198,5 +198,11 @@
     "version": "2.4.1",
     "url": "https://github.com/2008Choco/VeinMiner/releases/download/v2.4.1/VeinMiner-Bukkit-2.4.1.jar",
     "sha256": "2d2e85d89db6c284c43494e2ceb48e730d1e378fa8b02e41232ef187159134ab"
+  },
+  {
+    "name": "BlueMap",
+    "version": "5.28",
+    "url": "https://github.com/BlueMap-Minecraft/BlueMap/releases/download/v5.28/bluemap-5.28-paper.jar",
+    "sha256": "4cfb4a9963132d5be0a9db031a28a98e9df92deed37ebb0756d3a7dd8721ab98"
   }
 ]
