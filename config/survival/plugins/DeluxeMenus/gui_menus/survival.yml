@@ -1,4 +1,4 @@
-menu_title: '&8生存指南 · 玩家中心'
+menu_title: '&8南可熙的神奇妙妙服'
 open_command:
 - menu
 - cd
@@ -324,13 +324,6 @@ items:
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_45:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 45
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
   frame_46:
     material: LIGHT_BLUE_STAINED_GLASS_PANE
     slot: 46
@@ -366,3 +359,15 @@ items:
     lore: []
     left_click_commands: []
     right_click_commands: []
+  teams:
+    material: CAMPFIRE
+    slot: 45
+    display_name: '&6伙伴小队'
+    lore:
+    - '&7组队建造 · 队内聊天 · 共享领地'
+    - '&7由地主主动开启，退队自动撤销共享'
+    - '&f点击进入伙伴中心'
+    left_click_commands:
+    - '[openguimenu] teams'
+    right_click_commands:
+    - '[openguimenu] teams'

@@ -1,0 +1,254 @@
+package cn.nankexi;
+
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
+import org.bukkit.*;
+import org.bukkit.command.*;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.*;
+import org.bukkit.event.server.ServerListPingEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.*;
+import org.bukkit.util.CachedServerIcon;
+import me.ryanhamshire.GriefPrevention.*;
+
+/** Small, local-only survival helpers. All claim mutations run on the main thread. */
+public final class MiaoServer extends JavaPlugin implements Listener {
+    private YamlConfiguration data;
+    private File store;
+    private final Map<UUID, Invitation> invites = new HashMap<>();
+    private final Map<UUID, Scoreboard> boards = new HashMap<>();
+    private final Set<UUID> hidden = new HashSet<>();
+    private CachedServerIcon icon;
+    private String motd;
+    private volatile int online;
+    private record Invitation(String team, long expires) {}
+    private DataStore claims() { return GriefPrevention.instance.dataStore; }
+
+    @Override public void onLoad() {
+        // One migration for the explicitly requested schedule. Leave other backup settings intact.
+        File marker = new File(getDataFolder(), "backup-schedule-v070.done");
+        File backup = new File(getDataFolder().getParentFile(), "Backuper/config.yml");
+        if (!marker.exists() && backup.isFile()) {
+            try {
+                YamlConfiguration y = new YamlConfiguration(); y.load(backup);
+                y.set("backup.autoBackupPeriod", 120);
+                y.set("storages.local.maxBackupsNumber", 3);
+                File tmp = new File(backup.getParentFile(), "config.yml.miao-tmp"); y.save(tmp);
+                Files.move(tmp.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                getDataFolder().mkdirs(); Files.writeString(marker.toPath(), "120 minutes; 3 local snapshots\n");
+                getLogger().info("自动备份已调整：每两小时一次，保留最近三份。");
+            } catch (Exception e) { throw new IllegalStateException("Cannot migrate backup schedule", e); }
+        }
+    }
+    @Override public void onEnable() {
+        saveDefaultConfig(); store = new File(getDataFolder(), "teams.yml");
+        data = new YamlConfiguration();
+        try { if (store.exists()) data.load(store); }
+        catch (Exception e) { throw new IllegalStateException("Refusing to replace unreadable team data", e); }
+        motd = color(getConfig().getString("motd", "南可熙的神奇妙妙服").replace("\\n", "\n"));
+        try (InputStream in = getResource("server-icon.png")) {
+            if (in != null) icon = Bukkit.loadServerIcon(javax.imageio.ImageIO.read(in));
+        } catch (Exception e) { getLogger().warning("服务器图标读取失败：" + e.getMessage()); }
+        Bukkit.getPluginManager().registerEvents(this, this);
+        reconcile();
+        Bukkit.getScheduler().runTaskTimer(this, () -> {
+            online = (int) Bukkit.getOnlinePlayers().stream().filter(p -> !dummy(p)).count();
+            for (Player p : Bukkit.getOnlinePlayers()) if (!dummy(p)) render(p);
+        }, 20L, Math.max(40L, getConfig().getLong("sidebar.refresh-ticks", 40)));
+        Bukkit.getScheduler().runTaskTimer(this, this::reconcile, 100L, 100L);
+        getLogger().info("中文侧边栏、组队共享领地、中文服务器列表已启用。");
+    }
+    private static boolean dummy(Player p) { return p.hasMetadata("fakeplayer:spawned_at"); }
+    private static String color(String s) { return ChatColor.translateAlternateColorCodes('&', s); }
+    private void say(CommandSender p, String s) { p.sendMessage(color("&6[妙妙服] &f" + s)); }
+    private void save() {
+        try {
+            File temp = new File(getDataFolder(), "teams.yml.tmp"); data.save(temp);
+            try { Files.move(temp.toPath(), store.toPath(), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING); }
+            catch (AtomicMoveNotSupportedException e) { Files.move(temp.toPath(), store.toPath(), StandardCopyOption.REPLACE_EXISTING); }
+        } catch (IOException e) { throw new IllegalStateException("Cannot persist team data", e); }
+    }
+    private Set<String> keys(String path) {
+        ConfigurationSection s = data.getConfigurationSection(path);
+        return s == null ? Set.of() : new HashSet<>(s.getKeys(false));
+    }
+    private String team(UUID player) {
+        for (String t : keys("teams")) if (members(t).contains(player.toString())) return t;
+        return null;
+    }
+    private List<String> members(String t) { return data.getStringList("teams." + t + ".members"); }
+    private boolean leader(Player p, String t) { return p.getUniqueId().toString().equals(data.getString("teams." + t + ".owner")); }
+    private String title(String t) { return t == null ? "未加入" : data.getString("teams." + t + ".name", "队伍"); }
+    private void notifyTeam(String t, String text) {
+        for (String id : members(t)) { Player p = Bukkit.getPlayer(UUID.fromString(id)); if (p != null) say(p, text); }
+    }
+    private Claim ownedClaim(Player p) {
+        Claim c = claims().getClaimAt(p.getLocation(), true, null);
+        if (c == null || c.parent != null || c.isAdminClaim() || !p.getUniqueId().equals(c.getOwnerID())) return null;
+        return c;
+    }
+    // Journal the previous explicit trust before granting. Only undo unchanged grants made here.
+    private boolean restore(Claim c, String root, String id) {
+        if (c.getPermission(id) == ClaimPermission.Build) {
+            String prior = data.getString(root + ".grants." + id, "NONE");
+            if (prior.equals("NONE")) c.dropPermission(id); else c.setPermission(id, ClaimPermission.valueOf(prior));
+            claims().saveClaim(c);
+        }
+        data.set(root + ".grants." + id, null); return true;
+    }
+    private void reconcile() {
+        boolean changed = false;
+        for (String key : keys("claims")) {
+            String root = "claims." + key;
+            Claim c = claims().getClaim(Long.parseLong(key));
+            String t = data.getString(root + ".team"), owner = data.getString(root + ".owner");
+            boolean valid = c != null && !c.isAdminClaim() && c.parent == null
+                && Objects.equals(owner, c.getOwnerID().toString()) && keys("teams").contains(t) && members(t).contains(owner);
+            Set<String> wanted = valid ? new HashSet<>(members(t)) : new HashSet<>(); wanted.remove(owner);
+            for (String id : keys(root + ".grants")) if (!wanted.contains(id)) {
+                if (c != null && Objects.equals(owner, String.valueOf(c.getOwnerID()))) restore(c, root, id);
+                else data.set(root + ".grants." + id, null);
+                changed = true;
+            }
+            if (!valid) { data.set(root, null); changed = true; continue; }
+            for (String id : wanted) {
+                // Do not overwrite an independent manual trust already as strong as Build.
+                ClaimPermission before = c.getPermission(id);
+                if (data.contains(root + ".grants." + id)) {
+                    String prior = data.getString(root + ".grants." + id);
+                    if ((before == null && "NONE".equals(prior)) || (before != null && before.name().equals(prior))) {
+                        c.setPermission(id, ClaimPermission.Build); claims().saveClaim(c);
+                    }
+                    continue;
+                }
+                if (before != null && ClaimPermission.Build.isGrantedBy(before)) continue;
+                data.set(root + ".grants." + id, before == null ? "NONE" : before.name());
+                save(); // Write-ahead record survives a crash before or after the GP save.
+                c.setPermission(id, ClaimPermission.Build); claims().saveClaim(c); changed = true;
+            }
+        }
+        if (changed) save();
+    }
+    @Override public boolean onCommand(CommandSender sender, Command command, String label, String[] a) {
+        if (!(sender instanceof Player p)) { say(sender, "MiaoServer 0.7.0：中文组队、侧边栏和服务器图标已加载。玩家使用 /team。"); return true; }
+        if (dummy(p)) { say(p, "假人不能使用组队系统。"); return true; }
+        if (command.getName().equals("sidebar")) {
+            if (hidden.remove(p.getUniqueId())) say(p, "侧边栏已打开。");
+            else { hidden.add(p.getUniqueId()); detach(p); say(p, "侧边栏已关闭。"); }
+            return true;
+        }
+        String t = team(p.getUniqueId()), sub = a.length == 0 ? "info" : a[0].toLowerCase(Locale.ROOT);
+        switch (sub) {
+            case "create" -> {
+                if (t != null || a.length != 2 || !a[1].matches("[\\p{L}\\p{N}_-]{1,16}")) { say(p, "先退出现有队伍，再用 /team create 队名（1～16个中文、字母或数字）。"); break; }
+                if (keys("teams").stream().anyMatch(k -> title(k).equalsIgnoreCase(a[1]))) { say(p, "这个队名已经有人使用。"); break; }
+                t = UUID.randomUUID().toString(); String r = "teams." + t;
+                data.set(r + ".name", a[1]); data.set(r + ".owner", p.getUniqueId().toString());
+                data.set(r + ".members", List.of(p.getUniqueId().toString())); save(); say(p, "队伍创建成功！用 /team invite 玩家 邀请伙伴。");
+            }
+            case "invite" -> {
+                Player q = a.length == 2 ? Bukkit.getPlayerExact(a[1]) : null;
+                if (t == null || !leader(p, t) || q == null || dummy(q) || team(q.getUniqueId()) != null) { say(p, "队长使用 /team invite 在线且未组队的玩家。"); break; }
+                invites.put(q.getUniqueId(), new Invitation(t, System.currentTimeMillis() + getConfig().getLong("teams.invite-seconds", 300) * 1000));
+                say(q, p.getName() + " 邀请你加入「" + title(t) + "」，五分钟内输入 /team join 接受。"); say(p, "邀请已发送。");
+            }
+            case "join" -> {
+                Invitation i = invites.get(p.getUniqueId());
+                if (t != null || i == null || i.expires < System.currentTimeMillis() || !keys("teams").contains(i.team)) { say(p, "没有有效邀请，或你已经在队伍中。"); break; }
+                List<String> m = members(i.team);
+                if (m.size() >= getConfig().getInt("teams.max-members", 8)) { say(p, "队伍已满，默认最多八人。"); break; }
+                m.add(p.getUniqueId().toString()); data.set("teams." + i.team + ".members", m); save(); invites.remove(p.getUniqueId());
+                reconcile(); notifyTeam(i.team, p.getName() + " 加入了队伍，已同步共享领地权限。");
+            }
+            case "leave", "kick" -> {
+                if (t == null) { say(p, "你还没有队伍。"); break; }
+                String target = p.getUniqueId().toString();
+                if (sub.equals("kick")) {
+                    if (!leader(p, t) || a.length != 2) { say(p, "队长使用 /team kick 玩家。"); break; }
+                    target = null;
+                    for (String id : members(t)) if (a[1].equalsIgnoreCase(Bukkit.getOfflinePlayer(UUID.fromString(id)).getName())) target = id;
+                }
+                if (target == null || target.equals(data.getString("teams." + t + ".owner"))) { say(p, "不能移除队长；队长解散请用 /team disband confirm。"); break; }
+                List<String> m = members(t); m.remove(target); data.set("teams." + t + ".members", m); save(); reconcile();
+                Player removed = Bukkit.getPlayer(UUID.fromString(target)); if (removed != null) say(removed, "已退出队伍，队伍授予的共享权限已撤销。");
+                say(p, "操作完成，原有手动信任不会删除。");
+            }
+            case "disband" -> {
+                if (t == null || !leader(p, t) || a.length != 2 || !a[1].equals("confirm")) { say(p, "队长确认解散：/team disband confirm。只取消共享，不删除领地或建筑。"); break; }
+                notifyTeam(t, "队伍已解散，共享权限已撤销，领地和建筑保留。"); data.set("teams." + t, null); save(); reconcile();
+            }
+            case "share", "unshare" -> {
+                Claim c = ownedClaim(p);
+                if (c == null || t == null || Set.of("flat", "lobby").contains(p.getWorld().getName())) { say(p, "请在生存区自己拥有的主领地内操作，并先加入队伍；子领地单独管理。"); break; }
+                String r = "claims." + c.getID();
+                if (sub.equals("share")) {
+                    if (data.contains(r)) { say(p, "这块领地已经共享，先取消共享再变更绑定。"); break; }
+                    data.set(r + ".team", t); data.set(r + ".owner", p.getUniqueId().toString()); save(); reconcile();
+                    say(p, "领地已共享给「" + title(t) + "」；成员可建造和使用箱子，不能转授权。退队自动撤销。");
+                } else {
+                    data.set(r + ".team", ""); save(); reconcile(); say(p, "已取消队伍共享，保留独立手动信任。");
+                }
+            }
+            case "chat" -> {
+                if (t == null || a.length < 2) { say(p, "队内聊天：/team chat 消息。"); break; }
+                notifyTeam(t, "&b[队内] &f" + p.getName() + "：" + ChatColor.stripColor(String.join(" ", Arrays.copyOfRange(a, 1, a.length))).replace('&', '＆'));
+            }
+            default -> {
+                say(p, "&b队伍：&f" + title(t));
+                if (t != null) {
+                    List<String> names = new ArrayList<>(); for (String id : members(t)) names.add(Objects.toString(Bukkit.getOfflinePlayer(UUID.fromString(id)).getName(), id));
+                    say(p, "成员：" + String.join("、", names));
+                }
+                say(p, "/team create 队名 | invite 玩家 | join | leave | kick 玩家");
+                say(p, "/team share 共享脚下领地 | unshare | chat 消息");
+                say(p, "/team disband confirm 解散 | /sidebar 开关侧边栏");
+            }
+        }
+        return true;
+    }
+    @Override public List<String> onTabComplete(CommandSender s, Command c, String label, String[] a) {
+        if (a.length == 1) return List.of("info", "create", "invite", "join", "leave", "kick", "share", "unshare", "chat", "disband").stream().filter(v -> v.startsWith(a[0])).toList();
+        if (a.length == 2 && Set.of("invite", "kick").contains(a[0])) return Bukkit.getOnlinePlayers().stream().filter(p -> !dummy(p)).map(Player::getName).filter(n -> n.toLowerCase().startsWith(a[1].toLowerCase())).toList();
+        return List.of();
+    }
+    private void render(Player p) {
+        if (!getConfig().getBoolean("sidebar.enabled", true) || hidden.contains(p.getUniqueId())) return;
+        Scoreboard b = boards.get(p.getUniqueId());
+        if (b == null) {
+            // Respect another plugin's sidebar instead of repeatedly taking it over.
+            if (p.getScoreboard().getObjective(DisplaySlot.SIDEBAR) != null) return;
+            b = Bukkit.getScoreboardManager().getNewScoreboard();
+            Objective o = b.registerNewObjective("miao", Criteria.DUMMY, color("&6&l" + getConfig().getString("server-name"))); o.setDisplaySlot(DisplaySlot.SIDEBAR);
+            o.numberFormat(io.papermc.paper.scoreboard.numbers.NumberFormat.blank());
+            for (int i = 0; i < 9; i++) {
+                String entry = ChatColor.values()[i].toString(); Team row = b.registerNewTeam("row" + i); row.addEntry(entry); o.getScore(entry).setScore(9 - i);
+            }
+            boards.put(p.getUniqueId(), b); p.setScoreboard(b);
+        }
+        if (p.getScoreboard() != b) return;
+        long seconds = Integer.toUnsignedLong(p.getStatistic(Statistic.PLAY_ONE_MINUTE)) / 20;
+        double tps = Math.min(20, Bukkit.getTPS()[0]);
+        String world = switch (p.getWorld().getName()) { case "flat" -> "创造超平坦"; case "lobby" -> "温馨主城"; case "world_nether" -> "下界"; case "world_the_end" -> "末地"; default -> "自由生存"; };
+        String[] lines = {"&7────────────", "&f玩家 &a" + p.getName(), "&f在线 &b" + online + " &7/ " + Bukkit.getMaxPlayers(),
+            "&f延迟 &e" + p.getPing() + " ms", "&f游玩 &d" + seconds / 3600 + "小时" + seconds / 60 % 60 + "分",
+            "&f状态 " + (tps >= 18 ? "&a流畅" : "&e繁忙") + " &7TPS &f" + String.format(Locale.ROOT, "%.1f", tps),
+            "&f世界 &a" + world, "&f队伍 &b" + title(team(p.getUniqueId())), "&6指南针菜单 &7/menu"};
+        for (int i = 0; i < lines.length; i++) b.getTeam("row" + i).setPrefix(color(lines[i]));
+    }
+    private void detach(Player p) {
+        Scoreboard b = boards.remove(p.getUniqueId());
+        if (b != null && p.getScoreboard() == b) p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+    }
+    @EventHandler public void quit(PlayerQuitEvent e) { boards.remove(e.getPlayer().getUniqueId()); hidden.remove(e.getPlayer().getUniqueId()); invites.remove(e.getPlayer().getUniqueId()); }
+    @EventHandler public void ping(ServerListPingEvent e) {
+        e.setMotd(motd);
+        if (e instanceof com.destroystokyo.paper.event.server.PaperServerListPingEvent paper) paper.setNumPlayers(online);
+        if (icon != null) e.setServerIcon(icon);
+    }
+    @Override public void onDisable() { for (Player p : Bukkit.getOnlinePlayers()) detach(p); }
+}

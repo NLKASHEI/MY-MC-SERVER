@@ -111,6 +111,7 @@ survival.player:
     quickshop.history: true
     quickshop.history.owned: true
     quickshop.browse.teleport: false
+    survival.team: true
 survival.cleanup:
   description: 管理员手动执行保守掉落物清理
   default: op

@@ -3,7 +3,7 @@ lastBackup: 0
 lastChange: 0
 backup:
   autoBackup: true
-  autoBackupPeriod: 360
+  autoBackupPeriod: 120
   autoBackupCron: ''
   backupFileNameFormat: dd-MM-yyyy HH-mm-ss
   addDirectoryToBackup:
@@ -43,6 +43,7 @@ backup:
   - plugins/QuickShop-Hikari.jar
   - plugins/Backuper.jar
   - plugins/DHSupport.jar
+  - plugins/MiaoServer.jar
   - plugins/QuickShop-Hikari/libs
   - plugins/QuickShop/libs
   - plugins/DHSupport/data.sqlite
@@ -71,7 +72,7 @@ storages:
     enabled: true
     autoBackup: true
     backupsFolder: ../../backups/automatic
-    maxBackupsNumber: 12
+    maxBackupsNumber: 3
     maxBackupsWeight: 0
     zipArchive: true
     zipCompressionLevel: 1

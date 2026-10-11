@@ -1,0 +1,25 @@
+menu_title: '&8确认解散小队'
+size: 27
+items:
+  confirm:
+    material: RED_CONCRETE
+    slot: 11
+    display_name: '&c确认解散'
+    lore:
+    - '&7仅队长可操作；队内共享将全部撤销'
+    - '&7领地和建筑仍属于原地主'
+    left_click_commands:
+    - '[close]'
+    - '[player] team disband confirm'
+    right_click_commands:
+    - '[close]'
+    - '[player] team disband confirm'
+  cancel:
+    material: LIME_CONCRETE
+    slot: 15
+    display_name: '&a保留队伍'
+    lore: []
+    left_click_commands:
+    - '[openguimenu] teams'
+    right_click_commands:
+    - '[openguimenu] teams'

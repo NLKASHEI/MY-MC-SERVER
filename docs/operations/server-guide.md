@@ -57,4 +57,8 @@ Paper 26.2 存档结构为 `world/dimensions/minecraft/`，所有维度都在同
 
 ## 自动备份与玩家商店
 
-Backuper 每 6 小时备份、保留最近 12 份；`/market` 打开玩家箱子交易中心。Java 遥远地平线使用匹配的 DH 3.2.0-b，PE 无该 MOD 效果。WorldEdit 已安装且仅管理员可用。详见 [备份、集市与远景指南](backup-market-dh.md)。
+Backuper 每 2 小时备份、保留最近 3 份；`/market` 打开玩家箱子交易中心。Java 遥远地平线使用匹配的 DH 3.2.0-b，PE 无该 MOD 效果。WorldEdit 已安装且仅管理员可用。详见 [备份、集市与远景指南](backup-market-dh.md)。
+
+## 伙伴与侧边栏
+
+服务器名为「南可熙的神奇妙妙服」。指南针左下角进入伙伴中心，组队可共享地主主动开启的领地，离队自动撤销队伍授权。侧边栏显示状态、在线人数、PING、游玩时间和队伍；`/sidebar` 开关。详见 [伙伴指南](community.md)。

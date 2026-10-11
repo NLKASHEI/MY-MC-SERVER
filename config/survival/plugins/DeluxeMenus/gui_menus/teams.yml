@@ -1,0 +1,289 @@
+menu_title: '&8伙伴小队 · 一起安家'
+open_command:
+- teams-menu
+size: 45
+items:
+  info:
+    material: BOOK
+    slot: 11
+    display_name: '&b我的队伍'
+    lore:
+    - '&7查看队名、成员和中文命令帮助'
+    left_click_commands:
+    - '[close]'
+    - '[player] team info'
+    right_click_commands:
+    - '[close]'
+    - '[player] team info'
+  create:
+    material: OAK_SAPLING
+    slot: 13
+    display_name: '&a创建小队'
+    lore:
+    - '&7队名支持中文，默认最多八人'
+    - '&f聊天输入：/team create 队名'
+    left_click_commands:
+    - '[close]'
+    - '[message] &6创建队伍：&f/team create 队名'
+    right_click_commands:
+    - '[close]'
+    - '[message] &6创建队伍：&f/team create 队名'
+  invite:
+    material: PLAYER_HEAD
+    slot: 15
+    display_name: '&e邀请伙伴'
+    lore:
+    - '&7队长邀请在线且未组队的朋友'
+    - '&f聊天输入：/team invite 玩家'
+    left_click_commands:
+    - '[close]'
+    - '[message] &6邀请伙伴：&f/team invite 玩家'
+    right_click_commands:
+    - '[close]'
+    - '[message] &6邀请伙伴：&f/team invite 玩家'
+  join:
+    material: EMERALD
+    slot: 20
+    display_name: '&a接受邀请'
+    lore:
+    - '&7邀请五分钟有效；一个人只加入一队'
+    left_click_commands:
+    - '[close]'
+    - '[player] team join'
+    right_click_commands:
+    - '[close]'
+    - '[player] team join'
+  share:
+    material: GOLDEN_SHOVEL
+    slot: 22
+    display_name: '&6共享脚下领地'
+    lore:
+    - '&7地主站在自己的生存主领地内点击'
+    - '&7队员可建造、用箱子；不能转授权'
+    - '&7退队自动撤销队伍授予的权限'
+    - '&7原有手动信任保留；子领地单独管理'
+    left_click_commands:
+    - '[close]'
+    - '[player] team share'
+    right_click_commands:
+    - '[close]'
+    - '[player] team share'
+  unshare:
+    material: OAK_FENCE
+    slot: 24
+    display_name: '&e取消共享'
+    lore:
+    - '&7只撤销队伍授予的信任'
+    - '&7不会删除领地、建筑或独立手动信任'
+    left_click_commands:
+    - '[close]'
+    - '[player] team unshare'
+    right_click_commands:
+    - '[close]'
+    - '[player] team unshare'
+  chat:
+    material: WRITABLE_BOOK
+    slot: 29
+    display_name: '&b队内聊天'
+    lore:
+    - '&f聊天输入：/team chat 消息'
+    left_click_commands:
+    - '[close]'
+    - '[message] &b队内聊天：&f/team chat 消息'
+    right_click_commands:
+    - '[close]'
+    - '[message] &b队内聊天：&f/team chat 消息'
+  leave:
+    material: OAK_DOOR
+    slot: 31
+    display_name: '&e退出队伍'
+    lore:
+    - '&7队长必须先解散队伍'
+    - '&7退出后队伍授予的共享权限会撤销'
+    left_click_commands:
+    - '[close]'
+    - '[player] team leave'
+    right_click_commands:
+    - '[close]'
+    - '[player] team leave'
+  manage:
+    material: REDSTONE
+    slot: 33
+    display_name: '&c队长管理'
+    lore:
+    - '&f移除成员：/team kick 玩家'
+    - '&7解散需二次确认，不删除建筑'
+    left_click_commands:
+    - '[openguimenu] team_confirm'
+    right_click_commands:
+    - '[openguimenu] team_confirm'
+  back:
+    material: COMPASS
+    slot: 40
+    display_name: '&a返回服务中心'
+    lore: []
+    left_click_commands:
+    - '[openguimenu] survival'
+    right_click_commands:
+    - '[openguimenu] survival'
+  frame_0:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 0
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_1:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 1
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_2:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 2
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_3:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 3
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_4:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 4
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_5:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 5
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_6:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 6
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_7:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 7
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_8:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 8
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_9:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 9
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_17:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 17
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_18:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 18
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_26:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 26
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_27:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 27
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_35:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 35
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_36:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 36
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_37:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 37
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_38:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 38
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_39:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 39
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_41:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 41
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_42:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 42
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_43:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 43
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_44:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 44
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []

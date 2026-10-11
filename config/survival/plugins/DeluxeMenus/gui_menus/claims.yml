@@ -294,3 +294,14 @@ items:
     lore: []
     left_click_commands: []
     right_click_commands: []
+  teams:
+    material: CAMPFIRE
+    slot: 30
+    display_name: '&6队伍共享领地'
+    lore:
+    - '&7邀请伙伴共同建造、使用箱子'
+    - '&7领地所有权仍归地主，成员不能再授权'
+    left_click_commands:
+    - '[openguimenu] teams'
+    right_click_commands:
+    - '[openguimenu] teams'

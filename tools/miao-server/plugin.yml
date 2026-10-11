@@ -1,0 +1,17 @@
+name: MiaoServer
+version: 0.7.0
+main: cn.nankexi.MiaoServer
+api-version: '26.2'
+depend: [GriefPrevention]
+loadbefore: [Backuper]
+commands:
+  mteam:
+    aliases: [team]
+    description: 中文组队与共享领地
+    permission: survival.team
+  sidebar:
+    description: 开关中文侧边栏
+    permission: survival.team
+permissions:
+  survival.team:
+    default: true

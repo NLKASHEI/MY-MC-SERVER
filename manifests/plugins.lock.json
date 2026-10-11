@@ -180,5 +180,11 @@
     "version": "0.14.0",
     "url": "https://cdn.modrinth.com/data/IjY7seTG/versions/R1UjEyjz/DistantHorizonsSupport-0.14.0.jar",
     "sha256": "3dd299bb8dc6fb38cde9bec54e9a87b51161ed1e44b9245f637513472c1985ca"
+  },
+  {
+    "name": "MiaoServer",
+    "version": "0.7.0",
+    "url": "https://github.com/NLKASHEI/MY-MC-SERVER/releases/download/v0.7.0/MiaoServer-0.7.0.jar",
+    "sha256": "65383f4fe82795d124440bb2e77eb47b32f053817c4804df811d5d0f3de409cf"
   }
 ]

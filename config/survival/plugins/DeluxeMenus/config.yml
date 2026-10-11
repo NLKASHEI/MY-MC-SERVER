@@ -23,3 +23,7 @@ gui_menus:
     file: claim_confirm.yml
   market:
     file: market.yml
+  teams:
+    file: teams.yml
+  team_confirm:
+    file: team_confirm.yml

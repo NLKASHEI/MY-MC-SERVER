@@ -1,0 +1,8 @@
+server-name: 南可熙的神奇妙妙服
+motd: '&6&l南可熙的神奇妙妙服&f\n&b原版生存 &7· &a温馨家园 &7· &eJava / PE 互通'
+sidebar:
+  enabled: true
+  refresh-ticks: 40
+teams:
+  max-members: 8
+  invite-seconds: 300

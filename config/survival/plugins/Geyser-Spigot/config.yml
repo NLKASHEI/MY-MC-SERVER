@@ -20,15 +20,15 @@ bedrock:
 java:
   auth-type: floodgate
 motd:
-  primary-motd: 生存服务器
-  secondary-motd: 自由生存 · 家园保护 · 双端互联
+  primary-motd: 南可熙的神奇妙妙服
+  secondary-motd: 原版生存 · 温馨家园 · Java / PE 互通
   passthrough-motd: true
   max-players: 100
   passthrough-player-counts: true
   integrated-ping-passthrough: true
   ping-passthrough-interval: 3
 gameplay:
-  server-name: 生存服务器
+  server-name: 南可熙的神奇妙妙服
   cooldown-type: crosshair
   command-suggestions: true
   show-coordinates: true
