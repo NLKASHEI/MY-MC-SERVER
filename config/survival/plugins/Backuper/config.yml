@@ -2,7 +2,7 @@ configVersion: 16.0
 lastBackup: 0
 lastChange: 0
 backup:
-  autoBackup: true
+  autoBackup: false
   autoBackupPeriod: 120
   autoBackupCron: ''
   backupFileNameFormat: dd-MM-yyyy HH-mm-ss
@@ -44,6 +44,8 @@ backup:
   - plugins/Backuper.jar
   - plugins/DHSupport.jar
   - plugins/MiaoServer.jar
+  - plugins/LuckPerms/luckperms-h2-v2.mv.db
+  - plugins/QuickShop-Hikari/shops.mv.db
   - plugins/PacketEvents.jar
   - plugins/QuickShop-Hikari/libs
   - plugins/QuickShop/libs
@@ -56,7 +58,7 @@ backup:
   - plugins/QuickShop-Hikari/lib
   - plugins/QuickShop-Hikari/cache
   deleteBrokenBackups: true
-  skipDuplicateBackup: true
+  skipDuplicateBackup: false
   afterBackup: NOTHING
   setWorldsReadOnly: false
 server:

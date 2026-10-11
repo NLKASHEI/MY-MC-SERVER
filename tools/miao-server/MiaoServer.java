@@ -33,6 +33,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
 
     @Override public void onLoad() {
         RuntimeMigration.apply(this);
+        DatabaseBackups.migrate(this);
         // One migration for the explicitly requested schedule. Leave other backup settings intact.
         File marker = new File(getDataFolder(), "backup-schedule-v070.done");
         File backup = new File(getDataFolder().getParentFile(), "Backuper/config.yml");
@@ -60,6 +61,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this, this);
         ui = new MiaoInterface(this);
         lobbyGuard = new LobbyGuard(this);
+        new DatabaseBackups(this);
         reconcile();
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             online = (int) Bukkit.getOnlinePlayers().stream().filter(p -> !dummy(p)).count();

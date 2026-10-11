@@ -1,4 +1,4 @@
-﻿param([string]$CommandsFile)
+﻿param([string]$CommandsFile, [switch]$WaitForBackup)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 $server = Join-Path $root 'servers/survival'
@@ -31,6 +31,16 @@ try {
     foreach ($command in Get-Content $CommandsFile -Encoding UTF8) {
       if ($command.Trim()) { $process.StandardInput.WriteLine($command); $process.StandardInput.Flush(); Start-Sleep -Seconds 1 }
     }
+  }
+  if ($WaitForBackup) {
+    $backupDeadline = (Get-Date).AddMinutes(4)
+    do {
+      Start-Sleep -Seconds 2
+      $backupLog = Get-Content (Join-Path $server 'logs/latest.log') -Raw
+      if ($backupLog -match '数据库快照失败|安全备份未完成|Error adding to ZIP') { throw 'Online backup failed; inspect latest.log' }
+      if ($backupLog -match 'The Backup task completed') { break }
+    } while (!$process.HasExited -and (Get-Date) -lt $backupDeadline)
+    if ($backupLog -notmatch 'The Backup task completed') { throw 'Backup did not finish before the deadline' }
   }
   $process.StandardInput.WriteLine('plugins')
   $process.StandardInput.WriteLine('skript reload all')

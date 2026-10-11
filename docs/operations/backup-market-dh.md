@@ -2,13 +2,19 @@
 
 ## 自动备份
 
-采用 [Backuper 4.1.2](https://github.com/DVDishka/Backuper)。每 120 分钟备份一次，世界无变化时跳过，保留最近 3 份；连续运行时有三个恢复点，最旧一份通常约四小时前。只开启本地存储，ZIP 压缩级别 1，关闭调试与外部存储，低频异步工作以减少负担。低压缩会多占磁盘，实际负载取决于存档和云盘性能。
+采用 [Backuper 4.1.2](https://github.com/DVDishka/Backuper)，由 MiaoServer 每 120 分钟触发，保留最近 3 份；连续运行时最旧一份通常约四小时前。只开启本地存储，ZIP 压缩级别 1，关闭调试与外部存储。每次先保存世界，再通过 LuckPerms 和 QuickShop 已有 JDBC 连接执行 H2 `BACKUP TO`，异步生成并校验完整数据库快照，然后调用 Backuper 打包。快照失败时取消本次备份，保留现有恢复点。低压缩会多占磁盘，实际负载取决于存档和云盘性能。
 
 目录为项目根目录 `backups/automatic`，清理只针对这个自动存储，不清理更新前的完整备份。包含所有已加载世界、插件数据与配置、Paper 配置、锁定清单和内存设置；排除可重新下载的插件 JAR、依赖缓存及可重建的 DH LOD 数据库。调度与保留机制见 [上游说明](https://github.com/DVDishka/Backuper#basic-configuration)。
 
 管理员可 `/backuper backup local` 手动备份、`/backuper list local` 列出。普通玩家没有备份、删除或恢复权限。恢复前停服，解压到单独目录，检查结构再替换文件；插件 ZIP 和 `scripts/restore-backup.ps1` 的完整停服备份格式不同，不能混用还原入口。
 
 在线备份不是跨所有插件数据库的原子快照；交易或账户数据故障时优先使用完整停服备份。备份包含密码数据库和密钥，必须私有保存。这里是同一云主机的本地备份，应定期复制到另一台机器或私有存储。
+
+### 权限与商店数据库的恢复
+
+Windows 上在线读取 `.mv.db` 会遭遇文件锁。0.9.0 起自动 ZIP 排除这两个正在使用的文件，改为包含 `plugins/MiaoServer/database-snapshots/luckperms.zip` 与 `quickshop.zip`。这是 H2 引擎生成的数据库备份，不是功能缩水的店铺清单导出。恢复时必须停服：解压外层备份；解压 `luckperms.zip` 内的 `luckperms-h2-v2.mv.db` 到 `plugins/LuckPerms/`，解压 `quickshop.zip` 内的 `shops.mv.db` 到 `plugins/QuickShop-Hikari/`，再启动。替换前另存当前文件，使用同一备份里的插件配置和版本。
+
+不要重新开启 Backuper 的 `backup.autoBackup`，它的原生计时器无法保证先完成数据库快照。MiaoServer 接管两小时计时和 `/backuper backup local`；其他列出、状态、取消、清理命令仍由 Backuper 执行。安全入口只支持本地备份，不接受附加停服/重启参数。关闭按世界变化跳过，防止只改权限或商店时遗漏备份。云服更新会一次性迁移这些明确的键，并保留 `config.yml.before-v090`，不会覆盖玩家数据库。
 
 ## 玩家箱子商店
 
