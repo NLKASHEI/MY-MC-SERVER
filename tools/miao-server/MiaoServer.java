@@ -72,7 +72,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
     }
     private static boolean dummy(Player p) { return p.hasMetadata("fakeplayer:spawned_at"); }
     private static String color(String s) { return ChatColor.translateAlternateColorCodes('&', s); }
-    private void say(CommandSender p, String s) { p.sendMessage(color("&6[妙妙服] &f" + s)); }
+    private void say(CommandSender p, String s) { p.sendMessage(color("&6南可熙提醒您： &f" + s)); }
     private void save() {
         try {
             File temp = new File(getDataFolder(), "teams.yml.tmp"); data.save(temp);
@@ -228,7 +228,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
             // Respect another plugin's sidebar instead of repeatedly taking it over.
             if (p.getScoreboard().getObjective(DisplaySlot.SIDEBAR) != null) return;
             b = Bukkit.getScoreboardManager().getNewScoreboard();
-            Objective o = b.registerNewObjective("miao", Criteria.DUMMY, color("&6&l" + getConfig().getString("server-name"))); o.setDisplaySlot(DisplaySlot.SIDEBAR);
+            Objective o = b.registerNewObjective("miao", Criteria.DUMMY, color(getConfig().getString("sidebar.title", "&6&l欢迎游玩"))); o.setDisplaySlot(DisplaySlot.SIDEBAR);
             o.numberFormat(io.papermc.paper.scoreboard.numbers.NumberFormat.blank());
             for (int i = 0; i < 15; i++) {
                 String entry = ChatColor.values()[i].toString(); Team row = b.registerNewTeam("row" + i); row.addEntry(entry); o.getScore(entry).setScore(15 - i);

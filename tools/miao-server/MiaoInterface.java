@@ -56,7 +56,7 @@ final class MiaoInterface implements Listener {
     }
     private void decorate(Player p) { p.setDisplayName("§b"+display(p)+"§r"); p.setPlayerListName("§b"+display(p)+"§r"); }
     private String path(Player p) { return "players."+p.getUniqueId(); }
-    private void say(Player p,String s) { p.sendMessage("§6[妙妙服] §f"+s); }
+    private void say(Player p,String s) { p.sendMessage("§6南可熙提醒您： §f"+s); }
     private void main(Player p,Runnable r) { Bukkit.getScheduler().runTask(plugin,()->{ if(p.isOnline()&&authenticated(p)) r.run(); }); }
     private void save() {
         if(!dirty) return;
@@ -77,14 +77,19 @@ final class MiaoInterface implements Listener {
     private Material favorite(Player p) { Material m=Material.matchMaterial(prefs.getString(path(p)+".sidebar.block","OAK_LOG"));return m!=null&&m.isBlock()?m:Material.OAK_LOG; }
     static String blockName(Material m) { return switch(m) { case STONE->"石头";case COBBLESTONE->"圆石";case OAK_LOG->"橡木原木";case OAK_PLANKS->"橡木木板";case DIRT->"泥土";case IRON_ORE->"铁矿石";case DIAMOND_ORE->"钻石矿石";case DEEPSLATE_DIAMOND_ORE->"深层钻石矿";case REDSTONE_ORE->"红石矿石";case WHEAT->"小麦";default->m.name();}; }
     List<String> lines(Player p,int online,String team) {
-        List<String> result=new ArrayList<>();result.add("§7────────────");
+        List<String> result=new ArrayList<>();
         long now=System.nanoTime(), pending=(now-checkpoint.getOrDefault(p.getUniqueId(),now))/1_000_000_000L;
         long total=prefs.getLong(path(p)+".total-seconds",Integer.toUnsignedLong(p.getStatistic(Statistic.PLAY_ONE_MINUTE))/20)+pending;
         long session=(now-started.getOrDefault(p.getUniqueId(),now))/1_000_000_000L;
         double tps=Math.min(20,Bukkit.getTPS()[0]);
         String world=switch(p.getWorld().getName()){case "flat"->"创造超平坦";case "lobby"->"温馨主城";case "world_nether"->"下界";case "world_the_end"->"末地";default->"自由生存";};
-        for(String key:selected(p)) {
-            if(result.size()>=14)break;
+        Set<String> chosen=new LinkedHashSet<>(selected(p));
+        List<String> order=List.of("player","world","team","total","session","balance","placed","mined","block","kills","fishing","deaths","distance","online","ping","tps");
+        String lastGroup=""; int shown=0;
+        for(String key:order) {
+            if(!chosen.contains(key)||shown>=13)continue;
+            String group=List.of("online","ping","tps").contains(key)?"§8── §b服务器 §8──":"§8── §6我的成长 §8──";
+            if(!group.equals(lastGroup)){result.add(group);lastGroup=group;}
             String s=switch(key) {
                 case "player"->"§f玩家 §a"+display(p);case "online"->"§f在线 §b"+online+" §7/ "+Bukkit.getMaxPlayers();case "ping"->"§f延迟 §e"+p.getPing()+" ms";
                 case "total"->"§f总游玩 §d"+duration(total);case "session"->"§f本次 §d"+duration(session);
@@ -96,9 +101,9 @@ final class MiaoInterface implements Listener {
                 case "kills"->"§f击败生物 §c"+p.getStatistic(Statistic.MOB_KILLS);case "fishing"->"§f钓鱼收获 §b"+p.getStatistic(Statistic.FISH_CAUGHT);
                 case "deaths"->"§f死亡 §7"+p.getStatistic(Statistic.DEATHS);case "distance"->"§f步行 §e"+String.format(Locale.ROOT,"%.2f",p.getStatistic(Statistic.WALK_ONE_CM)/100000.0)+" km";
                 default->null;
-            };if(s!=null)result.add(s);
+            };if(s!=null){result.add(s.replace("§f","§7").replaceFirst(" ","  §8› §r"));shown++;}
         }
-        result.add("§6显示设置 §7/sidebar settings"); return result;
+        return result;
     }
     boolean sidebar(Player p,String[] a) {
         if(!authenticated(p)) {say(p,"请先完成登录。");return true;}
@@ -210,7 +215,7 @@ final class MiaoInterface implements Listener {
         YamlConfiguration y=YamlConfiguration.loadConfiguration(f);ConfigurationSection section=y.getConfigurationSection("items");if(section==null)return;
         List<ConfigurationSection> buttons=section.getKeys(false).stream().map(section::getConfigurationSection).filter(Objects::nonNull)
             .filter(i->!i.getStringList("left_click_commands").isEmpty()).sorted(Comparator.comparingInt(i->i.getInt("slot",0))).toList();
-        SimpleForm.Builder b=SimpleForm.builder().title(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&',y.getString("menu_title","妙妙服"))))
+        SimpleForm.Builder b=SimpleForm.builder().title(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&',y.getString("menu_title","NLK 服务中心"))))
             .content("§6温馨家园 · 自由生存\n§7点击功能进入，关闭窗口可返回游戏。");
         for(var i:buttons){String label=ChatColor.translateAlternateColorCodes('&',i.getString("display_name","功能"));List<String> lore=i.getStringList("lore");
             String detail=lore.isEmpty()?"":ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&',lore.get(0)));b.button(label+(detail.isBlank()?"":"\n§7"+detail));}
@@ -288,7 +293,7 @@ final class MiaoInterface implements Listener {
             boolean compass=false;for(ItemStack i:p.getInventory().getContents())if(i!=null&&i.getType()==Material.COMPASS&&i.hasItemMeta()&&i.getItemMeta().getDisplayName().equals("§a生存指南针"))compass=true;
             if(!compass){ItemStack i=new ItemStack(Material.COMPASS);ItemMeta meta=i.getItemMeta();meta.setDisplayName("§a生存指南针");meta.setLore(List.of("§7右键打开服务中心","§7管理员左键传送，普通玩家左键无操作"));i.setItemMeta(meta);p.getInventory().addItem(i);}
             say(p,"欢迎来到 §6南可熙的神奇妙妙服§f！右键指南针选择世界。");
-            say(p,"§7/menu 服务中心 · /sidebar settings 成长展示 · /team 伙伴小队");save();
+            save();
         },20);
     }
     @EventHandler(priority=EventPriority.HIGHEST) public void initial(io.papermc.paper.event.player.AsyncPlayerSpawnLocationEvent e) {

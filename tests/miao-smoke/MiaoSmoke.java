@@ -45,9 +45,12 @@ public class MiaoSmoke extends JavaPlugin {
    ok(claim.getPermission(member.toString())==ClaimPermission.Container,"disband revokes grant");
    ok(GriefPrevention.instance.dataStore.getClaim(claim.getID())!=null,"keep claim after disband");
    Method render=MiaoServer.class.getDeclaredMethod("render",Player.class);render.setAccessible(true);render.invoke(m,p);
-   ok(board[0].getTeam("row3").getPrefix().contains("42 ms"),"ping sidebar");
-   ok(board[0].getTeam("row4").getPrefix().contains("1小时0分"),"play time sidebar");
-   ok(board[0].getObjective(DisplaySlot.SIDEBAR).getDisplayName().contains("南可熙的神奇妙妙服"),"Chinese server title");
+   String rows=board[0].getTeams().stream().map(Team::getPrefix).collect(java.util.stream.Collectors.joining("\n"));
+   ok(rows.contains("42 ms"),"ping sidebar");
+   ok(rows.contains("1小时0分"),"play time sidebar");
+   ok(!rows.contains("/sidebar")&&rows.contains("我的成长")&&rows.contains("服务器"),"grouped sidebar without command footer");
+   String title=board[0].getObjective(DisplaySlot.SIDEBAR).getDisplayName();
+   ok(title.contains("欢迎游玩"),"welcome sidebar title");
    Object ui=get(m,"ui");YamlConfiguration preferences=(YamlConfiguration)get(ui,"prefs");
    String setting="players."+owner+".sidebar.enabled";
    preferences.set(setting,false);render.invoke(m,p);ok(board[0].getObjective(DisplaySlot.SIDEBAR)==null,"sidebar disable detaches");

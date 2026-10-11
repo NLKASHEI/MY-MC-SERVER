@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 /** Explicit, one-time, key-level fixes; never copies a player database or a world. */
 final class RuntimeMigration {
     static void apply(MiaoServer plugin) {
+        branding(plugin);
         File marker = new File(plugin.getDataFolder(), "ui-fixes-v080.done");
         if (marker.exists()) return;
         try {
@@ -54,6 +55,38 @@ final class RuntimeMigration {
             plugin.getDataFolder().mkdirs(); Files.writeString(marker.toPath(), "Applied bounded UI/spawn/protection fixes\n");
             plugin.getLogger().info("已修正中文提示、首次主城出生、绑定按钮和指南针冲突；玩家数据未替换。");
         } catch (Exception e) { throw new IllegalStateException("Cannot apply v0.8 UI fixes", e); }
+    }
+    private static void branding(MiaoServer plugin) {
+        File marker=new File(plugin.getDataFolder(),"branding-v092-final.done");
+        if(marker.exists())return;
+        try {
+            for(String name:List.of("MiaoServer/config.yml","Geyser-Spigot/config.yml","DeluxeMenus/gui_menus/survival.yml","Essentials/config.yml","Essentials/motd.txt","Skript/scripts/survival.sk")) {
+                File file=new File(plugin.getDataFolder().getParentFile(),name);
+                if(!file.isFile())continue;
+                String old=Files.readString(file.toPath());
+                String updated=old.replace("南可熙的神奇服","南可熙的神奇妙妙服").replace("[妙妙服]","南可熙提醒您：").replace("[服]","南可熙提醒您：");
+                if(updated.equals(old))continue;
+                File prior=new File(file.getParentFile(),file.getName()+".before-v092");
+                if(!prior.exists())Files.copy(file.toPath(),prior.toPath());
+                File temp=new File(file.getParentFile(),file.getName()+".nlk-tmp");
+                Files.writeString(temp.toPath(),updated);
+                Files.move(temp.toPath(),file.toPath(),StandardCopyOption.REPLACE_EXISTING);
+            }
+            File sidebar=new File(plugin.getDataFolder(),"config.yml");
+            if(sidebar.isFile()) {
+                YamlConfiguration y=new YamlConfiguration();y.load(sidebar);
+                String title=y.getString("sidebar.title");
+                if(title==null||title.equals("&6&l南可熙 &8· &bNLK")) {
+                    y.set("sidebar.title","&6&l欢迎游玩");
+                    File prior=new File(sidebar.getParentFile(),"config.yml.before-title-v092");
+                    if(!prior.exists())Files.copy(sidebar.toPath(),prior.toPath());
+                    File temp=new File(sidebar.getParentFile(),"config.yml.nlk-tmp");y.save(temp);
+                    Files.move(temp.toPath(),sidebar.toPath(),StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+            plugin.getDataFolder().mkdirs();Files.writeString(marker.toPath(),"Default branding migrated; local settings and player data preserved\n");
+            plugin.getLogger().info("提示与侧边栏已更新；完整服名保持南可熙的神奇妙妙服。");
+        }catch(Exception e){throw new IllegalStateException("Cannot migrate NLK branding",e);}
     }
     private static void patch(MiaoServer p, String name, Map<String, Object> values) throws Exception {
         File file = new File(p.getDataFolder().getParentFile(), name);

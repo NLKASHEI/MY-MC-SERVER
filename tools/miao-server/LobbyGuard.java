@@ -42,7 +42,7 @@ final class LobbyGuard implements Listener {
         String root = cmd.split(" ", 2)[0].replace("/minecraft:", "/");
         boolean editing = java.util.Set.of("/setblock", "/fill", "/clone", "/place").contains(root);
         if ((lobby(e.getPlayer().getWorld()) && (editing || root.equals("/execute"))) || (root.equals("/execute") && cmd.contains("lobby"))) {
-            e.setCancelled(true); e.getPlayer().sendMessage("§6[妙妙服] §c主城为只读地图，OP 也不能修改。请停服维护地图。");
+            e.setCancelled(true); e.getPlayer().sendMessage("§6南可熙提醒您： §c主城为只读地图，OP 也不能修改。请停服维护地图。");
         }
     }
     @Subscribe public void editing(EditSessionEvent e) {

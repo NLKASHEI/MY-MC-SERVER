@@ -1,6 +1,6 @@
 # 原生 Skript + Vault。变量由 Skript 持久化，重启不会重置已领取奖励。
 options:
-    prefix: &6[妙妙服]&r
+    prefix: &6南可熙提醒您：&r
 
 # 创建前记录召唤者位置，避免出生点插件先把实体挪走而记录错误位置。
 command /survivalbotprepare <text> <text>:
