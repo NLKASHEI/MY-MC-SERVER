@@ -23,6 +23,13 @@ foreach ($name in @('libraries','cache','versions')) {
   if (Test-Path $path) { Copy-Item $path $server -Recurse }
 }
 Copy-Item (Join-Path $root 'config/survival/*') $server -Recurse -Force
+foreach ($extension in (Get-Content (Join-Path $root 'manifests/extensions.lock.json') -Raw | ConvertFrom-Json)) {
+  $source = Join-Path $root "servers/survival/$($extension.path)"
+  if ((Get-FileHash $source -Algorithm SHA256).Hash.ToLower() -ne $extension.sha256) { throw 'Extension checksum mismatch' }
+  $target = Join-Path $server $extension.path
+  New-Item -ItemType Directory -Force (Split-Path $target -Parent) | Out-Null
+  Copy-Item $source $target
+}
 $worldTemplate = Get-Content (Join-Path $root 'manifests/world-template.lock.json') -Raw | ConvertFrom-Json
 $worldZip = Join-Path $root $worldTemplate.file
 if ((Get-FileHash $worldZip -Algorithm SHA256).Hash.ToLower() -ne $worldTemplate.sha256) { throw 'World template checksum mismatch' }

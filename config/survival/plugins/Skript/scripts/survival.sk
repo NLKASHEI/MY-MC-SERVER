@@ -2,6 +2,32 @@
 options:
     prefix: &2[生存服]&r
 
+# 创建前记录召唤者位置，避免出生点插件先把实体挪走而记录错误位置。
+command /survivalbotprepare <text> <text>:
+    executable by: console
+    trigger:
+        if arg-2 is "CONSOLE":
+            set {survival.bot-location::%arg-1%} to spawn location of world "world"
+        else:
+            set {_owner} to arg-2 parsed as player
+            if {_owner} is set:
+                set {survival.bot-location::%arg-1%} to location of {_owner}
+
+# 登录/首次出生插件处理完成再恢复机器旁的位置。
+# 只允许控制台调用，必须具有插件真实实体元数据，不能按名字判断。
+command /survivalbotrestore <player>:
+    executable by: console
+    trigger:
+        if metadata value "fakeplayer:spawned_at" of arg-1 is not set:
+            stop
+        set {_bot} to arg-1
+        set {_location} to {survival.bot-location::%uuid of {_bot}%}
+        if {_location} is not set:
+            stop
+        wait 3 seconds
+        if {_bot} is online:
+            teleport {_bot} to {_location}
+
 command /guide [<text>]:
     permission: survival.guide
     executable by: players
@@ -11,10 +37,24 @@ command /guide [<text>]:
             send "&7/trust 玩家：授权建造；/untrust 玩家：撤销；/claimslist：查看圈地。"
             send "&7/abandonclaim：放弃当前位置圈地；初始 500 格，每小时增加 100 格。"
         else if arg-1 is "compass":
+            if metadata value "fakeplayer:spawned_at" of player is set:
+                if {survival.bot-location::%uuid of player%} is set:
+                    teleport player to {survival.bot-location::%uuid of player%}
+                stop
             if player has compass named "&a生存指南针":
                 send "{@prefix} &7你已拥有指南针。"
             else:
                 give player compass named "&a生存指南针" with lore "&7右键打开服务中心"
+        else if arg-1 is "technical":
+            send "{@prefix} &e/fp spawn：在当前位置创建假人；每人限一个。"
+            send "&7/fp attack continuous：持续攻击；/fp use continuous：持续使用。"
+            send "&7/fp stop：停止动作；/fp invsee：假人背包；/fp kick：移除。"
+            send "&7仅生存维度使用，离线 15 秒后移除，背包保存；假人不领取金币或技能经验。"
+        else if arg-1 is "linking":
+            send "{@prefix} &e先在 Java 主账号注册并登录，输入 /linkaccount 查看本地绑定步骤。"
+            send "&7在 PE 账号登录后按提示完成验证，再重新连接并使用 Java 账号密码。"
+            send "&7绑定后共用 Java 进度，不自动合并旧 PE 背包；绑定前先转移物品。"
+            send "&7同一账号不能双端同时在线；/unlinkaccount 解除绑定。"
         else if arg-1 is "fun":
             send "{@prefix} &e空手右键台阶、半砖或地毯坐下，潜行站起。"
             send "&7空手右键玩家骑到头顶，最多叠 3 人；底下玩家潜行可甩下乘客。"
@@ -48,6 +88,7 @@ on world change:
 
 on quit:
     delete {survival.last-location::%uuid of player%}
+    delete {survival.bot-location::%uuid of player%}
 
 command /hub:
     permission: survival.guide
@@ -70,6 +111,8 @@ every 2 seconds:
 every 1 minute:
     set {_day} to now formatted as "yyyy-MM-dd"
     loop all players:
+        if metadata value "fakeplayer:spawned_at" of loop-player is set:
+            continue
         if gamemode of loop-player is creative:
             continue
         set {_id} to uuid of loop-player
@@ -87,6 +130,8 @@ command /reward:
     permission: survival.reward
     executable by: players
     trigger:
+        if metadata value "fakeplayer:spawned_at" of player is set:
+            stop
         if gamemode of player is creative:
             send "{@prefix} &c请先回生存或主城领取奖励。"
             stop

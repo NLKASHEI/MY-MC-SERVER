@@ -7,6 +7,24 @@ config = root / 'config/survival'
 def read(rel):
     return yaml.safe_load((config / rel).read_text(encoding='utf-8-sig'))
 
+floodgate = read('plugins/floodgate/config.yml')['player-link']
+assert floodgate['enabled'] and floodgate['enable-own-linking']
+assert floodgate['type'] == 'sqlite' and not floodgate['enable-global-linking']
+geyser = read('plugins/Geyser-Spigot/config.yml')
+assert geyser['bedrock']['port'] == 8585
+assert geyser['advanced']['bedrock']['broadcast-port'] == 20013
+assert geyser['java']['auth-type'] == 'floodgate'
+aura = read('plugins/AuraSkills/config.yml')
+assert set(aura['disabled_worlds']) == {'lobby', 'flat'}
+assert aura['disable_in_creative_mode'] and not aura['jobs']['enabled']
+fake = read('plugins/FakePlayer-CE/config.yml')
+assert fake['player-limit'] == 1 and fake['server-limit'] == 20
+assert not fake['http-admin']['enabled'] and not fake['restore-on-start']
+assert fake['follow-quiting-force'] and fake['after-spawn-commands']
+assert 'survivalbotrestore %p' in fake['after-spawn-commands']
+dummy = read('permissions.yml')['survival.dummy']
+assert not dummy['default'] and not dummy['children']['survival.reward']
+assert not dummy['children']['auraskills.skill.mining']
 files = list(config.rglob('*.yml'))
 for file in files:
     yaml.safe_load(file.read_text(encoding='utf-8-sig'))

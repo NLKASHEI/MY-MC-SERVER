@@ -130,3 +130,42 @@ items:
     right_click_commands:
     - '[close]'
     - '[player] balance'
+  skills:
+    material: EXPERIENCE_BOTTLE
+    slot: 20
+    display_name: '&b技能成长'
+    lore:
+    - '&7挖矿、伐木、钓鱼、战斗升级'
+    - '&7主城与创造区不获得技能收益'
+    left_click_commands:
+    - '[close]'
+    - '[player] skills'
+    right_click_commands:
+    - '[close]'
+    - '[player] skills'
+  technical:
+    material: REDSTONE
+    slot: 22
+    display_name: '&c生电助手'
+    lore:
+    - '&7每人一个假人，加载与操作机器'
+    - '&7仅生存世界可使用'
+    left_click_commands:
+    - '[close]'
+    - '[player] guide technical'
+    right_click_commands:
+    - '[close]'
+    - '[player] guide technical'
+  linking:
+    material: IRON_BARS
+    slot: 24
+    display_name: '&a双端账号绑定'
+    lore:
+    - '&7PE 与 PC 绑定后共用进度'
+    - '&7先登录 Java 主账号，再绑定'
+    left_click_commands:
+    - '[close]'
+    - '[player] guide linking'
+    right_click_commands:
+    - '[close]'
+    - '[player] guide linking'

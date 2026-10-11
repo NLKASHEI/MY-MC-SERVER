@@ -40,7 +40,7 @@ foreach ($plugin in $current) {
     $repo = $Matches[1]
     $v = Invoke-RestMethod "https://api.github.com/repos/$repo/releases/latest" -Headers $headers
     $oldFile = [IO.Path]::GetFileName($plugin.url)
-    $pattern = if ($plugin.name -eq 'AuthMe') {'-Paper.jar$'} else {'^'+[regex]::Escape($plugin.name)+'([-.].*)?\.jar$'}
+    $pattern = if ($plugin.name -in @('AuthMe','CommandAPI')) {'-Paper.jar$'} else {'^'+[regex]::Escape($plugin.name)+'([-.].*)?\.jar$'}
     $f = @($v.assets | Where-Object name -Match $pattern)[0]
     if (!$f) { throw 'No matching release asset' }
     $hash = if ($f.digest -like 'sha256:*') {$f.digest.Substring(7)} else {$null}
@@ -49,6 +49,9 @@ foreach ($plugin in $current) {
     $report.Add([pscustomobject]@{name=$plugin.name;installed=$plugin.version;candidate='manual';note='Pinned special source; review official site and update manifest after testing'})
   }
  } catch { $report.Add([pscustomobject]@{name=$plugin.name;installed=$plugin.version;candidate='unavailable';note=$_.Exception.Message}) }
+}
+foreach ($extension in (Get-Content (Join-Path $root 'manifests/extensions.lock.json') -Raw | ConvertFrom-Json)) {
+  $report.Add([pscustomobject]@{name=$extension.name;installed=$extension.version;candidate='manual';note='Floodgate database extension: review official floodgatedb sqlite builds; back up linked-players.db before replacing the extension in plugins/floodgate, never as a root plugin'})
 }
 $report | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $stage 'report.json') -Encoding UTF8
 ConvertTo-Json -InputObject @($candidates.ToArray()) -Depth 5 | Set-Content (Join-Path $stage 'candidates.json') -Encoding UTF8

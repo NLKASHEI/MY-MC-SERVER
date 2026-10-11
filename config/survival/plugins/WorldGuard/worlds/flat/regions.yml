@@ -17,6 +17,10 @@ regions:
       - economyshopgui:sellall
       - essentials:sell
       - essentials:pay
+      - fp
+      - fakeplayer
+      - fakeplayer-ce:fp
+      - fakeplayer-ce:fakeplayer
     owners: {}
     type: global
     priority: 0

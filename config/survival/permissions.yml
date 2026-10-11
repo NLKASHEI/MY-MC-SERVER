@@ -51,6 +51,70 @@ survival.player:
     multiverse.teleport.self.w.lobby: true
     multiverse.teleport.self.w.flat: true
     multiverse.teleport.self.w.world: true
+    floodgate.command.linkaccount: true
+    floodgate.command.unlinkaccount: true
+    auraskills.command.skills: true
+    auraskills.command.stats: true
+    auraskills.command.top: true
+    auraskills.command.rank: true
+    auraskills.command.lang: true
+    auraskills.command.help: true
+    fakeplayer.command.spawn: true
+    fakeplayer.command.kick: true
+    fakeplayer.command.list: true
+    fakeplayer.command.select: true
+    fakeplayer.command.selection: true
+    fakeplayer.command.distance: true
+    fakeplayer.command.status: true
+    fakeplayer.command.invsee: true
+    fakeplayer.command.enderchest: true
+    fakeplayer.command.attack: true
+    fakeplayer.command.mine: true
+    fakeplayer.command.use: true
+    fakeplayer.command.jump: true
+    fakeplayer.command.stop: true
+    fakeplayer.command.look: true
+    fakeplayer.command.turn: true
+    fakeplayer.command.move: true
+    fakeplayer.command.sneak: true
+    fakeplayer.command.sprint: true
+    fakeplayer.command.swap: true
+    fakeplayer.command.hold: true
+    fakeplayer.command.sleep: true
+    fakeplayer.command.wakeup: true
+    fakeplayer.command.drop: true
+    fakeplayer.command.dropstack: true
+    fakeplayer.command.expme: true
+    fakeplayer.command.cmd: false
+    fakeplayer.command.config: false
+    fakeplayer.command.set: false
+    fakeplayer.command.tp: false
+    fakeplayer.command.tphere: false
+    fakeplayer.command.tps: false
+    fakeplayer.command.say: false
+    fakeplayer.spawn.name: false
+    fakeplayer.command.spawn.name: false
+    fakeplayer.command.spawn.name.force-real: false
+    fakeplayer.command.spawn.location: false
 survival.cleanup:
   description: 管理员手动执行保守掉落物清理
   default: op
+survival.dummy:
+  description: 仅由服务端假人插件按实际 UUID 分配，禁止技能和奖励收益
+  default: false
+  children:
+    survival.reward: false
+    floodgate.command.linkaccount: false
+    floodgate.command.unlinkaccount: false
+    auraskills.leaderboard.exclude: true
+    auraskills.skill.farming: false
+    auraskills.skill.foraging: false
+    auraskills.skill.mining: false
+    auraskills.skill.fishing: false
+    auraskills.skill.excavation: false
+    auraskills.skill.archery: false
+    auraskills.skill.defense: false
+    auraskills.skill.fighting: false
+    auraskills.skill.agility: false
+    auraskills.skill.enchanting: false
+    auraskills.skill.alchemy: false

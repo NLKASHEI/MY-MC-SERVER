@@ -31,6 +31,11 @@ foreach ($plugin in (Get-Content (Join-Path $root 'manifests/plugins.lock.json')
   } else { Fetch $plugin.url $target $plugin.sha256 }
 }
 Copy-Item (Join-Path $root 'config/survival/*') $server -Recurse -Force
+foreach ($extension in (Get-Content (Join-Path $root 'manifests/extensions.lock.json') -Raw | ConvertFrom-Json)) {
+  $target = Join-Path $server $extension.path
+  New-Item -ItemType Directory -Force (Split-Path $target -Parent) | Out-Null
+  Fetch $extension.url $target $extension.sha256
+}
 $worldTemplate = Get-Content (Join-Path $root 'manifests/world-template.lock.json') -Raw | ConvertFrom-Json
 $worldZip = Join-Path $root $worldTemplate.file
 if ((Get-FileHash $worldZip -Algorithm SHA256).Hash.ToLower() -ne $worldTemplate.sha256) { throw 'World template checksum mismatch' }

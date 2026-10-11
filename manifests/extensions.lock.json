@@ -1,0 +1,9 @@
+[
+  {
+    "name": "floodgate-sqlite-database",
+    "version": "2.2.5-138",
+    "path": "plugins/floodgate/floodgate-sqlite-database.jar",
+    "url": "https://download.geysermc.org/v2/projects/floodgatedb/versions/2.2.5/builds/138/downloads/sqlite",
+    "sha256": "df4ae91e452f7124f11b97d625357b00b13208c056e68c5473e1599b1e443317"
+  }
+]

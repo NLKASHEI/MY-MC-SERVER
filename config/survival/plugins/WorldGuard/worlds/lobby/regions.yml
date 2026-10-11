@@ -18,6 +18,11 @@ regions:
       use: allow
       interact: allow
       greeting: 欢迎来到主城！右键指南针或输入 /menu 选择世界。
+      blocked-cmds:
+      - fp
+      - fakeplayer
+      - fakeplayer-ce:fp
+      - fakeplayer-ce:fakeplayer
     owners: {}
     type: global
     priority: 0

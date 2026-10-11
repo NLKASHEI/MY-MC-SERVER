@@ -19,5 +19,10 @@ foreach ($plugin in $lock) {
     try { if (!$archive.GetEntry('plugin.yml') -and !$archive.GetEntry('paper-plugin.yml')) { throw "Wrong platform JAR: $($plugin.name)" } } finally { $archive.Dispose() }
   }
 }
+foreach ($extension in (Get-Content (Join-Path $root 'manifests/extensions.lock.json') -Raw | ConvertFrom-Json)) {
+  if ($extension.path -ne 'plugins/floodgate/floodgate-sqlite-database.jar' -or $extension.sha256 -notmatch '^[a-f0-9]{64}$' -or $extension.url -notmatch '^https://download.geysermc.org/') { throw 'Invalid Floodgate extension manifest' }
+  $jar = Join-Path $root "servers/survival/$($extension.path)"
+  if ((Test-Path $jar) -and (Get-FileHash $jar -Algorithm SHA256).Hash.ToLower() -ne $extension.sha256) { throw 'Extension checksum mismatch' }
+}
 if ($errors.Count) { throw ($errors -join "`n") }
 Write-Host "PowerShell syntax and $($lock.Count) plugin manifest entries validated."

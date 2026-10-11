@@ -6,7 +6,7 @@ New-Item -ItemType Directory -Force (Join-Path $root 'downloads') | Out-Null
 $java = @(Get-ChildItem (Join-Path $root 'runtime') -Filter java.exe -Recurse)[0].FullName
 $info = New-Object System.Diagnostics.ProcessStartInfo
 $info.FileName = $java
-$info.Arguments = '-Xms1G -Xmx3G -Dfile.encoding=UTF-8 -Duser.timezone=Asia/Shanghai -jar paper.jar --nogui'
+$info.Arguments = '-Xms1G -Xmx3G -Dfile.encoding=UTF-8 -Duser.timezone=Asia/Shanghai -Dorg.bukkit.plugin.java.LibraryLoader.centralURL=https://maven.aliyun.com/repository/central -jar paper.jar --nogui'
 $info.WorkingDirectory = $server
 $info.UseShellExecute = $false
 $info.CreateNoWindow = $true

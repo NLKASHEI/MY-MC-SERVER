@@ -26,7 +26,7 @@ disconnect:
 player-link:
   # Whether to enable the linking system. Turning this off will prevent
   # players from using the linking feature even if they are already linked.
-  enabled: false
+  enabled: true
 
   # Whether to require a linked account in order to be able to join the server.
   require-link: false
@@ -35,7 +35,7 @@ player-link:
   # -> This can work in addition to global linking.
   # Note that you have to install a linking database implementation before enabling this, because
   # it'll cause errors otherwise.
-  enable-own-linking: false
+  enable-own-linking: true
 
   # The following three options only apply when 'enable-own-linking' is set to 'true'
 
