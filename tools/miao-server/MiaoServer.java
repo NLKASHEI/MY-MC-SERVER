@@ -51,6 +51,12 @@ public final class MiaoServer extends JavaPlugin implements Listener {
     }
     @Override public void onEnable() {
         saveDefaultConfig(); store = new File(getDataFolder(), "teams.yml");
+        File simulationMarker=new File(getDataFolder(),"simulation-distance-runtime-v096.done");
+        if(!simulationMarker.exists()) {
+            Bukkit.getWorlds().forEach(w->w.setSimulationDistance(15));
+            try { Files.writeString(simulationMarker.toPath(),"First startup applied simulation-distance=15\n"); }
+            catch(IOException e){throw new IllegalStateException("Cannot record simulation distance migration",e);}
+        }
         File distanceMarker=new File(getDataFolder(),"view-distance-runtime-v095.done");
         if(!distanceMarker.exists()) {
             Bukkit.getWorlds().forEach(w->w.setViewDistance(20));

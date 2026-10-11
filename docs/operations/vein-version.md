@@ -10,6 +10,6 @@
 
 已安装 [ViaVersion 5.12.1](https://github.com/ViaVersion/ViaVersion/releases/tag/5.12.1) 与 [ViaBackwards 5.12.1](https://github.com/ViaVersion/ViaBackwards/releases/tag/5.12.1)。前者让新版 Java 客户端连接较旧核心，后者让旧版客户端连接较新核心；协议支持取决于对应发行版，不能保证未来所有版本或所有旧客户端 MOD。核心和世界继续保持 26.2，协议转换不提供新版本玩法。基岩版兼容范围由 Geyser 决定，Via 系列不能让任意历史 PE 版本进入。
 
-本次视距设为 20 区块，模拟距离保持原值（模板为 6）。首次启动备份 server.properties.before-v095，仅改 view-distance，并对已加载世界立即生效；不会覆盖端口、白名单或本地参数，后续服主可自行调低。客户端自身视距也会限制实际看到的距离。
+当前视距为 20 区块，模拟距离为 15（0.9.6 起按服主要求提高）。首次启动备份 server.properties.before-v095，仅改 view-distance，并对已加载世界立即生效；不会覆盖端口、白名单或其他本地参数，后续服主可自行调低。0.9.6 首次启动仅迁移 simulation-distance=15，并保存 server.properties.before-v096，立即应用已加载世界；每项迁移只执行一次，不会每次启动重置服主后续调整。客户端自身视距也会限制实际看到的距离。
 
 旧服自动安装常用中文语言文件（不存在时）、追加工具箱菜单按钮和菜单注册、补充对应权限。数据库、玩家身份、键值和本地菜单动作不覆盖；独立自定义占位被占用时保留自定义按钮。菜单与权限迁移前备份 .before-v095。

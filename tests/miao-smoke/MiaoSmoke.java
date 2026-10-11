@@ -70,6 +70,7 @@ public class MiaoSmoke extends JavaPlugin {
    var permissionFile=new YamlConfiguration();permissionFile.options().pathSeparator('|');permissionFile.load(new java.io.File(m.getDataFolder().getParentFile().getParentFile(),"permissions.yml"));
    ok(permissionFile.getBoolean("survival.player|children|veinminer.command.toggle"),"permission migration keeps literal dotted keys");
    ok(w.getViewDistance()==20,"runtime view distance 20");
+   ok(w.getSimulationDistance()==15,"runtime simulation distance 15");
    String setting="players."+owner+".sidebar.enabled";
    preferences.set(setting,false);render.invoke(m,p);ok(board[0].getObjective(DisplaySlot.SIDEBAR)==null,"sidebar disable detaches");
    preferences.set(setting,true);render.invoke(m,p);ok(board[0].getObjective(DisplaySlot.SIDEBAR)!=null,"sidebar enabled again");preferences.set(setting,null);

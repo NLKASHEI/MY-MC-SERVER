@@ -54,4 +54,4 @@ JAR 和 Java 保留各自上游许可证。仓库保存项目配置、脚本、�
 
 新增 Backuper 定时备份与保留清理、QuickShop-Hikari 玩家箱子交易，以及 Java 遥远地平线服务端支持。创世神 WorldEdit 已安装，仅供管理员使用。详见 [备份、集市与远景指南](docs/operations/backup-market-dh.md)。
 
-连锁挖矿使用 VeinMiner 2.4.1：指南针 → 生电工具箱 → 连锁挖矿，默认蹲下触发，可选择自动触发；只连矿石、最多 32 块，正常消耗耐久与饥饿。服务端视距 20、模拟距离保持 6。已有 ViaVersion / ViaBackwards 5.12.1 支持 Java 协议版本兼容，详见 [挖矿与版本指南](docs/operations/vein-version.md)。
+连锁挖矿使用 VeinMiner 2.4.1：指南针 → 生电工具箱 → 连锁挖矿，默认蹲下触发，可选择自动触发；只连矿石、最多 32 块，正常消耗耐久与饥饿。服务端视距 20、模拟距离 15。已有 ViaVersion / ViaBackwards 5.12.1 支持 Java 协议版本兼容，详见 [挖矿与版本指南](docs/operations/vein-version.md)。

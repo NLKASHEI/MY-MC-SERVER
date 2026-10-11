@@ -11,6 +11,7 @@ final class RuntimeMigration {
         branding(plugin);
         menuLayout(plugin);
         veinAndDistance(plugin);
+        simulationDistance(plugin);
         File marker = new File(plugin.getDataFolder(), "ui-fixes-v080.done");
         if (marker.exists()) return;
         try {
@@ -190,6 +191,23 @@ final class RuntimeMigration {
             plugin.getDataFolder().mkdirs();Files.writeString(marker.toPath(),"Vein menu installed; view-distance=20; local settings preserved\n");
             plugin.getLogger().info("连锁挖矿已接入工具箱；服务端视距设为 20，模拟距离保持原值。");
         }catch(Exception e){throw new IllegalStateException("Cannot apply vein mining and view distance settings",e);}
+    }
+    private static void simulationDistance(MiaoServer plugin) {
+        File marker=new File(plugin.getDataFolder(),"simulation-distance-v096.done");
+        if(marker.exists())return;
+        try {
+            File file=new File(plugin.getDataFolder().getParentFile().getParentFile(),"server.properties");
+            String text=Files.readString(file.toPath());
+            String updated=text.replaceAll("(?m)^simulation-distance=[^\\r\\n]*","simulation-distance=15");
+            if(updated.equals(text)&&!text.matches("(?s).*\\bsimulation-distance=.*"))updated=text+"\nsimulation-distance=15\n";
+            if(!updated.equals(text)) {
+                File backup=new File(file.getParentFile(),"server.properties.before-v096");
+                if(!backup.exists())Files.copy(file.toPath(),backup.toPath());
+                Files.writeString(file.toPath(),updated);
+            }
+            plugin.getDataFolder().mkdirs();Files.writeString(marker.toPath(),"Requested simulation-distance=15\n");
+            plugin.getLogger().info("模拟距离已设为 15；其他服务端参数保持本地设置。");
+        }catch(Exception e){throw new IllegalStateException("Cannot apply requested simulation distance",e);}
     }
     private static boolean ySlot(File file,String key,int expected) {
         return YamlConfiguration.loadConfiguration(file).getInt("items."+key+".slot",-1)==expected;
