@@ -96,7 +96,7 @@ minecraft:lobby:
     enabled: false
     amount: 0.0
     currency: '@vault-economy'
-  gamemode: survival
+  gamemode: adventure
   generator: ''
   hidden: false
   hunger: false

@@ -6,7 +6,7 @@ Windows 云服务器使用的 Paper 26.2 原版生存辅助服务端。Java 离�
 
 按 [mattpocock/skills](https://github.com/mattpocock/skills) 的分类技能、镜像文档、根目录规范组织维护流程；这是服务端项目，组件运行目录单独放在 `servers/survival`。
 
-新增中文侧边栏、伙伴组队和自动同步的领地共享，指南针统一入口。自动备份每两小时一次，只保留最近三份；Java 列表使用温馨 MC 小屋图标。详见 [伙伴与侧边栏指南](docs/operations/community.md)。
+新增中文侧边栏、伙伴组队和自动同步的领地共享，指南针统一入口。自动备份每两小时一次，只保留最近三份；Java 列表使用温馨 MC 小屋图标。PE 指南针使用原生表单，侧边栏可选择成长数据并保存开关；主城保护不放行 OP。详见 [伙伴与侧边栏指南](docs/operations/community.md)。
 
 ## 快速使用
 

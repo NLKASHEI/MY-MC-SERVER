@@ -324,13 +324,6 @@ items:
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_46:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 46
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
   frame_48:
     material: LIGHT_BLUE_STAINED_GLASS_PANE
     slot: 48
@@ -371,3 +364,16 @@ items:
     - '[openguimenu] teams'
     right_click_commands:
     - '[openguimenu] teams'
+  sidebar:
+    material: CLOCK
+    slot: 46
+    display_name: '&d我的成长 · 侧边栏'
+    lore:
+    - '&7开关侧边栏，选择喜欢的数据'
+    - '&7总时长、本次时长、金币与建造成就'
+    left_click_commands:
+    - '[close]'
+    - '[player] sidebar settings'
+    right_click_commands:
+    - '[close]'
+    - '[player] sidebar settings'

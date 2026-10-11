@@ -44,6 +44,7 @@ backup:
   - plugins/Backuper.jar
   - plugins/DHSupport.jar
   - plugins/MiaoServer.jar
+  - plugins/PacketEvents.jar
   - plugins/QuickShop-Hikari/libs
   - plugins/QuickShop/libs
   - plugins/DHSupport/data.sqlite

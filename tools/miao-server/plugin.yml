@@ -1,9 +1,9 @@
 name: MiaoServer
-version: 0.7.0
+version: 0.8.0
 main: cn.nankexi.MiaoServer
 api-version: '26.2'
-depend: [GriefPrevention]
-loadbefore: [Backuper]
+depend: [GriefPrevention, AuthMe, floodgate, WorldEdit, Vault]
+loadbefore: [Backuper, DeluxeMenus]
 commands:
   mteam:
     aliases: [team]
@@ -12,6 +12,14 @@ commands:
   sidebar:
     description: 开关中文侧边栏
     permission: survival.team
+  miao:
+    description: 妙妙服服务中心
+    permission: survival.guide
+  accountlink:
+    description: 中文双端绑定流程
+    permission: floodgate.command.linkaccount
 permissions:
   survival.team:
     default: true
+  miao.compass.teleport:
+    default: op

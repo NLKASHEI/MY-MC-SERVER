@@ -22,10 +22,12 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-public-netwo
 ## 一次绑定，共用身份
 
 1. Java 使用以后长期使用的固定名字注册并 `/login`，这是主账号。离线名字的大小写也应保持一致。
-2. PE 使用 Xbox 身份经 Floodgate 入服，先按 AuthMe 提示注册、登录。未绑定时名字带 `.`，拥有独立数据。
-3. 在已经登录的 Java 端输入 `/linkaccount`，按插件提示输入目标 PE 名称并取得验证码；在已经登录的 PE 端按提示输入确认命令。命令参数以当前插件提示为准，验证码五分钟有效。
+2. PE 使用 Xbox 身份经 Floodgate 入服，先按 AuthMe 提示注册、登录。未绑定时拥有独立数据；聊天、列表和侧边栏显示 `[PE]`，底层登录名保留 `.` 以兼容已有 AuthMe 账户。
+3. Java 点账号菜单的绑定按钮，选择自己的已登录 PE 账号，或输入 `/linkaccount Xbox名` 取得验证码。PE 点同一按钮，在原生表单填写 Java 名称与验证码，或输入 `/linkaccount Java名 验证码`。Xbox 名不加服务器前缀，有空格时加引号。验证码五分钟有效。
 4. 绑定后重连 PE，身份切换为 Java 主账号，使用 Java 主账号的服内密码登录。两端依次登录，共用同一份 UUID 数据；同一账号不能同时双端在线。
 5. 需要解除时使用 `/unlinkaccount`。解除后 PE 恢复其原本独立身份和数据。
+
+Floodgate 最终固定使用 Java 身份，谁先输入命令不会改变存档来源；全球绑定服允许任一端先输入的流程与本服本地命令不同。要把旧 PE 进度作为新基础，需要先备份并迁移各插件数据，不会自动合并两套物品、金币、领地或技能。详见 [官方说明](https://geysermc.org/wiki/floodgate/linking/)。
 
 共用内容包括原版背包/末影箱/经验/位置/进度，以及 Essentials 金币与家、GriefPrevention 圈地、LuckPerms 权限、在线奖励记录、AuraSkills 等级。创造超平坦的背包仍与生存隔离；账号绑定不取消世界隔离。各插件升级或改动存储键后需重新验收。
 

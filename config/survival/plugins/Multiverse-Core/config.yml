@@ -21,7 +21,7 @@ teleport:
   safe-location-vertical-search-radius: 3
 spawn:
   first-spawn-override: true
-  first-spawn-location: w:minecraft:lobby
+  first-spawn-location: w:lobby
   enable-join-destination: false
   join-destination: ''
   default-respawn-in-overworld: true

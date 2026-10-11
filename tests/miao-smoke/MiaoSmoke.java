@@ -9,6 +9,7 @@ import org.bukkit.scoreboard.*;
 import me.ryanhamshire.GriefPrevention.*;
 public class MiaoSmoke extends JavaPlugin {
  public void onEnable(){Bukkit.getScheduler().runTaskLater(this,this::check,40);}
+ Object get(Object o,String field) throws Exception {Field f=o.getClass().getDeclaredField(field);f.setAccessible(true);return f.get(o);}
  void ok(boolean b,String s){if(!b)throw new AssertionError(s);}
  void check(){
   MiaoServer m=(MiaoServer)Bukkit.getPluginManager().getPlugin("MiaoServer");
@@ -26,7 +27,7 @@ public class MiaoSmoke extends JavaPlugin {
    Player p=(Player)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{Player.class},(obj,method,a)->switch(method.getName()){
      case "getUniqueId"->owner;case "getName"->"MiaoSmokeOwner";case "getLocation"->location;
      case "getWorld"->w;case "getScoreboard"->board[0];case "setScoreboard"->{board[0]=(Scoreboard)a[0];yield null;}
-     case "getStatistic"->72000;case "getPing"->42;case "hasMetadata"->false;
+     case "getStatistic"->72000;case "getPing"->42;case "hasMetadata"->false;case "isOp"->true;
      case "sendMessage"->null;case "hashCode"->owner.hashCode();case "equals"->obj==a[0];
      default->{Class<?> c=method.getReturnType();yield c==boolean.class?false:c==int.class?0:null;}
    });
@@ -47,7 +48,19 @@ public class MiaoSmoke extends JavaPlugin {
    ok(board[0].getTeam("row3").getPrefix().contains("42 ms"),"ping sidebar");
    ok(board[0].getTeam("row4").getPrefix().contains("1小时0分"),"play time sidebar");
    ok(board[0].getObjective(DisplaySlot.SIDEBAR).getDisplayName().contains("南可熙的神奇妙妙服"),"Chinese server title");
-   getLogger().info("MIAO_SMOKE_PASS: share, leave, original trust, disband, claim preservation, sidebar Chinese/ping/time");
+   Object ui=get(m,"ui");YamlConfiguration preferences=(YamlConfiguration)get(ui,"prefs");
+   String setting="players."+owner+".sidebar.enabled";
+   preferences.set(setting,false);render.invoke(m,p);ok(board[0].getObjective(DisplaySlot.SIDEBAR)==null,"sidebar disable detaches");
+   preferences.set(setting,true);render.invoke(m,p);ok(board[0].getObjective(DisplaySlot.SIDEBAR)!=null,"sidebar enabled again");preferences.set(setting,null);
+   org.bukkit.World lobby=Bukkit.getWorld("lobby");ok(lobby!=null,"lobby exists");
+   Object guard=get(m,"lobbyGuard");var event=new org.bukkit.event.block.BlockBreakEvent(lobby.getBlockAt(0,95,0),p);
+   Method breaking=guard.getClass().getDeclaredMethod("breakBlock",org.bukkit.event.block.BlockBreakEvent.class);breaking.setAccessible(true);breaking.invoke(guard,event);ok(p.isOp()&&event.isCancelled(),"OP cannot break lobby");
+   var we=com.sk89q.worldedit.WorldEdit.getInstance();var target=com.sk89q.worldedit.math.BlockVector3.at(0,95,0);
+   var world=com.sk89q.worldedit.bukkit.BukkitAdapter.adapt(lobby);var before=world.getBlock(target);
+   var desired=before.equals(com.sk89q.worldedit.world.block.BlockTypes.DIAMOND_BLOCK.getDefaultState())?com.sk89q.worldedit.world.block.BlockTypes.EMERALD_BLOCK.getDefaultState():com.sk89q.worldedit.world.block.BlockTypes.DIAMOND_BLOCK.getDefaultState();
+   try(var edit=we.newEditSession(world)){edit.setBlock(target,desired);}
+   ok(world.getBlock(target).equals(before),"WorldEdit left map unchanged");
+   getLogger().info("MIAO_SMOKE_PASS: sidebar disable/enable, OP lobby guard, WorldEdit readonly;  share, leave, original trust, disband, claim preservation, sidebar Chinese/ping/time");
   }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"MIAO_SMOKE_FAIL",e);}
   finally{try{if(claim!=null)GriefPrevention.instance.dataStore.deleteClaim(claim);if(original!=null){f.set(m,original);Method save=MiaoServer.class.getDeclaredMethod("save");save.setAccessible(true);save.invoke(m);}}catch(Exception e){throw new RuntimeException(e);}}
  }

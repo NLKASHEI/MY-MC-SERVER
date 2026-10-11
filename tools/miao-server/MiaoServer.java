@@ -26,10 +26,13 @@ public final class MiaoServer extends JavaPlugin implements Listener {
     private CachedServerIcon icon;
     private String motd;
     private volatile int online;
+    private MiaoInterface ui;
+    private LobbyGuard lobbyGuard;
     private record Invitation(String team, long expires) {}
     private DataStore claims() { return GriefPrevention.instance.dataStore; }
 
     @Override public void onLoad() {
+        RuntimeMigration.apply(this);
         // One migration for the explicitly requested schedule. Leave other backup settings intact.
         File marker = new File(getDataFolder(), "backup-schedule-v070.done");
         File backup = new File(getDataFolder().getParentFile(), "Backuper/config.yml");
@@ -55,10 +58,12 @@ public final class MiaoServer extends JavaPlugin implements Listener {
             if (in != null) icon = Bukkit.loadServerIcon(javax.imageio.ImageIO.read(in));
         } catch (Exception e) { getLogger().warning("服务器图标读取失败：" + e.getMessage()); }
         Bukkit.getPluginManager().registerEvents(this, this);
+        ui = new MiaoInterface(this);
+        lobbyGuard = new LobbyGuard(this);
         reconcile();
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             online = (int) Bukkit.getOnlinePlayers().stream().filter(p -> !dummy(p)).count();
-            for (Player p : Bukkit.getOnlinePlayers()) if (!dummy(p)) render(p);
+            for (Player p : Bukkit.getOnlinePlayers()) if (!dummy(p) && ui.authenticated(p)) render(p);
         }, 20L, Math.max(40L, getConfig().getLong("sidebar.refresh-ticks", 40)));
         Bukkit.getScheduler().runTaskTimer(this, this::reconcile, 100L, 100L);
         getLogger().info("中文侧边栏、组队共享领地、中文服务器列表已启用。");
@@ -135,13 +140,11 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         if (changed) save();
     }
     @Override public boolean onCommand(CommandSender sender, Command command, String label, String[] a) {
-        if (!(sender instanceof Player p)) { say(sender, "MiaoServer 0.7.0：中文组队、侧边栏和服务器图标已加载。玩家使用 /team。"); return true; }
+        if (!(sender instanceof Player p)) { say(sender, "MiaoServer 0.8.0：中文组队、侧边栏和服务器图标已加载。玩家使用 /team。"); return true; }
         if (dummy(p)) { say(p, "假人不能使用组队系统。"); return true; }
-        if (command.getName().equals("sidebar")) {
-            if (hidden.remove(p.getUniqueId())) say(p, "侧边栏已打开。");
-            else { hidden.add(p.getUniqueId()); detach(p); say(p, "侧边栏已关闭。"); }
-            return true;
-        }
+        if (command.getName().equals("sidebar")) return ui.sidebar(p, a);
+        if (command.getName().equals("miao")) return ui.command(p, a);
+        if (command.getName().equals("accountlink")) return ui.command(p, new String[]{"link"});
         String t = team(p.getUniqueId()), sub = a.length == 0 ? "info" : a[0].toLowerCase(Locale.ROOT);
         switch (sub) {
             case "create" -> {
@@ -217,7 +220,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         return List.of();
     }
     private void render(Player p) {
-        if (!getConfig().getBoolean("sidebar.enabled", true) || hidden.contains(p.getUniqueId())) return;
+        if (!ui.enabled(p)) { detach(p); return; }
         Scoreboard b = boards.get(p.getUniqueId());
         if (b == null) {
             // Respect another plugin's sidebar instead of repeatedly taking it over.
@@ -225,22 +228,21 @@ public final class MiaoServer extends JavaPlugin implements Listener {
             b = Bukkit.getScoreboardManager().getNewScoreboard();
             Objective o = b.registerNewObjective("miao", Criteria.DUMMY, color("&6&l" + getConfig().getString("server-name"))); o.setDisplaySlot(DisplaySlot.SIDEBAR);
             o.numberFormat(io.papermc.paper.scoreboard.numbers.NumberFormat.blank());
-            for (int i = 0; i < 9; i++) {
-                String entry = ChatColor.values()[i].toString(); Team row = b.registerNewTeam("row" + i); row.addEntry(entry); o.getScore(entry).setScore(9 - i);
+            for (int i = 0; i < 15; i++) {
+                String entry = ChatColor.values()[i].toString(); Team row = b.registerNewTeam("row" + i); row.addEntry(entry); o.getScore(entry).setScore(15 - i);
             }
             boards.put(p.getUniqueId(), b); p.setScoreboard(b);
         }
         if (p.getScoreboard() != b) return;
-        long seconds = Integer.toUnsignedLong(p.getStatistic(Statistic.PLAY_ONE_MINUTE)) / 20;
-        double tps = Math.min(20, Bukkit.getTPS()[0]);
-        String world = switch (p.getWorld().getName()) { case "flat" -> "创造超平坦"; case "lobby" -> "温馨主城"; case "world_nether" -> "下界"; case "world_the_end" -> "末地"; default -> "自由生存"; };
-        String[] lines = {"&7────────────", "&f玩家 &a" + p.getName(), "&f在线 &b" + online + " &7/ " + Bukkit.getMaxPlayers(),
-            "&f延迟 &e" + p.getPing() + " ms", "&f游玩 &d" + seconds / 3600 + "小时" + seconds / 60 % 60 + "分",
-            "&f状态 " + (tps >= 18 ? "&a流畅" : "&e繁忙") + " &7TPS &f" + String.format(Locale.ROOT, "%.1f", tps),
-            "&f世界 &a" + world, "&f队伍 &b" + title(team(p.getUniqueId())), "&6指南针菜单 &7/menu"};
-        for (int i = 0; i < lines.length; i++) b.getTeam("row" + i).setPrefix(color(lines[i]));
+        List<String> lines = ui.lines(p, online, title(team(p.getUniqueId())));
+        Objective objective = b.getObjective("miao");
+        for (int i = 0; i < 15; i++) {
+            String entry = ChatColor.values()[i].toString();
+            if (i < lines.size()) { b.getTeam("row" + i).setPrefix(lines.get(i)); objective.getScore(entry).setScore(15 - i); }
+            else b.resetScores(entry);
+        }
     }
-    private void detach(Player p) {
+    void detach(Player p) {
         Scoreboard b = boards.remove(p.getUniqueId());
         if (b != null && p.getScoreboard() == b) p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
     }
@@ -250,5 +252,5 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         if (e instanceof com.destroystokyo.paper.event.server.PaperServerListPingEvent paper) paper.setNumPlayers(online);
         if (icon != null) e.setServerIcon(icon);
     }
-    @Override public void onDisable() { for (Player p : Bukkit.getOnlinePlayers()) detach(p); }
+    @Override public void onDisable() { if (ui != null) ui.stop(); if (lobbyGuard != null) lobbyGuard.stop(); for (Player p : Bukkit.getOnlinePlayers()) detach(p); }
 }

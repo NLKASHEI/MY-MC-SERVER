@@ -8,15 +8,15 @@ items:
     slot: 10
     display_name: '&a开始 PC / PE 绑定'
     lore:
-    - '&7先登录 Java 主账号与 PE 账号'
-    - '&7绑定后采用 Java 主账号的进度'
-    - '&f点击按插件提示开始绑定'
+    - '&7Java 选择已登录的 PE 账号发起绑定'
+    - '&7PE 表单填写 Java 名称和验证码'
+    - '&c采用 Java 身份；不自动合并旧数据'
     left_click_commands:
     - '[close]'
-    - '[player] linkaccount'
+    - '[player] accountlink'
     right_click_commands:
     - '[close]'
-    - '[player] linkaccount'
+    - '[player] accountlink'
   help:
     material: BOOK
     slot: 12

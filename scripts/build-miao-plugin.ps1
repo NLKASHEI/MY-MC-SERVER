@@ -10,7 +10,7 @@ try {
   New-Item -ItemType Directory -Force $folder | Out-Null
   $jars = @(Get-ChildItem servers/survival/libraries -Recurse -Filter '*.jar') + @(Get-ChildItem servers/survival/plugins -File -Filter '*.jar')
   $cp = @($jars | ForEach-Object { $_.FullName.Substring($root.Length + 1).Replace('\','/') }) -join ';'
-  $source = 'tools/miao-server/MiaoServer.java'
+  $source = (@(Get-ChildItem tools/miao-server -Filter '*.java') | ForEach-Object { 'tools/miao-server/' + $_.Name }) -join ' '
   if ($Smoke) { $source = 'tests/miao-smoke/MiaoSmoke.java'; $cp = 'servers/survival/plugins/MiaoServer.jar;' + $cp }
   $argFile = $folder + '/javac.args'
   $line = '-encoding UTF-8 -classpath "' + $cp + '" -d ' + $folder + ' ' + $source

@@ -1,6 +1,6 @@
 # 原生 Skript + Vault。变量由 Skript 持久化，重启不会重置已领取奖励。
 options:
-    prefix: &2[生存服]&r
+    prefix: &6[妙妙服]&r
 
 # 创建前记录召唤者位置，避免出生点插件先把实体挪走而记录错误位置。
 command /survivalbotprepare <text> <text>:
@@ -99,8 +99,8 @@ command /guide [<text>]:
             send "&7/fp stop：停止动作；/fp invsee：假人背包；/fp kick：移除。"
             send "&7仅生存维度使用，离线 15 秒后移除，背包保存；假人不领取金币或技能经验。"
         else if arg-1 is "linking":
-            send "{@prefix} &e先在 Java 主账号注册并登录，输入 /linkaccount 查看本地绑定步骤。"
-            send "&7在 PE 账号登录后按提示完成验证，再重新连接并使用 Java 账号密码。"
+            send "{@prefix} &e先登录两个账号，点击账号菜单的绑定按钮，或使用 /accountlink。"
+            send "&7Java 输入 /linkaccount 手机Xbox名；PE 输入 /linkaccount Java账号名 验证码。"
             send "&7绑定后共用 Java 进度，不自动合并旧 PE 背包；绑定前先转移物品。"
             send "&7同一账号不能双端同时在线；/unlinkaccount 解除绑定。"
         else if arg-1 is "fun":
@@ -119,10 +119,7 @@ command /guide [<text>]:
             send "&7/reward：领取在线奖励；/guide claims：圈地说明。"
             send "&7/msg 玩家 内容：私聊；/spawn：出生点；/changepassword：改密。"
 
-on right click:
-    if player's tool is compass named "&a生存指南针":
-        cancel event
-        make player execute command "menu"
+# 指南针点击由 MiaoServer 统一处理，避免 Java/PE 与 WorldEdit 重复执行。
 
 on join:
     set {survival.last-location::%uuid of player%} to location of player

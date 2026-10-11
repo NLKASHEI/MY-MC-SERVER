@@ -3,6 +3,20 @@ motd: '&6&l南可熙的神奇妙妙服&f\n&b原版生存 &7· &a温馨家园 &7�
 sidebar:
   enabled: true
   refresh-ticks: 40
+  default-fields:
+  - player
+  - online
+  - ping
+  - total
+  - session
+  - tps
+  - world
+  - team
+  - balance
+  - placed
+  - mined
+  - kills
+  - fishing
 teams:
   max-members: 8
   invite-seconds: 300
