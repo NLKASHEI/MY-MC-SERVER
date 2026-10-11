@@ -2,15 +2,21 @@
 
 ## 一键获取我们发布的更新
 
-首次部署选最新完整 ZIP，以后在控制台输入 `stop`，待退出后双击根目录 **一键更新.bat**。无需 Git、Python 或 GitHub 账号。它使用公开 GitHub Release API 获取最新正式版（[官方接口说明](https://docs.github.com/en/rest/releases/releases#get-the-latest-release)）。需要云服务器能访问 GitHub 和发生变化的插件下载源，网络失败不会开始替换。
+首次部署选最新完整 ZIP，以后在控制台输入 `stop`，待退出后双击根目录 **一键更新.bat** 或 **update-fast.bat**。两个入口均默认加速，自动查找最新正式版本，不锁定版本。无需 Git、Python 或 GitHub 账号。它使用公开 GitHub Release API 获取最新正式版（[官方接口说明](https://docs.github.com/en/rest/releases/releases#get-the-latest-release)）。需要云服务器能访问 GitHub 和发生变化的插件下载源，网络失败不会开始替换。
 
-### 0.9.0 旧入口的临时修复
+### 永久入口（0.9.3 起）
+
+已有云服仅需安装一次 `MY-MC-SERVER-updater.zip`：停服，解压合并到原服务端根目录；只放入两个更新按钮和 `scripts/update-release.ps1`，不覆盖世界、数据库或插件配置。以后始终使用同一个按钮，不必再次下载入口或手动转移 Release。默认通过 `https://gh-proxy.org/` 加速公开 GitHub API 和资产，失败尝试直连。引擎与按钮随未来更新包维护；已是最新版本时直接提示退出。原本锁定旧版本的 `update-fast.bat` 会被这个永久入口替换。
+
+维护者用 `scripts/build-permanent-updater.ps1` 构建固定资产名 `MY-MC-SERVER-updater.zip`，新正式 Release 一并发布；客户端日常更新只需要轻量更新包，不重新下载永久入口 ZIP。
+
+### 0.9.0 旧入口的临时修复（历史）
 
 如果出现 `Disallowed update file` 且文件名乱码，原因是旧脚本在 PowerShell 5.1 下按系统编码读取 UTF-8 更新清单。不是下载没有完成，也不能通过放宽路径检查处理。修复后的脚本显式按 UTF-8 读取所有 JSON；回归测试清单保留实际中文字符，覆盖中文 `.bat` 文件名。
 
 从 0.9.0 Release 下载 `MY-MC-SERVER-fast-update-v0.9.0.zip`，停服后把全部内容解压到**现有服务端根目录**，合并 `scripts`，双击 `update-fast.bat`。该入口包含修复后的独立引擎，固定到 0.9.0 和已发布更新包的 SHA256；优先使用 [GH-Proxy 官方说明](https://gh-proxy.com/docs/github-accelerator) 的 `https://gh-proxy.org/` 转发公开 API 和 Release 下载，失败或组件校验不一致尝试直连。其他插件官方源保持直连，不上传任何存档或凭据。
 
-成功后恢复普通入口的兼容性：将修复引擎复制为 `scripts/update-release.ps1`，旧脚本另存 `.before-fast-update`。本临时入口不会被旧更新包替换，后续版本继续使用普通中文“一键更新.bat”。新版引擎也支持 `-GitHubProxy https://gh-proxy.org/`，方便指定加速；普通入口默认直连。停服、完整备份、世界/数据库保护、配置冲突、校验及失败回退均保留。
+成功后恢复普通入口的兼容性：将修复引擎复制为 `scripts/update-release.ps1`，旧脚本另存 `.before-fast-update`。本临时入口不会被旧更新包替换，后续版本继续使用普通中文“一键更新.bat”。新版引擎也支持 `-GitHubProxy https://gh-proxy.org/`，方便指定加速；0.9.0–0.9.2 普通入口默认直连；从 0.9.3 起两个永久入口默认加速。停服、完整备份、世界/数据库保护、配置冲突、校验及失败回退均保留。
 
 维护者用 `scripts/build-update-rescue.ps1 -ReleaseTag v0.9.0` 从当前修复引擎构建救援 ZIP；固定 SHA 必须取已经发布的原更新包，不能重打包并替换旧 Release 资产。只需上传新救援 ZIP 与校验文件，不重新上传大型完整服务端。
 

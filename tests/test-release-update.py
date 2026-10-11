@@ -14,6 +14,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--base', required=True, help='Extracted prior full deployment directory')
 parser.add_argument('--package', default=str(ROOT / 'release/MY-MC-SERVER-update-v0.5.0.zip'))
 parser.add_argument('--rescue', action='store_true', help='Verify repair of an old installed updater after success')
+parser.add_argument('--latest', action='store_true', help='Exercise latest release discovery through an offline HTTP fixture')
 args = parser.parse_args()
 BASE = Path(args.base)
 work = Path(tempfile.mkdtemp(prefix='updater-test-', dir=ROOT / 'downloads'))
@@ -99,7 +100,31 @@ def run(package, checksum=None):
     return subprocess.run(['powershell.exe', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', str(engine), '-Package', str(package), '-ExpectedSha256', checksum or digest(package)], capture_output=True, env=env)
 
 package = make_package('normal.zip')
-result = run(package)
+def run_latest(package):
+    release_file = work / 'latest.json'
+    checksum_file = work / 'latest.sha256.txt'
+    write(checksum_file, digest(package) + '  fixture.zip\n')
+    asset = f'MY-MC-SERVER-update-v{index["version"]}.zip'
+    write(release_file, json.dumps({'tag_name': 'v' + index['version'], 'html_url': 'https://github.com/NLKASHEI/MY-MC-SERVER/releases/latest', 'assets': [
+        {'name': asset, 'browser_download_url': 'https://github.com/fixture/' + asset, 'digest': 'sha256:' + digest(package)},
+        {'name': asset + '.sha256.txt', 'browser_download_url': 'https://github.com/fixture/' + asset + '.sha256.txt'}]}))
+    bootstrap = work / 'latest-fixture.ps1'
+    write(bootstrap, '''param($FixtureEngine,$FixtureArchive,$FixtureChecksum,$FixtureRelease)
+function Invoke-RestMethod {
+ param($Uri,$Headers,$TimeoutSec)
+ if($Uri -ne 'https://gh-proxy.org/https://api.github.com/repos/NLKASHEI/MY-MC-SERVER/releases/latest'){throw "Unexpected release route: $Uri"}
+ Get-Content -LiteralPath $FixtureRelease -Raw -Encoding UTF8 | ConvertFrom-Json
+}
+function Invoke-WebRequest {
+ param($Uri,$Headers,$TimeoutSec,$OutFile,$UseBasicParsing)
+ if($Uri -notlike 'https://gh-proxy.org/https://github.com/fixture/*'){throw "Unexpected asset route: $Uri"}
+ if($Uri.EndsWith('.sha256.txt')){Copy-Item -LiteralPath $FixtureChecksum -Destination $OutFile}else{Copy-Item -LiteralPath $FixtureArchive -Destination $OutFile}
+}
+& $FixtureEngine -GitHubProxy https://gh-proxy.org/
+''')
+    return subprocess.run(['powershell.exe', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', str(bootstrap), str(engine), str(package), str(checksum_file), str(release_file)], capture_output=True, env=env)
+
+result = run_latest(package) if args.latest else run(package)
 if result.returncode:
     raise RuntimeError(result.stdout.decode(errors='replace') + result.stderr.decode(errors='replace'))
 assert digest(server / 'servers/survival' / home) == digest(payload / 'config/survival' / home)
@@ -117,6 +142,16 @@ if args.rescue:
     print('PASS: rescue entry repairs the normal updater after applying old release payload')
 print('PASS: UTF-8 manifest with literal Chinese BAT names under PS5.1')
 print('PASS: PS5.1 update, unchanged menu replaced, modified menu/ports/data retained, full backup')
+if args.latest:
+    permanent = (server / 'update-fast.bat').read_text(encoding='utf-8-sig')
+    assert '-ReleaseTag' not in permanent and '-PinnedPackageSha256' not in permanent
+    assert '-GitHubProxy "https://gh-proxy.org/"' in permanent
+    first_state = digest(server / '.update-state.json')
+    second = run_latest(package)
+    assert second.returncode == 0
+    assert digest(server / '.update-state.json') == first_state
+    assert '已是最新版本'.encode('utf-8') in second.stdout or '已是最新版本'.encode('gbk') in second.stdout
+    print('PASS: permanent accelerated entry discovers latest, survives update, and skips already installed release')
 
 before_state = digest(server / '.update-state.json')
 assert run(package, '0' * 64).returncode != 0
