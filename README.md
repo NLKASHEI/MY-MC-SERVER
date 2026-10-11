@@ -8,11 +8,15 @@ Windows 云服务器使用的 Paper 26.2 原版生存辅助服务端。Java 离�
 
 ## 快速使用
 
+完整部署包：从 [GitHub Release](https://github.com/NLKASHEI/MY-MC-SERVER/releases/latest) 下载 ZIP 和 SHA256 校验文件。GitHub 自动生成的 Source code 仅是源码，不包含 Java 和插件。
+
 下载完整部署包并解压到 Windows 服务器。阅读 Minecraft EULA，将 `servers/survival/eula.txt` 改为 `eula=true`，双击 `启动服务器.bat`。内存在 `server-settings.json` 中修改。云端放行 Java TCP 25565 和基岩 UDP 8585。
 
 按现有映射填写：Java `s9-4.yxjsmc.cn:20005` → TCP 25565；基岩 `s9-4.yxjsmc.cn:20013` → UDP 8585。用户已向云商确认映射支持 TCP+UDP，公网实际入服仍需部署后验收。3389 的远程桌面映射保持原用途。
 
 新增 FakePlayer-CE 生电假人、AuraSkills 中文技能成长与 Floodgate 本地 SQLite 账号绑定。绑定后两端使用 Java 主账号的存档、金币、圈地和技能进度；先转移旧 PE 账号物品，再绑定，不能自动合并两份历史记录。详见 [双端与生电指南](docs/operations/crossplay-technical.md)。
+
+指南针有 10 个中文界面，整合家园、好友传送、圈地、奖励、假人和账号操作；AuraSkills 钓鱼扩展为 54 项奖励。布局与奖励说明见 [菜单与钓鱼指南](docs/operations/menu-fishing.md)。已有服务器更新前先备份，按更新指南选择性合并配置，不能用整包覆盖现有世界或玩家数据库。
 
 从源码安装：双击 `安装服务端.bat` 获取锁定组件，再按上面的步骤接受 EULA 并启动。安装需要联网，初次启动部分插件也会获取运行依赖。
 

@@ -1,4 +1,4 @@
-menu_title: '&5趣味互动'
+menu_title: '&8休闲互动'
 open_command:
 - fun
 - yl
@@ -90,3 +90,136 @@ items:
     right_click_commands:
     - '[close]'
     - '[player] menu'
+  frame_0:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 0
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_1:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 1
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_2:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 2
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_3:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 3
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_4:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 4
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_5:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 5
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_6:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 6
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_7:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 7
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_8:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 8
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_9:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 9
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_17:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 17
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_18:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 18
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_19:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 19
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_20:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 20
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_21:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 21
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_23:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 23
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_24:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 24
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_25:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 25
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_26:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 26
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []

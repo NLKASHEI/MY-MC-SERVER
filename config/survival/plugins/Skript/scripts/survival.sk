@@ -45,6 +45,39 @@ command /guide [<text>]:
                 send "{@prefix} &7你已拥有指南针。"
             else:
                 give player compass named "&a生存指南针" with lore "&7右键打开服务中心"
+        else if arg-1 is "homes":
+            send "{@prefix} &e菜单可保存与返回默认“家园”；支持最多三个家。"
+            send "{@prefix} &7/sethome 家名：保存当前位置；/home 家名：回家。"
+            send "{@prefix} &7/home：查看家列表；/delhome 家名：删除指定家。"
+        else if arg-1 is "tpa":
+            send "{@prefix} &e输入 /tpa 玩家名，申请前往对方身边。"
+            send "{@prefix} &7收到申请可在传送菜单点接受或拒绝；传送等待三秒。"
+        else if arg-1 is "chat":
+            send "{@prefix} &e/msg 玩家名 内容：私聊；/reply 内容：回复最近联系人。"
+        else if arg-1 is "trust":
+            send "{@prefix} &e先站在自己的圈地内，输入 /trust 玩家名。"
+            send "{@prefix} &7对方可建造、开门和使用容器。离开圈地操作会影响所有圈地。"
+            send "{@prefix} &7想只开放箱子或通行，请查看菜单“精细访问权限”。"
+        else if arg-1 is "untrust":
+            send "{@prefix} &e先站在要调整的圈地内，输入 /untrust 玩家名。"
+            send "{@prefix} &7使用 /trustlist 查看现有授权，谨慎使用 /untrust all。"
+        else if arg-1 is "claimaccess":
+            send "{@prefix} &e先站在要授权的圈地内，再输入以下命令："
+            send "{@prefix} &7/accesstrust 玩家名：只允许通行、开门和使用按钮。"
+            send "{@prefix} &7/containertrust 玩家名：允许通行及使用箱子等容器。"
+            send "{@prefix} &7/permissiontrust 玩家名：允许管理授权，请只给可信好友。"
+        else if arg-1 is "wallet":
+            send "{@prefix} &e输入 /balance 查看金币；/pay 玩家名 金额 转账。"
+            send "{@prefix} &7主城与生存共用钱包，创造世界禁止交易。"
+        else if arg-1 is "password":
+            send "{@prefix} &e/changepassword 旧密码 新密码：修改服内登录密码。"
+            send "{@prefix} &7在聊天命令中填写，不要发送普通聊天消息或公开密码。"
+        else if arg-1 is "fishing":
+            send "{@prefix} &b新增 54 种奖励条目：海边拾遗、深海馈赠、海底珍藏。"
+            send "{@prefix} &7包含海洋材料、装饰、附魔书、钓竿、唱片与少量珍贵资源。"
+            send "{@prefix} &7额外奖励要求开放水域；优先选择自然湖泊或海边。"
+            send "{@prefix} &7稀有 / 史诗基础概率为 百分之二 / 千分之五，对应能力会提高概率。"
+            send "{@prefix} &7珍藏池基础概率 万分之八，不增加幸运倍率；不额外发金币。"
         else if arg-1 is "technical":
             send "{@prefix} &e/fp spawn：在当前位置创建假人；每人限一个。"
             send "&7/fp attack continuous：持续攻击；/fp use continuous：持续使用。"
@@ -62,7 +95,7 @@ command /guide [<text>]:
             send "&7/lay：躺下；/crawl：爬行；/spin：转圈；/fun：互动菜单。"
         else:
             send "{@prefix} &a欢迎来到原版生存！"
-            send "&7/menu：服务中心；/guide compass：领取菜单指南针。"
+            send "&7/menu：玩家中心；/guide compass：领取菜单指南针。"
             send "&7/worlds：选择世界；/hub：返回主城；/fun：趣味互动。"
             send "&7主城与生存共用背包；创造世界隔离，物品不能带回生存。"
             send "&7/sethome 家名：设家；/home 家名：回家；/delhome 家名：删除。"

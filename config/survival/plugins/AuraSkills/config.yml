@@ -301,7 +301,7 @@ menus:
   stat_info:
     enabled: true
 loot:
-  update_loot_tables: true
+  update_loot_tables: false
   directly_to_inventory: false
 check_for_updates: true
 automatic_backups:

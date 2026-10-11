@@ -1,0 +1,296 @@
+menu_title: '&8领地管家'
+open_command:
+- claims-menu
+size: 45
+items:
+  tutorial:
+    material: GOLDEN_SHOVEL
+    slot: 11
+    display_name: '&e金铲圈地教程'
+    lore:
+    - '&7金铲右键两角，自定义圈地范围'
+    - '&7木棍右键查看归属与边界'
+    - '&f点击查看详细说明'
+    left_click_commands:
+    - '[close]'
+    - '[player] guide claims'
+    right_click_commands:
+    - '[close]'
+    - '[player] guide claims'
+  quick:
+    material: OAK_FENCE
+    slot: 13
+    display_name: '&a保护脚下区域'
+    lore:
+    - '&7站在生存世界的空地上'
+    - '&7需要手持金铲；半径 5，约 121 格'
+    - '&f点击创建基础圈地'
+    left_click_commands:
+    - '[close]'
+    - '[player] claim 5'
+    right_click_commands:
+    - '[close]'
+    - '[player] claim 5'
+  list:
+    material: MAP
+    slot: 15
+    display_name: '&b我的圈地与格数'
+    lore:
+    - '&7查看已圈土地与剩余额度'
+    left_click_commands:
+    - '[close]'
+    - '[player] claimslist'
+    right_click_commands:
+    - '[close]'
+    - '[player] claimslist'
+  trust:
+    material: PLAYER_HEAD
+    slot: 20
+    display_name: '&f好友建造授权'
+    lore:
+    - '&7允许好友建造和使用容器'
+    - '&7先站在要授权的圈地内'
+    left_click_commands:
+    - '[close]'
+    - '[player] guide trust'
+    right_click_commands:
+    - '[close]'
+    - '[player] guide trust'
+  access:
+    material: OAK_DOOR
+    slot: 22
+    display_name: '&f精细访问权限'
+    lore:
+    - '&7仅开门、仅容器、授权管理'
+    - '&7按照需要分配，不必全部开放'
+    left_click_commands:
+    - '[close]'
+    - '[player] guide claimaccess'
+    right_click_commands:
+    - '[close]'
+    - '[player] guide claimaccess'
+  trustlist:
+    material: PAPER
+    slot: 24
+    display_name: '&e查看授权名单'
+    lore:
+    - '&7先站在要查看的圈地内'
+    left_click_commands:
+    - '[close]'
+    - '[player] trustlist'
+    right_click_commands:
+    - '[close]'
+    - '[player] trustlist'
+  untrust:
+    material: IRON_DOOR
+    slot: 29
+    display_name: '&6撤销好友授权'
+    lore:
+    - '&7撤销指定玩家的圈地权限'
+    left_click_commands:
+    - '[close]'
+    - '[player] guide untrust'
+    right_click_commands:
+    - '[close]'
+    - '[player] guide untrust'
+  trapped:
+    material: ENDER_PEARL
+    slot: 31
+    display_name: '&b脱困帮助'
+    lore:
+    - '&7被困在他人的圈地内时使用'
+    - '&7按提示原地等待，不要移动'
+    left_click_commands:
+    - '[close]'
+    - '[player] trapped'
+    right_click_commands:
+    - '[close]'
+    - '[player] trapped'
+  abandon:
+    material: BARRIER
+    slot: 33
+    display_name: '&c放弃当前圈地'
+    lore:
+    - '&7解除当前位置的土地保护'
+    - '&c需要再次确认，不会删除建筑'
+    left_click_commands:
+    - '[close]'
+    - '[player] claim-confirm'
+    right_click_commands:
+    - '[close]'
+    - '[player] claim-confirm'
+  heading:
+    material: BOOK
+    slot: 4
+    display_name: '&b&l领地管家'
+    lore:
+    - '&7点击图标使用功能'
+    - '&8生存指南 · 简单而自在'
+    left_click_commands: []
+    right_click_commands: []
+  back:
+    material: ARROW
+    slot: 40
+    display_name: '&f返回玩家中心'
+    lore:
+    - '&7回到指南针主菜单'
+    left_click_commands:
+    - '[close]'
+    - '[player] menu'
+    right_click_commands:
+    - '[close]'
+    - '[player] menu'
+  frame_0:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 0
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_1:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 1
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_2:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 2
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_3:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 3
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_5:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 5
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_6:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 6
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_7:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 7
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_8:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 8
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_9:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 9
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_17:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 17
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_18:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 18
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_26:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 26
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_27:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 27
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_35:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 35
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_36:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 36
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_37:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 37
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_38:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 38
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_39:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 39
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_41:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 41
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_42:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 42
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_43:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 43
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_44:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 44
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []

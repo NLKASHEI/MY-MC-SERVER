@@ -1,16 +1,17 @@
-menu_title: '&2中文服务中心'
+menu_title: '&8生存指南 · 玩家中心'
 open_command:
 - menu
 - cd
-size: 45
+size: 54
 items:
   lobby:
     material: BEACON
     slot: 11
-    display_name: '&b主城'
+    display_name: '&b主城漫游'
     lore:
-    - '&7安全休闲区 · 建筑受保护'
-    - '&7与生存共用背包，购物后可带回家'
+    - '&7安全休闲区，建筑受到保护'
+    - '&7与生存世界共用背包'
+    - '&f点击前往主城'
     left_click_commands:
     - '[close]'
     - '[player] mv tp w:lobby'
@@ -20,10 +21,11 @@ items:
   survival:
     material: GRASS_BLOCK
     slot: 13
-    display_name: '&a原版生存'
+    display_name: '&a自由生存'
     lore:
-    - '&7自由探索 · 生存模式'
-    - '&7主世界、下界、末地共用生存背包'
+    - '&7探索、建造与原版冒险'
+    - '&7主世界 / 下界 / 末地共用背包'
+    - '&f点击前往生存世界'
     left_click_commands:
     - '[close]'
     - '[player] mv tp w:world'
@@ -33,139 +35,335 @@ items:
   flat:
     material: BRICKS
     slot: 15
-    display_name: '&d创造超平坦'
+    display_name: '&d创造工坊'
     lore:
-    - '&7自由建造 · 创造模式'
-    - '&c背包、末影箱、经验与生存隔离'
-    - '&7创造世界不可交易或领取金币'
+    - '&7超平坦自由建造'
+    - '&c背包与生存隔离，不可交易'
+    - '&f点击前往创造世界'
     left_click_commands:
     - '[close]'
     - '[player] mv tp w:flat'
     right_click_commands:
     - '[close]'
     - '[player] mv tp w:flat'
-  shop:
-    material: EMERALD
-    slot: 28
-    display_name: '&a物资商店'
-    lore:
-    - '&7生存物资，只购买，暂不收购'
-    left_click_commands:
-    - '[close]'
-    - '[player] shop'
-    right_click_commands:
-    - '[close]'
-    - '[player] shop'
   homes:
     material: RED_BED
-    slot: 29
-    display_name: '&e返回家园'
+    slot: 20
+    display_name: '&f家园与传送点'
     lore:
-    - '&7/sethome 家名 设置家'
-    - '&7每人最多三个家'
+    - '&7回家、设置家园、查看说明'
+    - '&f点击打开家园菜单'
     left_click_commands:
     - '[close]'
-    - '[player] home'
+    - '[player] homes-menu'
     right_click_commands:
     - '[close]'
-    - '[player] home'
-  rewards:
-    material: CLOCK
-    slot: 30
-    display_name: '&6在线奖励'
+    - '[player] homes-menu'
+  travel:
+    material: ENDER_PEARL
+    slot: 22
+    display_name: '&b好友传送'
     lore:
-    - '&7每天活跃 30 / 60 / 120 分钟'
-    - '&7创造世界不累计'
+    - '&7申请、接受与拒绝传送'
+    - '&f点击打开传送菜单'
     left_click_commands:
     - '[close]'
-    - '[player] reward'
+    - '[player] travel-menu'
     right_click_commands:
     - '[close]'
-    - '[player] reward'
+    - '[player] travel-menu'
   claims:
     material: GOLDEN_SHOVEL
-    slot: 32
-    display_name: '&b生存圈地'
+    slot: 24
+    display_name: '&e领地管家'
     lore:
-    - '&7金铲选择两角；/trust 授权'
+    - '&7圈地、查看格数、授权好友'
+    - '&7保护自己的建筑与容器'
+    - '&f点击打开圈地菜单'
     left_click_commands:
     - '[close]'
-    - '[player] guide claims'
+    - '[player] claims-menu'
     right_click_commands:
     - '[close]'
-    - '[player] guide claims'
-  guide:
-    material: BOOK
-    slot: 33
-    display_name: '&f新手指南'
+    - '[player] claims-menu'
+  shop:
+    material: EMERALD
+    slot: 29
+    display_name: '&a物资小店'
     lore:
-    - '&7查看账号、世界和经济说明'
+    - '&7常用生存物资，仅购买'
+    - '&f点击打开商店'
     left_click_commands:
     - '[close]'
-    - '[player] guide'
+    - '[player] shop'
     right_click_commands:
     - '[close]'
-    - '[player] guide'
-  fun:
-    material: OAK_STAIRS
-    slot: 34
-    display_name: '&d趣味互动'
-    lore:
-    - '&7坐下、躺下、爬行、旋转、骑头'
-    left_click_commands:
-    - '[close]'
-    - '[player] fun'
-    right_click_commands:
-    - '[close]'
-    - '[player] fun'
-  balance:
-    material: GOLD_INGOT
-    slot: 40
-    display_name: '&e账户余额'
-    lore:
-    - '&7金币全服共用，创造世界不交易'
-    left_click_commands:
-    - '[close]'
-    - '[player] balance'
-    right_click_commands:
-    - '[close]'
-    - '[player] balance'
+    - '[player] shop'
   skills:
     material: EXPERIENCE_BOTTLE
-    slot: 20
+    slot: 31
     display_name: '&b技能成长'
     lore:
-    - '&7挖矿、伐木、钓鱼、战斗升级'
-    - '&7主城与创造区不获得技能收益'
+    - '&7挖矿、伐木、钓鱼与战斗升级'
+    - '&7主城和创造区不获得收益'
+    - '&f点击查看技能'
     left_click_commands:
     - '[close]'
     - '[player] skills'
     right_click_commands:
     - '[close]'
     - '[player] skills'
+  fishing:
+    material: FISHING_ROD
+    slot: 33
+    display_name: '&3钓鱼图鉴'
+    lore:
+    - '&7海洋资源、实用装备、海底珍藏'
+    - '&7开放水域解锁额外奖励'
+    - '&f点击查看奖励分类'
+    left_click_commands:
+    - '[close]'
+    - '[player] fishing-menu'
+    right_click_commands:
+    - '[close]'
+    - '[player] fishing-menu'
+  rewards:
+    material: CLOCK
+    slot: 38
+    display_name: '&6每日在线礼物'
+    lore:
+    - '&7活跃 30 / 60 / 120 分钟'
+    - '&7每日各档领取一次，创造区不累计'
+    - '&f点击领取奖励'
+    left_click_commands:
+    - '[close]'
+    - '[player] reward'
+    right_click_commands:
+    - '[close]'
+    - '[player] reward'
   technical:
     material: REDSTONE
-    slot: 22
-    display_name: '&c生电助手'
+    slot: 40
+    display_name: '&c生电工具箱'
     lore:
-    - '&7每人一个假人，加载与操作机器'
-    - '&7仅生存世界可使用'
+    - '&7假人、背包、持续动作与停止'
+    - '&7每人一个，仅生存世界使用'
+    - '&f点击打开生电菜单'
     left_click_commands:
     - '[close]'
-    - '[player] guide technical'
+    - '[player] technical-menu'
     right_click_commands:
     - '[close]'
-    - '[player] guide technical'
-  linking:
-    material: IRON_BARS
-    slot: 24
-    display_name: '&a双端账号绑定'
+    - '[player] technical-menu'
+  fun:
+    material: OAK_STAIRS
+    slot: 42
+    display_name: '&d休闲互动'
     lore:
-    - '&7PE 与 PC 绑定后共用进度'
-    - '&7先登录 Java 主账号，再绑定'
+    - '&7坐下、躺下、骑头与小动作'
+    - '&f点击打开互动菜单'
     left_click_commands:
     - '[close]'
-    - '[player] guide linking'
+    - '[player] fun'
     right_click_commands:
     - '[close]'
-    - '[player] guide linking'
+    - '[player] fun'
+  guide:
+    material: WRITABLE_BOOK
+    slot: 47
+    display_name: '&f新手手册'
+    lore:
+    - '&7查看常用命令与玩法说明'
+    left_click_commands:
+    - '[close]'
+    - '[player] guide'
+    right_click_commands:
+    - '[close]'
+    - '[player] guide'
+  account:
+    material: NAME_TAG
+    slot: 49
+    display_name: '&b账号与双端绑定'
+    lore:
+    - '&7PC / PE 共用身份、改密说明'
+    left_click_commands:
+    - '[close]'
+    - '[player] account-menu'
+    right_click_commands:
+    - '[close]'
+    - '[player] account-menu'
+  balance:
+    material: GOLD_INGOT
+    slot: 51
+    display_name: '&e我的钱包'
+    lore:
+    - '&7查看余额与转账说明'
+    left_click_commands:
+    - '[close]'
+    - '[player] guide wallet'
+    right_click_commands:
+    - '[close]'
+    - '[player] guide wallet'
+  heading:
+    material: BOOK
+    slot: 4
+    display_name: '&b&l生存指南 · 玩家中心'
+    lore:
+    - '&7点击图标使用功能'
+    - '&8生存指南 · 简单而自在'
+    left_click_commands: []
+    right_click_commands: []
+  frame_0:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 0
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_1:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 1
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_2:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 2
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_3:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 3
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_5:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 5
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_6:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 6
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_7:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 7
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_8:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 8
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_9:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 9
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_17:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 17
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_18:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 18
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_26:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 26
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_27:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 27
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_35:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 35
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_36:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 36
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_44:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 44
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_45:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 45
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_46:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 46
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_48:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 48
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_50:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 50
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_52:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 52
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_53:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 53
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []

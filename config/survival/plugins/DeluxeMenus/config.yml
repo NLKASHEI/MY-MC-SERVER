@@ -7,3 +7,17 @@ gui_menus:
     file: worlds.yml
   fun:
     file: fun.yml
+  claims:
+    file: claims.yml
+  homes:
+    file: homes.yml
+  travel:
+    file: travel.yml
+  account:
+    file: account.yml
+  technical:
+    file: technical.yml
+  fishing:
+    file: fishing.yml
+  claim_confirm:
+    file: claim_confirm.yml

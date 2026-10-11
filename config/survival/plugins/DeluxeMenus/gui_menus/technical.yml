@@ -1,0 +1,253 @@
+menu_title: '&8生电工具箱'
+open_command:
+- technical-menu
+size: 36
+items:
+  spawn:
+    material: ARMOR_STAND
+    slot: 10
+    display_name: '&a召唤我的假人'
+    lore:
+    - '&7在当前机器旁创建，保持站定'
+    - '&7每人一个，离线后自动移除'
+    left_click_commands:
+    - '[close]'
+    - '[player] fp spawn'
+    right_click_commands:
+    - '[close]'
+    - '[player] fp spawn'
+  inventory:
+    material: CHEST
+    slot: 12
+    display_name: '&e假人背包'
+    lore:
+    - '&7放入工具、武器与补给'
+    left_click_commands:
+    - '[close]'
+    - '[player] fp invsee'
+    right_click_commands:
+    - '[close]'
+    - '[player] fp invsee'
+  attack:
+    material: IRON_SWORD
+    slot: 14
+    display_name: '&c持续攻击'
+    lore:
+    - '&7让自己的假人持续攻击'
+    - '&7工具仍受原版耐久规则约束'
+    left_click_commands:
+    - '[close]'
+    - '[player] fp attack continuous'
+    right_click_commands:
+    - '[close]'
+    - '[player] fp attack continuous'
+  use:
+    material: LEVER
+    slot: 16
+    display_name: '&b持续使用物品'
+    lore:
+    - '&7执行右键使用与交互动作'
+    left_click_commands:
+    - '[close]'
+    - '[player] fp use continuous'
+    right_click_commands:
+    - '[close]'
+    - '[player] fp use continuous'
+  stop:
+    material: REDSTONE_BLOCK
+    slot: 20
+    display_name: '&6停止所有动作'
+    lore:
+    - '&7让假人暂停操作'
+    left_click_commands:
+    - '[close]'
+    - '[player] fp stop'
+    right_click_commands:
+    - '[close]'
+    - '[player] fp stop'
+  kick:
+    material: BARRIER
+    slot: 22
+    display_name: '&c收回假人'
+    lore:
+    - '&7移除实体并保留背包'
+    - '&7重启后不会自动召回'
+    left_click_commands:
+    - '[close]'
+    - '[player] fp kick'
+    right_click_commands:
+    - '[close]'
+    - '[player] fp kick'
+  help:
+    material: BOOK
+    slot: 24
+    display_name: '&f生电使用说明'
+    lore:
+    - '&7查看限制与常用操作'
+    left_click_commands:
+    - '[close]'
+    - '[player] guide technical'
+    right_click_commands:
+    - '[close]'
+    - '[player] guide technical'
+  heading:
+    material: BOOK
+    slot: 4
+    display_name: '&b&l生电工具箱'
+    lore:
+    - '&7点击图标使用功能'
+    - '&8生存指南 · 简单而自在'
+    left_click_commands: []
+    right_click_commands: []
+  back:
+    material: ARROW
+    slot: 31
+    display_name: '&f返回玩家中心'
+    lore:
+    - '&7回到指南针主菜单'
+    left_click_commands:
+    - '[close]'
+    - '[player] menu'
+    right_click_commands:
+    - '[close]'
+    - '[player] menu'
+  frame_0:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 0
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_1:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 1
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_2:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 2
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_3:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 3
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_5:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 5
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_6:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 6
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_7:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 7
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_8:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 8
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_9:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 9
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_17:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 17
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_18:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 18
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_26:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 26
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_27:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 27
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_28:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 28
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_29:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 29
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_30:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 30
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_32:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 32
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_33:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 33
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_34:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 34
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_35:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 35
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
