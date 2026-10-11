@@ -1,0 +1,150 @@
+menu_title: '&8交易中心 · 玩家集市'
+open_command:
+- market
+size: 27
+items:
+  supplies:
+    material: EMERALD
+    slot: 11
+    display_name: '&a服务器补给店'
+    lore:
+    - '&7基础生存物资，使用金币购买'
+    left_click_commands: &id001
+    - '[close]'
+    - '[player] shop'
+    right_click_commands: *id001
+  browse:
+    material: CHEST
+    slot: 13
+    display_name: '&6玩家箱子商店'
+    lore:
+    - '&7浏览玩家开设的商店'
+    - '&7只有实际库存才能成交'
+    - '&f点击打开商店列表'
+    left_click_commands: &id002
+    - '[close]'
+    - '[player] qs browse'
+    right_click_commands: *id002
+  tutorial:
+    material: WRITABLE_BOOK
+    slot: 15
+    display_name: '&b我要开店'
+    lore:
+    - '&7生存世界开店，每人最多 20 家'
+    - '&7支持卖出与收购，创建及改价免费'
+    - '&f点击查看操作说明'
+    left_click_commands: &id003
+    - '[close]'
+    - '[player] guide market'
+    right_click_commands: *id003
+  back:
+    material: ARROW
+    slot: 22
+    display_name: '&f返回玩家中心'
+    lore: []
+    left_click_commands: &id004
+    - '[close]'
+    - '[player] menu'
+    right_click_commands: *id004
+  border_0:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 0
+    display_name: ' '
+    left_click_commands: []
+    right_click_commands: []
+  border_1:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 1
+    display_name: ' '
+    left_click_commands: []
+    right_click_commands: []
+  border_2:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 2
+    display_name: ' '
+    left_click_commands: []
+    right_click_commands: []
+  border_3:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 3
+    display_name: ' '
+    left_click_commands: []
+    right_click_commands: []
+  border_4:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 4
+    display_name: ' '
+    left_click_commands: []
+    right_click_commands: []
+  border_5:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 5
+    display_name: ' '
+    left_click_commands: []
+    right_click_commands: []
+  border_6:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 6
+    display_name: ' '
+    left_click_commands: []
+    right_click_commands: []
+  border_7:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 7
+    display_name: ' '
+    left_click_commands: []
+    right_click_commands: []
+  border_8:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 8
+    display_name: ' '
+    left_click_commands: []
+    right_click_commands: []
+  border_18:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 18
+    display_name: ' '
+    left_click_commands: []
+    right_click_commands: []
+  border_19:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 19
+    display_name: ' '
+    left_click_commands: []
+    right_click_commands: []
+  border_20:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 20
+    display_name: ' '
+    left_click_commands: []
+    right_click_commands: []
+  border_21:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 21
+    display_name: ' '
+    left_click_commands: []
+    right_click_commands: []
+  border_23:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 23
+    display_name: ' '
+    left_click_commands: []
+    right_click_commands: []
+  border_24:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 24
+    display_name: ' '
+    left_click_commands: []
+    right_click_commands: []
+  border_25:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 25
+    display_name: ' '
+    left_click_commands: []
+    right_click_commands: []
+  border_26:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    slot: 26
+    display_name: ' '
+    left_click_commands: []
+    right_click_commands: []

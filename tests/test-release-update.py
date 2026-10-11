@@ -113,7 +113,8 @@ assert run(package, '0' * 64).returncode != 0
 assert digest(server / '.update-state.json') == before_state
 print('PASS: checksum rejection before applying files')
 
-index['version'] = '0.5.1'
+parts = index['version'].split('.')
+index['version'] = '.'.join(parts[:2] + [str(int(parts[2]) + 1)])
 readme_before = digest(server / 'README.md')
 write(payload / 'README.md', (payload / 'README.md').read_text(encoding='utf-8-sig') + '\nrollback test\n')
 for file in index['files']:

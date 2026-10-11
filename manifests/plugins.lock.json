@@ -162,5 +162,23 @@
     "version": "2.4.0",
     "sha256": "de54cbd2e33d65e8b1704751ae4121ed2f5b466ba89c63a1aadf3a3e629d6a40",
     "url": "https://cdn.modrinth.com/data/uDdZAVls/versions/9rSJ3THD/AuraSkills-2.4.0.jar"
+  },
+  {
+    "name": "QuickShop-Hikari",
+    "version": "6.3.0.3",
+    "url": "https://cdn.modrinth.com/data/ijC5dDkD/versions/OxlW1jL5/QuickShop-Hikari-6.3.0.3.jar",
+    "sha256": "eb65b63d803b2c61be6827f803572ba71f56bbad9f1cd5959b9b746df0669c3a"
+  },
+  {
+    "name": "Backuper",
+    "version": "4.1.2",
+    "url": "https://cdn.modrinth.com/data/7cMAqMND/versions/PQ6Njsb2/Backuper-4.1.2.jar",
+    "sha256": "796ca5ddb7802235f040f7dd81943329ca55b240e8e07728e557dc04f9032081"
+  },
+  {
+    "name": "DHSupport",
+    "version": "0.14.0",
+    "url": "https://cdn.modrinth.com/data/IjY7seTG/versions/R1UjEyjz/DistantHorizonsSupport-0.14.0.jar",
+    "sha256": "3dd299bb8dc6fb38cde9bec54e9a87b51161ed1e44b9245f637513472c1985ca"
   }
 ]

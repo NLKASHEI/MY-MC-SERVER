@@ -154,6 +154,7 @@ foreach ($file in $files) {
     $nextBaseline[$path] = $file.contentSha256
     if ($current -eq $file.contentSha256) { continue }
     if ($path.StartsWith('manifests/') -and $current -and $current -ne $baseline) { throw "本地组件清单已修改，需要人工核对：$path" }
+    if ($current -and $baseline -eq $file.contentSha256) { continue }
     if ($current -and ($path -in $protected -or !$baseline -or $current -ne $baseline)) {
       $pending += [pscustomobject]@{ path=$path; source=(SafePath $stage ([string]$file.path)); reason='本地修改或受保护设置，原文件保留' }
     } else { $changes += [pscustomobject]@{ path=$path; source=(SafePath $stage ([string]$file.path)) } }

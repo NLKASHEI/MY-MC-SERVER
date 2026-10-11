@@ -18,7 +18,7 @@ Windows 云服务器使用的 Paper 26.2 原版生存辅助服务端。Java 离�
 
 新增 FakePlayer-CE 生电假人、AuraSkills 中文技能成长与 Floodgate 本地 SQLite 账号绑定。绑定后两端使用 Java 主账号的存档、金币、圈地和技能进度；先转移旧 PE 账号物品，再绑定，不能自动合并两份历史记录。详见 [双端与生电指南](docs/operations/crossplay-technical.md)。
 
-指南针有 10 个中文界面，整合家园、好友传送、圈地、奖励、假人和账号操作；AuraSkills 钓鱼扩展为 54 项奖励。布局与奖励说明见 [菜单与钓鱼指南](docs/operations/menu-fishing.md)。已有服务器更新前先备份，按更新指南选择性合并配置，不能用整包覆盖现有世界或玩家数据库。
+指南针有 11 个中文界面，整合家园、好友传送、圈地、奖励、假人和账号操作；AuraSkills 钓鱼扩展为 54 项奖励。布局与奖励说明见 [菜单与钓鱼指南](docs/operations/menu-fishing.md)。已有服务器更新前先备份，按更新指南选择性合并配置，不能用整包覆盖现有世界或玩家数据库。
 
 从源码安装：双击 `安装服务端.bat` 获取锁定组件，再按上面的步骤接受 EULA 并启动。安装需要联网，初次启动部分插件也会获取运行依赖。
 
@@ -49,3 +49,5 @@ Windows 云服务器使用的 Paper 26.2 原版生存辅助服务端。Java 离�
 JAR 和 Java 保留各自上游许可证。仓库保存项目配置、脚本、文档和静态主城地图资产；不上传玩家运行数据或认证密钥。
 
 主城地图署名、来源及模板使用规则见 [地图说明](assets/worlds/README.md)。已有玩家的云服禁止用初始地图模板覆盖存档。
+
+新增 Backuper 定时备份与保留清理、QuickShop-Hikari 玩家箱子交易，以及 Java 遥远地平线服务端支持。创世神 WorldEdit 已安装，仅供管理员使用。详见 [备份、集市与远景指南](docs/operations/backup-market-dh.md)。

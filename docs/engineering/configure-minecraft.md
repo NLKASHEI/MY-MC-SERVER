@@ -19,3 +19,5 @@
 多世界分组必须检查 Multiverse-Inventories 的 Applicable Worlds：当前它使用旧世界名，不能拿 Multiverse-Core worlds.yml 的 `minecraft:...` 键直接替代。运行 `python tests/validate-config.py` 检查分组、菜单、主城保护和地图模板；实际进服还要检查创造往返、末影箱、装备、副手、经验与重启保存。
 
 `tests/cleanup.sk` 是临时控制台测试脚本：放到测试服的 Skript/scripts 后执行 `/verifycleanup`，验证旧普通掉落物删除，新、命名、贵重和受保护物品保留。无玩家的测试服须先强制加载测试出生点附近区块，测试后解除加载并移除脚本；生产包不包含它。
+
+新增 Backuper、QuickShop-Hikari 和 DHSupport 的配置见 [备份、集市与远景指南](../operations/backup-market-dh.md)。维护时保留玩家商店数据库、备份存储和 LOD 数据，不给普通玩家备份/创世神管理权限。

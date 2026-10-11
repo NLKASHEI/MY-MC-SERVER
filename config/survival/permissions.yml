@@ -96,6 +96,21 @@ survival.player:
     fakeplayer.command.spawn.name: false
     fakeplayer.command.spawn.name.force-real: false
     fakeplayer.command.spawn.location: false
+    quickshop.use: true
+    quickshop.create.sell: true
+    quickshop.create.buy: true
+    quickshop.create.changeprice: true
+    quickshop.create.changeamount: true
+    quickshop.create.changeitem: true
+    quickshop.create.double: true
+    quickshop.create.cmd: true
+    quickshop.browse: true
+    quickshop.find: true
+    quickshop.fetchmessage: true
+    quickshop.preview: true
+    quickshop.history: true
+    quickshop.history.owned: true
+    quickshop.browse.teleport: false
 survival.cleanup:
   description: 管理员手动执行保守掉落物清理
   default: op
@@ -118,3 +133,6 @@ survival.dummy:
     auraskills.skill.agility: false
     auraskills.skill.enchanting: false
     auraskills.skill.alchemy: false
+    quickshop.use: false
+    quickshop.create.sell: false
+    quickshop.create.buy: false

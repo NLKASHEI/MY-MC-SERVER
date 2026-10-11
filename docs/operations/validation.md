@@ -1,5 +1,13 @@
 # 组装验收，2026-10-11
 
+## 0.6.0 备份、箱子商店与远景支持
+
+- 锁定清单共 29 个插件，新增 Backuper 4.1.2、QuickShop-Hikari 6.3.0.3、DHSupport 0.14.0，来自各上游 Modrinth 发布，下载 SHA512 与上游一致，并记录 SHA256。
+- 一次实际启动：三个新增插件正常启用，QuickShop 使用 EssentialsX Economy/Vault，DHSupport 输出 Ready，DeluxeMenus 加载 11 个 GUI，Skript 无解析错误。测试后正常保存停服，没有重复客户端/假人测试。
+- 68 份 YAML、PowerShell 语法与 29 个 JAR 清单通过静态检查。备份保留数量、间隔、本地低压缩及远景单线程/不开新地形已配置。
+- 本版更新包在 Windows PowerShell 5.1 离线夹具中通过保留数据、配置冲突、哈希拒绝和强制复制失败回退，模拟玩家数据均不变。
+- 实际定时备份恢复及保留轮转、Java/PE 两人箱子成交/圈地权限、Java DH 3.2.0-b 的真实 LOD 下载仍需云端客户端验收；DH 3.3 未承诺兼容。官方 LOD 插件启动可用不等于客户端远景效果已测试。
+
 ## 0.5.0 一键更新程序
 
 - PowerShell 脚本语法检查通过；更新器在 Windows PowerShell 5.1 的独立离线夹具中执行成功，已有世界、玩家存档、登录/绑定/圈地数据库、密钥、背包数据和内存设置的 SHA256 均保持不变。

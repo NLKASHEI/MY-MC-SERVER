@@ -1,0 +1,379 @@
+config-version: 1050
+game-language: zh-CN
+enabled-languages:
+- zh-CN
+lang-processor:
+  replace-filler-post-process: false
+  papi-post-process: true
+  fix-item-always-italic: true
+mojangapi-mirror: 0
+crowdin-host: https://crowdinota.hikari.r2.quickshop-powered.top
+use-crowdin-ota: false
+dev-mode: false
+shop-tax:
+  type: basic
+  account: ''
+  show: false
+  disable-for-unlimited-shop: false
+  apply-to: player
+  basic:
+    rate: 0
+  progressive:
+    brackets:
+      10000: 0.01
+      50000: 0.02
+      250000: 0.03
+      1000000: 0.05
+      5000000: 0.08
+      -1: 0.12
+shop-tag:
+  enabled: true
+  avoid-enabled: true
+  favorite-enabled: true
+  watch-enabled: true
+unlimited-shop-owner-change: false
+unlimited-shop-owner-change-account: quickshop
+respect-item-flag: true
+bungee-cross-server-msg: false
+proxy:
+  force-bungeecord: false
+currency: ''
+logging:
+  enable: true
+  log-actions: true
+  log-balance: true
+  file-size: 10.0
+  location: 1
+force-bukkit-chat-handler: false
+updater: false
+updater-source: modrinth
+auto-report-errors: false
+include-offlineplayer-list: false
+economy-type: 0
+use-decimal-format: false
+decimal-format: '#,###.##'
+send-display-item-protection-alert: false
+send-shop-protection-alert: false
+database:
+  mysql: false
+  host: localhost
+  port: 3306
+  database: quickshop
+  user: root
+  password: passwd
+  prefix: qs_
+  usessl: false
+  disable-username-cache: false
+  bake-uuids: false
+  loader-threads: -1
+  generate-full-report: false
+  unlimited-save-wait: false
+  skip-version-check: false
+  properties:
+    connectionTimeout: 60000
+    idleTimeout: 10000
+    maxLifetime: 1800000
+    maximumPoolSize: 10
+    minimumIdle: 10
+    cachePrepStmts: true
+    prepStmtCacheSize: 250
+    prepStmtCacheSqlLimit: 2048
+    useUnicode: true
+    characterEncoding: utf8
+    allowPublicKeyRetrieval: true
+    keepaliveTime: 60000
+limits:
+  use: true
+  default: 20
+  old-algorithm: false
+  ranks:
+    quickshop.example: 20
+shop-blocks:
+- CHEST
+- TRAPPED_CHEST
+- BARREL
+shop:
+  shoppable-check: true
+  update-sign-on-load: false
+  skip-command-confirmation: false
+  disable-unlimited-browse: false
+  control-panel:
+  - owner
+  - unlimited
+  - freeze
+  - shop_mode
+  - set_price
+  - set_amount
+  - refill
+  - empty
+  - display
+  - history
+  - remove
+  layout:
+    BUYING:
+      line1: header
+      line2: trading
+      line3: item
+      line4: price
+    FROZEN:
+      line1: header
+      line2: trading
+      line3: item
+      line4: price
+    SELLING:
+      line1: header
+      line2: trading
+      line3: item
+      line4: price
+  cost: 0
+  refund: false
+  refund-from-tax-account: false
+  sending-stock-message-to-staffs: false
+  disable-creative-mode-trading: true
+  disable-super-tool: false
+  disable-buy-transfer: false
+  remove-perms-on-transfer: true
+  allow-owner-break-shop-sign: false
+  price-change-requires-fee: false
+  fee-for-price-change: 50
+  lock: true
+  disable-quick-create: false
+  auto-sign: true
+  sign-glowing: false
+  sign-wax: false
+  sign-dye-color: ''
+  pay-unlimited-shop-owners: false
+  display-items: false
+  display-default: false
+  display-items-check-ticks: 6000
+  display-type: 3
+  display-protocol: packetevents
+  display-auto-despawn: false
+  display-despawn-range: 20
+  display-check-time: 40
+  display-allow-stacks: false
+  display-allow-enchants: true
+  display-hitbox: false
+  display-coords:
+    x: 0.5
+    y: 0.8
+    z: 0.5
+  display-rotation:
+    degrees: 0.0
+    x: 0.0
+    y: 1.0
+    z: 0.0
+  display-scale:
+    x: 1.25
+    y: 1.25
+    z: 1.25
+  text-display:
+    enabled: false
+    range-blocks: 3
+    y-offset: 0.8
+    background-color: 1073741824
+    line-width: 200
+    text-opacity: -1
+    see-through: false
+    shadow:
+      enabled: true
+    scale:
+      x: 0.5
+      y: 0.5
+      z: 0.5
+    lines:
+    - <green><item_name></green>
+    - <gray><owner></gray>
+    - <gray><type></gray>
+    - <gold><price_amount></gold>
+  per-player-shop-sign: false
+  finding:
+    oldLogic: false
+    distance: 45
+    limit: 10
+    global: false
+    cooldown: 20
+    all: true
+    exclude-out-of-stock: false
+  alternate-currency-symbol: $
+  alternate-currency-symbol-list:
+  - USD;$
+  - CNY;￥
+  disable-vault-format: false
+  currency-symbol-on-right: false
+  ignore-unlimited-shop-messages: true
+  auto-fetch-shop-messages: true
+  join-flush-delay: 60
+  ignore-cancel-chat-event: false
+  allow-offline-benefit: false
+  allow-shop-without-space-for-sign: false
+  maximum-digits-in-price: -1
+  show-owner-uuid-in-controlpanel-if-op: false
+  sign-material: OAK_WALL_SIGN
+  use-enchantment-for-enchanted-book: false
+  use-roman-numeral-for-enchantments: true
+  use-effect-for-potion-item: false
+  use-song-for-disc-item: false
+  whitelist-world:
+  - world
+  - world_nether
+  - world_the_end
+  blacklist-world:
+  - flat
+  - lobby
+  blacklist-lores:
+  - SoulBound
+  protection-checking: true
+  cancel-protection-fake-event-before-reach-monitor-listeners: true
+  ignore-cancelled-interact-event: true
+  protection-checking-blacklist:
+  - disabled_world
+  protection-checking-listener-blacklist:
+  - ignored_listener
+  max-shops-checks-in-once: 100
+  display-item-use-name: false
+  update-sign-when-inventory-moving: false
+  allow-economy-loan: false
+  word-for-trade-all-items: all
+  name-fee: 0
+  name-max-length: 32
+  ongoing-fee:
+    enable: false
+    ticks: 42000
+    cost-per-shop: 2
+    ignore-unlimited: true
+  force-load-downgrade-items:
+    enable: false
+    method: 0
+  remove-protection-trigger: true
+  allow-stacks: false
+  force-use-item-original-name: false
+  disable-max-size-check-for-size-command: false
+  use-cache: true
+  info-panel:
+    show-effects: true
+    show-enchantments: true
+    show-durability: true
+    click-cooldown: 100
+  message_date_time_formatter: yyyy-MM-dd HH:mm
+blacklist:
+- Bedrock
+database-loading-whitelist-worlds: []
+database-loading-blacklist-worlds:
+- flat
+- lobby
+plugin:
+  Multiverse-Core: true
+  PlaceHolderAPI:
+    enable: true
+    cache: 900000
+  WorldEdit: true
+effect:
+  sound:
+    ontabcomplete: true
+    oncommand: true
+    onclick: true
+matcher:
+  work-type: 1
+  ignore-count: true
+  check-material: true
+  components:
+    DAMAGE: true
+    REPAIR_COST: false
+    CUSTOM_NAME: true
+    ITEM_NAME: false
+    LORE: true
+    CUSTOM_MODEL_DATA: true
+    ENCHANTMENTS: true
+    STORED_ENCHANTMENTS: true
+    ATTRIBUTE_MODIFIERS: true
+    UNBREAKABLE: true
+    TRIM: true
+    DYED_COLOR: true
+    HIDE_ADDITIONAL_TOOLTIP: true
+    ENCHANTMENT_GLINT_OVERRIDE: true
+    POTION_CONTENTS: true
+    POTION_DURATION_SCALE: true
+    OMINOUS_BOTTLE_AMPLIFIER: true
+    BOOKS: true
+    BANNER: true
+    SKULL: true
+    FIREWORK: true
+    MAP: true
+    LEATHER_ARMOR: true
+    FISH_BUCKET: true
+    SUSPICIOUS_STEW: true
+    SHULKER_BOX: true
+    BUNDLE: true
+  item:
+    damage: true
+    repaircost: false
+    displayname: true
+    lores: true
+    enchs: true
+    potions: true
+    attributes: true
+    itemflags: true
+    custommodeldata: true
+    books: true
+    banner: true
+    skull: true
+    firework: true
+    map: true
+    leatherArmor: true
+    fishBucket: true
+    suspiciousStew: true
+    shulkerBox: true
+    bundle: true
+protect:
+  explode: true
+  hopper: true
+  hopper-owner-exclude: false
+  dropper: true
+  dropper-owner-exclude: false
+  entity: true
+  oxidation: true
+backup-policy:
+  shops-auto-purge: false
+  database-upgrade: true
+  startup: false
+  recovery: true
+custom-item-stacksize: []
+purge:
+  enabled: false
+  at-server-startup: true
+  days: 60
+  banned: true
+  skip-op: true
+debug:
+  disable-debuglogger: false
+  shop-deletion: false
+  delete-corrupt-shops: false
+legacy-updater:
+  shop-sign: false
+custom-commands:
+- qs
+- shop
+- chestshop
+- cshop
+custom-subcommands:
+  help: help
+config-damaged: false
+custom-translation-key: []
+uuid-lookup:
+  allow-db-uuid: true
+  allow-db-name: true
+  allow-essentialsx-uuid: true
+  allow-essentialsx-name: true
+  allow-playerdb-uuid: false
+  allow-playerdb-name: false
+  allow-bukkit-uuid: true
+  allow-bukkit-name: true
+privacy:
+  type:
+    DIAGNOSTIC: true
+    STATISTIC: true
+    RESEARCH: true
+  module: null
+transaction-metric:
+  enable: true

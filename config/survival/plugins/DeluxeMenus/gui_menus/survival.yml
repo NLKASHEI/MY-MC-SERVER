@@ -89,16 +89,15 @@ items:
   shop:
     material: EMERALD
     slot: 29
-    display_name: '&a物资小店'
+    display_name: '&6交易中心 · 玩家集市'
     lore:
-    - '&7常用生存物资，仅购买'
-    - '&f点击打开商店'
-    left_click_commands:
+    - '&7补给商店与玩家箱子交易'
+    - '&7浏览店铺，查看开店教程'
+    - '&f点击打开交易中心'
+    left_click_commands: &id001
     - '[close]'
-    - '[player] shop'
-    right_click_commands:
-    - '[close]'
-    - '[player] shop'
+    - '[player] market'
+    right_click_commands: *id001
   skills:
     material: EXPERIENCE_BOTTLE
     slot: 31

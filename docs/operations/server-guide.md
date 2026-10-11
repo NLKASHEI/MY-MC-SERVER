@@ -54,3 +54,7 @@ Paper 26.2 存档结构为 `world/dimensions/minecraft/`，所有维度都在同
 本地新服可将 `config/survival` 复制到运行目录。已有玩家的云服应逐项合并修改。`config` 不包含认证数据库、存档或密钥，不能拿它替代完整备份。
 
 日常停服：控制台输入 `stop`，等待所有存档保存和 Java 退出；再备份、更新或搬迁。备份脚本会拒绝对正在运行的随包 Java 进行文件复制。
+
+## 自动备份与玩家商店
+
+Backuper 每 6 小时备份、保留最近 12 份；`/market` 打开玩家箱子交易中心。Java 遥远地平线使用匹配的 DH 3.2.0-b，PE 无该 MOD 效果。WorldEdit 已安装且仅管理员可用。详见 [备份、集市与远景指南](backup-market-dh.md)。

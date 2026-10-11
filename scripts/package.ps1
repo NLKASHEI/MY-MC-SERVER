@@ -9,7 +9,7 @@ if (!(Test-Path $updateZip)) { & (Join-Path $PSScriptRoot 'build-update.ps1') }
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $release = Join-Path $root "release/MY-MC-SERVER-26.2-$stamp"
 New-Item -ItemType Directory -Force $release | Out-Null
-foreach ($name in @('scripts','runtime','manifests','config','docs','skills','assets','server-settings.json','release-version.json','README.md','AGENTS.md','GLOSSARY.md','CHANGELOG.md')) {
+foreach ($name in @('scripts','runtime','manifests','config','docs','skills','assets','server-settings.json','release-version.json','SCOPE.md','README.md','AGENTS.md','GLOSSARY.md','CHANGELOG.md')) {
   Copy-Item (Join-Path $root $name) $release -Recurse
 }
 Get-ChildItem $root -Filter *.bat | Copy-Item -Destination $release

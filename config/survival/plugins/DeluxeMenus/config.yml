@@ -21,3 +21,5 @@ gui_menus:
     file: fishing.yml
   claim_confirm:
     file: claim_confirm.yml
+  market:
+    file: market.yml

@@ -78,6 +78,21 @@ command /guide [<text>]:
             send "{@prefix} &7额外奖励要求开放水域；优先选择自然湖泊或海边。"
             send "{@prefix} &7稀有 / 史诗基础概率为 百分之二 / 千分之五，对应能力会提高概率。"
             send "{@prefix} &7珍藏池基础概率 万分之八，不增加幸运倍率；不额外发金币。"
+        else if arg-1 is "market":
+            send "{@prefix} &e放置箱子，手持商品左键箱子，再按提示在聊天中输入价格。"
+            send "&7把货物放进箱子供他人购买；空箱不能凭空出售。"
+            send "&7看着自己的店铺输入 /qs buy 改为收购，/qs sell 改为出售。"
+            send "&7/qs price 金额：改价；/qs remove：移除自己的店铺；/qs browse：浏览。"
+            send "&7只有生存维度开放交易，每人最多 20 家；建议在自己的领地内开店。"
+        else if arg-1 is "dh":
+            send "{@prefix} &b本服支持遥远地平线，Java 26.2 使用 Distant Horizons 3.2.0-b。"
+            send "&7当前官方服务端支持 3.1/3.2 协议；3.3 版本暂不保证互通。"
+            send "&7客户端需要 Fabric 或 NeoForge 及对应 MOD；PE 无法使用该效果。"
+            send "&7上限 128 区块，仅处理已生成地形，不提高生物活动或模拟距离。"
+        else if arg-1 is "worldedit":
+            send "{@prefix} &e创世神 WorldEdit 已安装，仅管理员可用。"
+            send "&7//wand：选区工具；//copy 与 //paste：复制粘贴；//undo：撤销。"
+            send "&7请分批操作并事先备份，不要给普通玩家 WorldEdit 通配权限。"
         else if arg-1 is "technical":
             send "{@prefix} &e/fp spawn：在当前位置创建假人；每人限一个。"
             send "&7/fp attack continuous：持续攻击；/fp use continuous：持续使用。"

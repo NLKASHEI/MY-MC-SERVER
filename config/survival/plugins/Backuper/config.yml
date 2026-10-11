@@ -1,0 +1,155 @@
+configVersion: 16.0
+lastBackup: 0
+lastChange: 0
+backup:
+  autoBackup: true
+  autoBackupPeriod: 360
+  autoBackupCron: ''
+  backupFileNameFormat: dd-MM-yyyy HH-mm-ss
+  addDirectoryToBackup:
+  - plugins
+  - server.properties
+  - permissions.yml
+  - config
+  - ../../manifests
+  - ../../server-settings.json
+  excludeDirectoryFromBackup:
+  - plugins/EssentialsX.jar
+  - plugins/EssentialsXSpawn.jar
+  - plugins/EssentialsXChat.jar
+  - plugins/AuthMe.jar
+  - plugins/Vault.jar
+  - plugins/PlaceholderAPI.jar
+  - plugins/Skript.jar
+  - plugins/luckperms.jar
+  - plugins/deluxemenus.jar
+  - plugins/griefprevention.jar
+  - plugins/coreprotect.jar
+  - plugins/chunky.jar
+  - plugins/multiverse-core.jar
+  - plugins/gsit.jar
+  - plugins/geyser.jar
+  - plugins/floodgate.jar
+  - plugins/EconomyShopGUI.jar
+  - plugins/ViaVersion.jar
+  - plugins/ViaBackwards.jar
+  - plugins/SkinsRestorer.jar
+  - plugins/Multiverse-Inventories.jar
+  - plugins/WorldEdit.jar
+  - plugins/WorldGuard.jar
+  - plugins/FakePlayer.jar
+  - plugins/CommandAPI.jar
+  - plugins/AuraSkills.jar
+  - plugins/QuickShop-Hikari.jar
+  - plugins/Backuper.jar
+  - plugins/DHSupport.jar
+  - plugins/QuickShop-Hikari/libs
+  - plugins/QuickShop/libs
+  - plugins/DHSupport/data.sqlite
+  - plugins/DHSupport/data.sqlite-wal
+  - plugins/DHSupport/data.sqlite-shm
+  - plugins/Backuper/logs
+  - plugins/EconomyShopGUI/cache
+  - plugins/CoreProtect/database.db-journal
+  - plugins/QuickShop-Hikari/lib
+  - plugins/QuickShop-Hikari/cache
+  deleteBrokenBackups: true
+  skipDuplicateBackup: true
+  afterBackup: NOTHING
+  setWorldsReadOnly: false
+server:
+  alertTimeBeforeRestart: 60
+  alertOnlyServerRestart: true
+  alertBackupMessage: 服务器将在 %d 秒后进行备份。
+  alertBackupRestartMessage: 服务器将在 %d 秒后备份并重启。
+  sizeCacheFile: ./plugins/Backuper/sizeCache.json
+  checkUpdates: false
+  betterLogging: false
+storages:
+  local:
+    type: local
+    enabled: true
+    autoBackup: true
+    backupsFolder: ../../backups/automatic
+    maxBackupsNumber: 12
+    maxBackupsWeight: 0
+    zipArchive: true
+    zipCompressionLevel: 1
+    debug:
+      protocolLogging: false
+  googleDrive:
+    type: googleDrive
+    enabled: false
+    autoBackup: false
+    backupsFolderId: ''
+    createBackuperFolder: true
+    maxBackupsNumber: 0
+    maxBackupsWeight: 0
+    zipArchive: true
+    zipCompressionLevel: 5
+    auth:
+      tokenFolderPath: ./plugins/Backuper/GoogleDrive/tokens
+    debug:
+      protocolLogging: true
+  ftp:
+    type: ftp
+    enabled: false
+    autoBackup: false
+    backupsFolder: ./
+    pathSeparatorSymbol: /
+    maxBackupsNumber: 0
+    maxBackupsWeight: 0
+    zipArchive: true
+    zipCompressionLevel: 5
+    auth:
+      address: ''
+      port: 21
+      username: ''
+      password: ''
+    debug:
+      protocolLogging: true
+  sftp:
+    type: sftp
+    enabled: false
+    autoBackup: false
+    backupsFolder: ./
+    pathSeparatorSymbol: /
+    maxBackupsNumber: 0
+    maxBackupsWeight: 0
+    zipArchive: true
+    zipCompressionLevel: 5
+    auth:
+      address: ''
+      port: 22
+      authType: password
+      username: ''
+      password: ''
+      keyFilePath: ''
+      useKnownHostsFile: false
+      knownHostsFilePath: ''
+      sshConfigFilePath: ''
+    debug:
+      protocolLogging: true
+  webdav:
+    type: webdav
+    enabled: false
+    autoBackup: false
+    backupsFolder: ./
+    maxBackupsNumber: 0
+    maxBackupsWeight: 0
+    zipArchive: true
+    zipCompressionLevel: 5
+    auth:
+      url: ''
+      username: ''
+      password: ''
+      allowInsecureHttp: false
+    http:
+      requestTimeoutSeconds: 3600
+      deleteConfirmationTimeoutSeconds: 60
+      bufferUploadsToDisk: false
+    chunking:
+      enabled: false
+      chunkSizeMB: 50
+    debug:
+      protocolLogging: true
