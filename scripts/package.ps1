@@ -5,19 +5,28 @@ if ($running) { throw 'Stop the local server before packaging.' }
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $release = Join-Path $root "release/MY-MC-SERVER-26.2-$stamp"
 New-Item -ItemType Directory -Force $release | Out-Null
-foreach ($name in @('scripts','runtime','manifests','config','docs','skills','server-settings.json','README.md','AGENTS.md','GLOSSARY.md')) {
+foreach ($name in @('scripts','runtime','manifests','config','docs','skills','assets','server-settings.json','README.md','AGENTS.md','GLOSSARY.md','CHANGELOG.md')) {
   Copy-Item (Join-Path $root $name) $release -Recurse
 }
 Get-ChildItem $root -Filter *.bat | Copy-Item -Destination $release
 $server = Join-Path $release 'servers/survival'
 New-Item -ItemType Directory -Force (Join-Path $server 'plugins') | Out-Null
 Copy-Item (Join-Path $root 'servers/survival/paper.jar') $server
-Get-ChildItem (Join-Path $root 'servers/survival/plugins') -Filter *.jar | Copy-Item -Destination (Join-Path $server 'plugins')
+# Only locked production jars; assembly/testing plugins never enter a release.
+foreach ($plugin in (Get-Content (Join-Path $root 'manifests/plugins.lock.json') -Raw | ConvertFrom-Json)) {
+  $path = Join-Path $root "servers/survival/plugins/$($plugin.name).jar"
+  if ((Get-FileHash $path -Algorithm SHA256).Hash.ToLower() -ne $plugin.sha256) { throw "Checksum mismatch: $($plugin.name)" }
+  Copy-Item $path (Join-Path $server 'plugins')
+}
 foreach ($name in @('libraries','cache','versions')) {
   $path = Join-Path $root "servers/survival/$name"
   if (Test-Path $path) { Copy-Item $path $server -Recurse }
 }
 Copy-Item (Join-Path $root 'config/survival/*') $server -Recurse -Force
+$worldTemplate = Get-Content (Join-Path $root 'manifests/world-template.lock.json') -Raw | ConvertFrom-Json
+$worldZip = Join-Path $root $worldTemplate.file
+if ((Get-FileHash $worldZip -Algorithm SHA256).Hash.ToLower() -ne $worldTemplate.sha256) { throw 'World template checksum mismatch' }
+Expand-Archive $worldZip $server -Force
 # Public item/texture mappings only; never copy account or skull caches.
 $icons = Join-Path $root 'servers/survival/plugins/EconomyShopGUI/cache'
 $iconTarget = Join-Path $server 'plugins/EconomyShopGUI/cache'

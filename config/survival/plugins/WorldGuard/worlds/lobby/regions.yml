@@ -1,0 +1,23 @@
+regions:
+  __global__:
+    members: {}
+    flags:
+      block-break: deny
+      block-place: deny
+      pvp: deny
+      invincible: allow
+      mob-spawning: deny
+      tnt: deny
+      creeper-explosion: deny
+      other-explosion: deny
+      fire-spread: deny
+      lava-fire: deny
+      item-drop: deny
+      item-pickup: deny
+      chest-access: deny
+      use: allow
+      interact: allow
+      greeting: 欢迎来到主城！右键指南针或输入 /menu 选择世界。
+    owners: {}
+    type: global
+    priority: 0

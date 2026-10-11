@@ -1,0 +1,48 @@
+# 保守清理：只清低价值、无人保护的旧掉落物。不会阻止原版 5 分钟自然消失。
+# 每次开服或脚本重载不认定旧物品的年龄；没有时间戳的掉落物跳过。
+on item spawn:
+    set metadata value "survival.spawned" of event-entity to now
+
+on drop:
+    set metadata value "survival.protected" of event-entity to true
+
+on death of player:
+    set {_death} to location of victim
+    wait 1 tick
+    loop dropped items in radius 10 around {_death}:
+        set metadata value "survival.protected" of loop-entity to true
+
+function tidyDrops() :: number:
+    set {_count} to 0
+    loop all dropped items in all worlds:
+        if metadata value "survival.protected" of loop-entity is true:
+            continue
+        set {_born} to metadata value "survival.spawned" of loop-entity
+        if {_born} is not set:
+            continue
+        if difference between now and {_born} is less than 2 minutes:
+            continue
+        set {_item} to item of loop-entity
+        if name of {_item} is set:
+            continue
+        if {_item} is cobblestone or cobbled deepslate or dirt or netherrack or rotten flesh or wheat seeds or stone:
+            delete loop-entity
+            add 1 to {_count}
+    return {_count}
+
+every 10 minutes:
+    broadcast "&6[清理助手] &e60 秒后清理旧的普通掉落物；新掉落、玩家丢弃、死亡掉落和命名物品跳过。"
+    wait 30 seconds
+    broadcast "&6[清理助手] &e30 秒后清理普通旧掉落物。"
+    wait 20 seconds
+    broadcast "&6[清理助手] &e10 秒后清理普通旧掉落物。"
+    wait 10 seconds
+    set {_count} to tidyDrops()
+    broadcast "&6[清理助手] &a已清理 %{_count}% 个普通掉落物实体。"
+
+command /cleanup:
+    permission: survival.cleanup
+    permission message: &c只有管理员可以手动清理。
+    trigger:
+        set {_count} to tidyDrops()
+        send "&6[清理助手] &a已清理 %{_count}% 个普通掉落物实体。"

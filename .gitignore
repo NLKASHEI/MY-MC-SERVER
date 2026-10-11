@@ -4,6 +4,7 @@
 /release/
 /servers/
 *.zip
+!/assets/worlds/bootstrap-26.2.zip
 *.jar
 *.db
 *.db-shm

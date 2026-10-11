@@ -1,0 +1,8 @@
+{
+  "author": "Kahcerus",
+  "sha256": "db08403b0fde1e8da8e5d892faf2b4e830f02946f26534d7e694570f9e6fdc46",
+  "description": "Clean map template: lobby blocks and five dimension generation metadata; no player data or survival chunks",
+  "file": "assets/worlds/bootstrap-26.2.zip",
+  "source": "https://www.planetminecraft.com/project/minecraft-lobby-spawn-map-schematic-free/",
+  "minecraftVersion": "26.2"
+}

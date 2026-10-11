@@ -1,0 +1,46 @@
+menu_title: '&2选择你的世界'
+open_command:
+- worlds
+- sj
+size: 27
+items:
+  lobby:
+    material: BEACON
+    slot: 11
+    display_name: '&b主城'
+    lore:
+    - '&7安全休闲区 · 建筑受保护'
+    - '&7与生存共用背包，购物后可带回家'
+    left_click_commands:
+    - '[close]'
+    - '[player] mv tp w:lobby'
+    right_click_commands:
+    - '[close]'
+    - '[player] mv tp w:lobby'
+  survival:
+    material: GRASS_BLOCK
+    slot: 13
+    display_name: '&a原版生存'
+    lore:
+    - '&7自由探索 · 生存模式'
+    - '&7主世界、下界、末地共用生存背包'
+    left_click_commands:
+    - '[close]'
+    - '[player] mv tp w:world'
+    right_click_commands:
+    - '[close]'
+    - '[player] mv tp w:world'
+  flat:
+    material: BRICKS
+    slot: 15
+    display_name: '&d创造超平坦'
+    lore:
+    - '&7自由建造 · 创造模式'
+    - '&c背包、末影箱、经验与生存隔离'
+    - '&7创造世界不可交易或领取金币'
+    left_click_commands:
+    - '[close]'
+    - '[player] mv tp w:flat'
+    right_click_commands:
+    - '[close]'
+    - '[player] mv tp w:flat'

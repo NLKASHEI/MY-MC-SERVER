@@ -1,69 +1,132 @@
-menu_title: '&2生存服务中心'
+menu_title: '&2中文服务中心'
 open_command:
-  - menu
-  - cd
-size: 27
+- menu
+- cd
+size: 45
 items:
+  lobby:
+    material: BEACON
+    slot: 11
+    display_name: '&b主城'
+    lore:
+    - '&7安全休闲区 · 建筑受保护'
+    - '&7与生存共用背包，购物后可带回家'
+    left_click_commands:
+    - '[close]'
+    - '[player] mv tp w:lobby'
+    right_click_commands:
+    - '[close]'
+    - '[player] mv tp w:lobby'
+  survival:
+    material: GRASS_BLOCK
+    slot: 13
+    display_name: '&a原版生存'
+    lore:
+    - '&7自由探索 · 生存模式'
+    - '&7主世界、下界、末地共用生存背包'
+    left_click_commands:
+    - '[close]'
+    - '[player] mv tp w:world'
+    right_click_commands:
+    - '[close]'
+    - '[player] mv tp w:world'
+  flat:
+    material: BRICKS
+    slot: 15
+    display_name: '&d创造超平坦'
+    lore:
+    - '&7自由建造 · 创造模式'
+    - '&c背包、末影箱、经验与生存隔离'
+    - '&7创造世界不可交易或领取金币'
+    left_click_commands:
+    - '[close]'
+    - '[player] mv tp w:flat'
+    right_click_commands:
+    - '[close]'
+    - '[player] mv tp w:flat'
   shop:
     material: EMERALD
-    slot: 10
+    slot: 28
     display_name: '&a物资商店'
     lore:
-      - '&7购买常用物资，收购物品暂不开启'
+    - '&7生存物资，只购买，暂不收购'
     left_click_commands:
-      - '[close]'
-      - '[player] shop'
+    - '[close]'
+    - '[player] shop'
     right_click_commands:
-      - '[close]'
-      - '[player] shop'
+    - '[close]'
+    - '[player] shop'
   homes:
     material: RED_BED
-    slot: 11
+    slot: 29
     display_name: '&e返回家园'
     lore:
-      - '&7点击查看或返回已设置的家'
-      - '&7使用 /sethome 家名 设置家'
+    - '&7/sethome 家名 设置家'
+    - '&7每人最多三个家'
     left_click_commands:
-      - '[close]'
-      - '[player] home'
+    - '[close]'
+    - '[player] home'
+    right_click_commands:
+    - '[close]'
+    - '[player] home'
   rewards:
     material: CLOCK
-    slot: 12
+    slot: 30
     display_name: '&6在线奖励'
     lore:
-      - '&7活跃在线 30 / 60 / 120 分钟'
-      - '&7每天各领一次，挂机不累计'
+    - '&7每天活跃 30 / 60 / 120 分钟'
+    - '&7创造世界不累计'
     left_click_commands:
-      - '[close]'
-      - '[player] reward'
-  balance:
-    material: GOLD_INGOT
-    slot: 14
-    display_name: '&e账户余额'
-    left_click_commands:
-      - '[close]'
-      - '[player] balance'
+    - '[close]'
+    - '[player] reward'
+    right_click_commands:
+    - '[close]'
+    - '[player] reward'
   claims:
     material: GOLDEN_SHOVEL
-    slot: 15
-    display_name: '&b家园圈地'
+    slot: 32
+    display_name: '&b生存圈地'
     lore:
-      - '&7用金铲右键选择两个对角'
-      - '&7使用 /trust 玩家 授权朋友'
+    - '&7金铲选择两角；/trust 授权'
     left_click_commands:
-      - '[close]'
-      - '[player] guide claims'
+    - '[close]'
+    - '[player] guide claims'
+    right_click_commands:
+    - '[close]'
+    - '[player] guide claims'
   guide:
     material: BOOK
-    slot: 16
+    slot: 33
     display_name: '&f新手指南'
+    lore:
+    - '&7查看账号、世界和经济说明'
     left_click_commands:
-      - '[close]'
-      - '[player] guide'
-  spawn:
-    material: COMPASS
-    slot: 22
-    display_name: '&a返回出生点'
+    - '[close]'
+    - '[player] guide'
+    right_click_commands:
+    - '[close]'
+    - '[player] guide'
+  fun:
+    material: OAK_STAIRS
+    slot: 34
+    display_name: '&d趣味互动'
+    lore:
+    - '&7坐下、躺下、爬行、旋转、骑头'
     left_click_commands:
-      - '[close]'
-      - '[player] spawn'
+    - '[close]'
+    - '[player] fun'
+    right_click_commands:
+    - '[close]'
+    - '[player] fun'
+  balance:
+    material: GOLD_INGOT
+    slot: 40
+    display_name: '&e账户余额'
+    lore:
+    - '&7金币全服共用，创造世界不交易'
+    left_click_commands:
+    - '[close]'
+    - '[player] balance'
+    right_click_commands:
+    - '[close]'
+    - '[player] balance'

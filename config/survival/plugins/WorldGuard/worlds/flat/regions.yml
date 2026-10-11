@@ -1,0 +1,22 @@
+regions:
+  __global__:
+    members: {}
+    flags:
+      pvp: deny
+      tnt: deny
+      fire-spread: deny
+      blocked-cmds:
+      - shop
+      - sell
+      - sellall
+      - pay
+      - reward
+      - eshop
+      - economyshopgui:shop
+      - economyshopgui:sell
+      - economyshopgui:sellall
+      - essentials:sell
+      - essentials:pay
+    owners: {}
+    type: global
+    priority: 0

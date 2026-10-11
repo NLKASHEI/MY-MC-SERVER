@@ -1,5 +1,3 @@
-# Default values are perfect for most servers.  If you want to customize and have a question, look for the answer here first: http://dev.bukkit.org/bukkit-plugins/grief-prevention/pages/setup-and-configuration/
-
 GriefPrevention:
   SeaLevelOverrides:
     world: -1
@@ -10,6 +8,8 @@ GriefPrevention:
       world: Survival
       world_nether: Disabled
       world_the_end: Disabled
+      lobby: Disabled
+      flat: Disabled
     PreventGlobalMonsterEggs: true
     PreventTheft: true
     HoppersRequireBuildTrust: false

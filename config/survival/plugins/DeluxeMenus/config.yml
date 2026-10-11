@@ -3,3 +3,7 @@ check_updates: true
 gui_menus:
   survival:
     file: survival.yml
+  worlds:
+    file: worlds.yml
+  fun:
+    file: fun.yml

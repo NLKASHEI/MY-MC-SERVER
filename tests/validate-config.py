@@ -1,0 +1,64 @@
+"""Check the relationships that protect creative inventory isolation, without running Minecraft."""
+import hashlib, json, pathlib, zipfile
+import yaml
+
+root = pathlib.Path(__file__).resolve().parent.parent
+config = root / 'config/survival'
+def read(rel):
+    return yaml.safe_load((config / rel).read_text(encoding='utf-8-sig'))
+
+files = list(config.rglob('*.yml'))
+for file in files:
+    yaml.safe_load(file.read_text(encoding='utf-8-sig'))
+worlds = read('plugins/Multiverse-Core/worlds.yml')
+legacy = {w['read-only']['legacy-world-name'] for w in worlds.values()}
+groups = read('plugins/Multiverse-Inventories/groups.yml')['groups']
+assert set(groups['survival']['worlds']) == {'lobby', 'world', 'world_nether', 'world_the_end'}
+assert set(groups['creative']['worlds']) == {'flat'}
+seen = set()
+for group in groups.values():
+    members = set(group['worlds'])
+    assert members <= legacy, 'Inventory groups must use legacy Bukkit names, not dimension keys'
+    assert not (seen & members), 'Conflicting inventory groups'
+    assert group['shares'] == ['all']
+    seen |= members
+assert seen == legacy
+assert worlds['minecraft:flat']['gamemode'] == 'creative'
+assert worlds['minecraft:lobby']['gamemode'] == worlds['minecraft:overworld']['gamemode'] == 'survival'
+core = read('plugins/Multiverse-Core/config.yml')
+assert core['world']['enforce-gamemode']
+assert core['teleport']['passenger-mode'] == 'dismount_all'
+shares = read('plugins/Multiverse-Inventories/config.yml')['share-handling']
+assert shares['enable-gamemode-share-handling']
+assert not shares['enable-bypass-permissions']
+assert not shares['default-ungrouped-worlds']
+assert not shares['active-optional-shares'], 'Currency is global; never enable economy sharing'
+perms = read('permissions.yml')['survival.player']['children']
+for dest in ['world', 'lobby', 'flat']:
+    assert perms['multiverse.teleport.self.w.' + dest] is True
+for node, enabled in perms.items():
+    if enabled:
+        assert 'bypass' not in node.lower() and node != '*', 'Player bypass permission granted'
+menus = read('plugins/DeluxeMenus/config.yml')['gui_menus']
+for entry in menus.values():
+    menu = read('plugins/DeluxeMenus/gui_menus/' + entry['file'])
+    for item in menu['items'].values():
+        assert 0 <= item['slot'] < menu['size']
+        assert item['left_click_commands'] == item['right_click_commands'], 'Mobile/right click behavior missing'
+lobby = read('plugins/WorldGuard/worlds/lobby/regions.yml')['regions']['__global__']['flags']
+assert lobby['block-break'] == lobby['block-place'] == 'deny'
+blocked = read('plugins/WorldGuard/worlds/flat/regions.yml')['regions']['__global__']['flags']['blocked-cmds']
+assert {'shop', 'sell', 'pay', 'reward'} <= set(blocked)
+lock = json.loads((root / 'manifests/world-template.lock.json').read_text(encoding='utf-8-sig'))
+asset = root / lock['file']
+assert hashlib.sha256(asset.read_bytes()).hexdigest() == lock['sha256']
+with zipfile.ZipFile(asset) as archive:
+    names = archive.namelist()
+    assert 'world/level.dat' in names
+    assert any(n.startswith('world/dimensions/minecraft/lobby/region/') for n in names)
+    for name in names:
+        assert name.startswith('world/') and '..' not in name.split('/')
+        assert not any(part in {'players','playerdata','stats','advancements','entities','poi'} for part in name.split('/'))
+        if '/region/' in name:
+            assert name.startswith('world/dimensions/minecraft/lobby/region/')
+print(f'{len(files)} YAML templates parsed; inventory groups, menus, world protection and clean map asset validated')

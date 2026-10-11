@@ -123,5 +123,26 @@
     "version": "15.12.6",
     "url": "https://github.com/SkinsRestorer/SkinsRestorer/releases/download/15.12.6/SkinsRestorer.jar",
     "sha256": "a85b4a370f988741c9a38f4d0498262edacbf3220314790ac1c127461996359c"
+  },
+  {
+    "name": "Multiverse-Inventories",
+    "version": "5.3.6",
+    "url": "https://cdn.modrinth.com/data/qvdtDX3s/versions/86s1EwyC/multiverse-inventories-5.3.6.jar",
+    "sha256": "6e58e89009283f4be8658abe2b7e46c482010ceccf3c8e0b0e8ca6a0a114ff92",
+    "modrinth": "multiverse-inventories"
+  },
+  {
+    "name": "WorldEdit",
+    "version": "7.4.5",
+    "url": "https://cdn.modrinth.com/data/1u6JkXh5/versions/F5ea2ov3/worldedit-bukkit-7.4.5.jar",
+    "sha256": "e5696a6d064b9969437a8888be91b0941148a28e0c3736de1554a00254a5d142",
+    "modrinth": "worldedit"
+  },
+  {
+    "name": "WorldGuard",
+    "version": "7.0.19",
+    "url": "https://cdn.modrinth.com/data/DKY9btbd/versions/TtfwTyi6/worldguard-bukkit-7.0.19.jar",
+    "sha256": "396df065f1cf38bab9878a0f53a776d5a085ebbf3c41813938b73f95d4eaca03",
+    "modrinth": "worldguard"
   }
 ]

@@ -1,0 +1,92 @@
+menu_title: '&5趣味互动'
+open_command:
+- fun
+- yl
+size: 27
+items:
+  sit:
+    material: OAK_STAIRS
+    slot: 10
+    display_name: '&e坐下'
+    lore:
+    - '&7空手右键台阶/半砖也能坐'
+    - '&7按潜行站起'
+    left_click_commands:
+    - '[close]'
+    - '[player] sit'
+    right_click_commands:
+    - '[close]'
+    - '[player] sit'
+  lay:
+    material: WHITE_BED
+    slot: 11
+    display_name: '&b躺一会儿'
+    lore:
+    - '&7休闲动作，按潜行结束'
+    left_click_commands:
+    - '[close]'
+    - '[player] lay'
+    right_click_commands:
+    - '[close]'
+    - '[player] lay'
+  crawl:
+    material: OAK_TRAPDOOR
+    slot: 12
+    display_name: '&a爬行'
+    lore:
+    - '&7钻进一格高的通道'
+    left_click_commands:
+    - '[close]'
+    - '[player] crawl'
+    right_click_commands:
+    - '[close]'
+    - '[player] crawl'
+  spin:
+    material: ENDER_PEARL
+    slot: 14
+    display_name: '&d转圈圈'
+    lore:
+    - '&7原地旋转动作'
+    left_click_commands:
+    - '[close]'
+    - '[player] spin'
+    right_click_commands:
+    - '[close]'
+    - '[player] spin'
+  ride:
+    material: SADDLE
+    slot: 15
+    display_name: '&6骑头开关'
+    lore:
+    - '&7空手右键玩家骑上头顶'
+    - '&7最多叠 3 人；底下玩家潜行可甩下'
+    - '&7点击开启/关闭被骑乘'
+    left_click_commands:
+    - '[close]'
+    - '[player] sit playertoggle'
+    right_click_commands:
+    - '[close]'
+    - '[player] sit playertoggle'
+  guide:
+    material: BOOK
+    slot: 16
+    display_name: '&f互动说明'
+    lore:
+    - '&7查看玩法和开关'
+    left_click_commands:
+    - '[close]'
+    - '[player] guide fun'
+    right_click_commands:
+    - '[close]'
+    - '[player] guide fun'
+  back:
+    material: COMPASS
+    slot: 22
+    display_name: '&a返回服务中心'
+    lore: []
+    left_click_commands:
+    - '[close]'
+    - '[player] menu'
+    right_click_commands:
+    - '[close]'
+    - '[player] menu'

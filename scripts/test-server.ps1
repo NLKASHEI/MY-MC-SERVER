@@ -13,6 +13,7 @@ $info.CreateNoWindow = $true
 $info.RedirectStandardInput = $true
 $process = New-Object System.Diagnostics.Process
 $process.StartInfo = $info
+$startedAt = Get-Date
 $null = $process.Start()
 $ready = $false
 $deadline = (Get-Date).AddMinutes(12)
@@ -20,7 +21,8 @@ try {
   while (!$process.HasExited -and (Get-Date) -lt $deadline) {
     Start-Sleep -Seconds 2
     $log = Get-Content (Join-Path $server 'logs/latest.log') -Raw -ErrorAction SilentlyContinue
-    if ($log -match 'Done \([0-9.]+s\)!') { $ready = $true; break }
+    $logFile = Get-Item (Join-Path $server 'logs/latest.log') -ErrorAction SilentlyContinue
+    if ($logFile -and $logFile.LastWriteTime -ge $startedAt -and $log -match 'Done \([0-9.]+s\)!') { $ready = $true; break }
   }
   if (!$ready) { throw 'Server failed to reach ready state' }
   Start-Sleep -Seconds 15

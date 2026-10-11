@@ -1,0 +1,20 @@
+# 登录成功并恢复背包后，由玩家自身领取指南针；不授予登录绕过。
+onJoin: {}
+onLogin:
+  compass:
+    command: guide compass
+    executor: PLAYER
+    delay: 20
+onSessionLogin:
+  compass:
+    command: guide compass
+    executor: PLAYER
+    delay: 20
+onFirstLogin:
+  compass:
+    command: guide compass
+    executor: PLAYER
+    delay: 20
+onRegister: {}
+onUnregister: {}
+onLogout: {}

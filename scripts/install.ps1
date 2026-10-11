@@ -31,6 +31,10 @@ foreach ($plugin in (Get-Content (Join-Path $root 'manifests/plugins.lock.json')
   } else { Fetch $plugin.url $target $plugin.sha256 }
 }
 Copy-Item (Join-Path $root 'config/survival/*') $server -Recurse -Force
+$worldTemplate = Get-Content (Join-Path $root 'manifests/world-template.lock.json') -Raw | ConvertFrom-Json
+$worldZip = Join-Path $root $worldTemplate.file
+if ((Get-FileHash $worldZip -Algorithm SHA256).Hash.ToLower() -ne $worldTemplate.sha256) { throw 'World template checksum mismatch' }
+Expand-Archive $worldZip $server -Force
 $eula = if ($AcceptEula) { 'eula=true' } else { 'eula=false' }
 Set-Content (Join-Path $server 'eula.txt') $eula -Encoding ASCII
 Write-Host 'Installed pinned components. Review https://aka.ms/MinecraftEULA before accepting the EULA.'

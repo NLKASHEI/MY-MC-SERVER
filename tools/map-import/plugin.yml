@@ -1,0 +1,12 @@
+name: HubMapImport
+version: 1.0.0
+main: HubMapImport
+api-version: '26.2'
+depend: [WorldEdit]
+commands:
+  hubimport:
+    description: Assembly console only; import the verified lobby once
+    permission: hubmap.import
+permissions:
+  hubmap.import:
+    default: op

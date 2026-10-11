@@ -10,4 +10,6 @@
 
 当前脚本针对同一 Minecraft 版本的组件更新。大版本升级应先复制整个服务端做迁移测试，不能在升级后的世界上尝试降级。
 
-更新成功后同步 Git 中的 `manifests`、经过清理的配置模板、CHANGELOG 和验收记录。部署包可用 `scripts/package.ps1` 重新生成，不包含世界、账户、日志或认证密钥。
+更新成功后同步 Git 中的 `manifests`、经过清理的配置模板、CHANGELOG 和验收记录。部署包可用 `scripts/package.ps1` 重新生成，只带固定的初始主城地图模板，不包含正在使用的生存区块、玩家、账户、日志或认证密钥。
+
+更新 JAR 不解压 `assets/worlds/bootstrap-26.2.zip`，也不重建背包分组。更改 Multiverse-Inventories 分组需停服备份，并按官方迁移命令处理已有背包；直接把有玩家的世界加入新分组可能丢失当前背包。更新后核查 Applicable Worlds、模式隔离和两个客户端的创造往返、末影箱、重启保留测试。

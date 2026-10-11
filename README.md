@@ -2,6 +2,8 @@
 
 Windows 云服务器使用的 Paper 26.2 原版生存辅助服务端。Java 离线账号和基岩版互联账号使用注册、密码登录。未安装反作弊。
 
+已组装主城地图、生存世界和创造超平坦。中文指南针菜单切换世界；主城与生存共用背包，创造区单独隔离。支持坐台阶、躺下、爬行、骑头开关和保守的定时掉落物清理。
+
 按 [mattpocock/skills](https://github.com/mattpocock/skills) 的分类技能、镜像文档、根目录规范组织维护流程；这是服务端项目，组件运行目录单独放在 `servers/survival`。
 
 ## 快速使用
@@ -25,6 +27,8 @@ Windows 云服务器使用的 Paper 26.2 原版生存辅助服务端。Java 离�
 | `scripts` | Windows 管理工具 |
 | `servers/survival` | 生成的实际服务端，不进入 Git |
 | `runtime` | 随包 Java 25，不进入 Git |
+| `assets/worlds` | 署名主城静态地图模板，无玩家数据 |
+| `tools/map-import` | 组装阶段使用的 WorldEdit 导入工具源码 |
 
 ## Model-invoked skills
 
@@ -32,4 +36,6 @@ Windows 云服务器使用的 Paper 26.2 原版生存辅助服务端。Java 离�
 - [update-minecraft](skills/engineering/update-minecraft/SKILL.md)：候选更新、备份和回退。
 - [localize-minecraft](skills/productivity/localize-minecraft/SKILL.md)：玩家可见文本汉化。
 
-JAR 和 Java 保留各自上游许可证。仓库只保存项目配置、脚本和文档；不上传运行数据或认证密钥。
+JAR 和 Java 保留各自上游许可证。仓库保存项目配置、脚本、文档和静态主城地图资产；不上传玩家运行数据或认证密钥。
+
+主城地图署名、来源及模板使用规则见 [地图说明](assets/worlds/README.md)。已有玩家的云服禁止用初始地图模板覆盖存档。

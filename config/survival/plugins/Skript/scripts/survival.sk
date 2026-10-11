@@ -15,9 +15,16 @@ command /guide [<text>]:
                 send "{@prefix} &7你已拥有指南针。"
             else:
                 give player compass named "&a生存指南针" with lore "&7右键打开服务中心"
+        else if arg-1 is "fun":
+            send "{@prefix} &e空手右键台阶、半砖或地毯坐下，潜行站起。"
+            send "&7空手右键玩家骑到头顶，最多叠 3 人；底下玩家潜行可甩下乘客。"
+            send "&7/sit playertoggle：允许/拒绝被骑乘；/sit toggle：开关点击坐下。"
+            send "&7/lay：躺下；/crawl：爬行；/spin：转圈；/fun：互动菜单。"
         else:
             send "{@prefix} &a欢迎来到原版生存！"
             send "&7/menu：服务中心；/guide compass：领取菜单指南针。"
+            send "&7/worlds：选择世界；/hub：返回主城；/fun：趣味互动。"
+            send "&7主城与生存共用背包；创造世界隔离，物品不能带回生存。"
             send "&7/sethome 家名：设家；/home 家名：回家；/delhome 家名：删除。"
             send "&7/tpa 玩家：申请传送；/tpaccept：接受；/tpdeny：拒绝。"
             send "&7/shop：物资商店；/balance：余额；/pay 玩家 金额：转账。"
@@ -32,26 +39,57 @@ on right click:
 on join:
     set {survival.last-location::%uuid of player%} to location of player
 
+on world change:
+    wait 1 second
+    if player is online:
+        set {survival.last-location::%uuid of player%} to location of player
+        if player does not have compass named "&a生存指南针":
+            give player compass named "&a生存指南针" with lore "&7右键打开服务中心"
+
 on quit:
     delete {survival.last-location::%uuid of player%}
+
+command /hub:
+    permission: survival.guide
+    executable by: players
+    trigger:
+        make player execute command "mv tp w:lobby"
+
+# 同时覆盖 /home、/tpa 等插件造成的跨世界传送，不携带载具或骑乘玩家。
+on teleport:
+    if world of past event-location is not world of future event-location:
+        eject passengers of player
+        make player dismount
+
+every 2 seconds:
+    loop all players:
+        if name of world of loop-player is "lobby":
+            if y-coordinate of loop-player's location is less than -20:
+                teleport loop-player to spawn of world "lobby"
 
 every 1 minute:
     set {_day} to now formatted as "yyyy-MM-dd"
     loop all players:
+        if gamemode of loop-player is creative:
+            continue
         set {_id} to uuid of loop-player
         if {survival.day::%{_id}%} is not {_day}:
             set {survival.day::%{_id}%} to {_day}
             set {survival.minutes::%{_id}%} to 0
             delete {survival.claimed::%{_id}%::*}
         if {survival.last-location::%{_id}%} is set:
-            if distance between location of loop-player and {survival.last-location::%{_id}%} is greater than 1:
-                add 1 to {survival.minutes::%{_id}%}
+            if world of loop-player is world of {survival.last-location::%{_id}%}:
+                if distance between location of loop-player and {survival.last-location::%{_id}%} is greater than 1:
+                    add 1 to {survival.minutes::%{_id}%}
         set {survival.last-location::%{_id}%} to location of loop-player
 
 command /reward:
     permission: survival.reward
     executable by: players
     trigger:
+        if gamemode of player is creative:
+            send "{@prefix} &c请先回生存或主城领取奖励。"
+            stop
         set {_id} to uuid of player
         set {_day} to now formatted as "yyyy-MM-dd"
         if {survival.day::%{_id}%} is not {_day}:

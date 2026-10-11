@@ -1,0 +1,46 @@
+# Temporary console verification script, never included in production configuration.
+command /verifycleanup:
+    executable by: console
+    trigger:
+        set {_base} to spawn of world "world"
+        add 2 to y-coordinate of {_base}
+        drop stone at {_base}
+        set {_old} to last dropped item
+        set metadata value "survival.spawned" of {_old} to 3 minutes ago
+        add 4 to x-coordinate of {_base}
+        drop stone at {_base}
+        set {_new} to last dropped item
+        add 4 to x-coordinate of {_base}
+        drop stone named "cleanup-test-named" at {_base}
+        set {_named} to last dropped item
+        set metadata value "survival.spawned" of {_named} to 3 minutes ago
+        add 4 to x-coordinate of {_base}
+        drop diamond at {_base}
+        set {_rare} to last dropped item
+        set metadata value "survival.spawned" of {_rare} to 3 minutes ago
+        add 4 to x-coordinate of {_base}
+        drop cobblestone at {_base}
+        set {_protected} to last dropped item
+        set metadata value "survival.spawned" of {_protected} to 3 minutes ago
+        set metadata value "survival.protected" of {_protected} to true
+        wait 2 ticks
+        send "CLEANUP_TEST_DIAG old=%{_old}% item=%item of {_old}% name=%name of item of {_old}% born=%metadata value "survival.spawned" of {_old}% protected=%metadata value "survival.protected" of {_old}% entities=%size of all dropped items in all worlds%"
+        set {_count} to tidyDrops()
+        if {_count} is 1:
+            if {_old} is dead:
+                if {_new} is not dead:
+                    if {_named} is not dead:
+                        if {_rare} is not dead:
+                            if {_protected} is not dead:
+                                send "CLEANUP_TEST_PASS old ordinary removed; new/named/rare/protected preserved"
+                                delete {_new}
+                                delete {_named}
+                                delete {_rare}
+                                delete {_protected}
+                                stop
+        send "CLEANUP_TEST_FAIL count=%{_count}%"
+        delete {_old}
+        delete {_new}
+        delete {_named}
+        delete {_rare}
+        delete {_protected}

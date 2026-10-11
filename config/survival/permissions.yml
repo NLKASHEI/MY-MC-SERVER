@@ -28,3 +28,29 @@ survival.player:
     griefprevention.createclaims: true
     gsit.sit: true
     skinsrestorer.player: true
+    gsit.sitclick: true
+    gsit.sittoggle: true
+    gsit.playersit: true
+    gsit.playersittoggle: true
+    gsit.lay: true
+    gsit.crawl: true
+    gsit.spin: true
+    multiverse.access.minecraft:flat: true
+    multiverse.access.minecraft:lobby: true
+    multiverse.access.minecraft:overworld: true
+    multiverse.access.minecraft:the_end: true
+    multiverse.access.minecraft:the_nether: true
+    multiverse.teleport.self.w.minecraft:lobby: true
+    multiverse.teleport.self.w.minecraft:flat: true
+    multiverse.teleport.self.w.minecraft:overworld: true
+    multiverse.access.flat: true
+    multiverse.access.lobby: true
+    multiverse.access.world: true
+    multiverse.access.world_the_end: true
+    multiverse.access.world_nether: true
+    multiverse.teleport.self.w.lobby: true
+    multiverse.teleport.self.w.flat: true
+    multiverse.teleport.self.w.world: true
+survival.cleanup:
+  description: 管理员手动执行保守掉落物清理
+  default: op
