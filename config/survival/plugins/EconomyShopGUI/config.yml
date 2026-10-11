@@ -1328,7 +1328,6 @@ commands:
 # Do not use a slash('/') before the command name or it will not work
 shop-commands:
 - 'shop'
-- 'market'
 
 # Set different aliases for the sellall command, defaults to /sellall if empty
 sellall-commands:

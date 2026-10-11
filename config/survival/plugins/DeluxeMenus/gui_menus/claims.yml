@@ -8,41 +8,41 @@ items:
     slot: 11
     display_name: '&e金铲圈地教程'
     lore:
-    - '&7金铲右键两角，自定义圈地范围'
-    - '&7木棍右键查看归属与边界'
+    - '&7金铲右键两个立体对角点'
+    - '&7长、宽、高每边最多 25 格'
     - '&f点击查看详细说明'
     left_click_commands:
     - '[close]'
-    - '[player] guide claims'
+    - '[player] miao land help'
     right_click_commands:
     - '[close]'
-    - '[player] guide claims'
+    - '[player] miao land help'
   quick:
     material: OAK_FENCE
     slot: 13
-    display_name: '&a保护脚下区域'
+    display_name: '&a确认创建选区'
     lore:
-    - '&7站在生存世界的空地上'
-    - '&7需要手持金铲；半径 5，约 121 格'
-    - '&f点击创建基础圈地'
+    - '&7先用金铲选择两个对角点'
+    - '&7绿色粒子范围仅自己可见'
+    - '&f点击创建严格立体保护'
     left_click_commands:
     - '[close]'
-    - '[player] claim 5'
+    - '[player] miao land create'
     right_click_commands:
     - '[close]'
-    - '[player] claim 5'
+    - '[player] miao land create'
   list:
     material: MAP
     slot: 15
-    display_name: '&b我的圈地与格数'
+    display_name: '&b我的立体领地'
     lore:
-    - '&7查看已圈土地与剩余额度'
+    - '&7查看自己拥有的立体领地'
     left_click_commands:
     - '[close]'
-    - '[player] claimslist'
+    - '[player] miao land list'
     right_click_commands:
     - '[close]'
-    - '[player] claimslist'
+    - '[player] miao land list'
   trust:
     material: PLAYER_HEAD
     slot: 20
@@ -52,23 +52,23 @@ items:
     - '&7先站在要授权的圈地内'
     left_click_commands:
     - '[close]'
-    - '[player] guide trust'
+    - '[player] miao land trusthelp'
     right_click_commands:
     - '[close]'
-    - '[player] guide trust'
+    - '[player] miao land trusthelp'
   access:
     material: OAK_DOOR
     slot: 22
-    display_name: '&f精细访问权限'
+    display_name: '&f申请更大领地'
     lore:
-    - '&7仅开门、仅容器、授权管理'
-    - '&7按照需要分配，不必全部开放'
+    - '&7选中超过 25 格的立体范围'
+    - '&7点击提交，需 OP 批准后创建'
     left_click_commands:
     - '[close]'
-    - '[player] guide claimaccess'
+    - '[player] miao land request'
     right_click_commands:
     - '[close]'
-    - '[player] guide claimaccess'
+    - '[player] miao land request'
   trustlist:
     material: PAPER
     slot: 24
@@ -77,10 +77,10 @@ items:
     - '&7先站在要查看的圈地内'
     left_click_commands:
     - '[close]'
-    - '[player] trustlist'
+    - '[player] miao land info'
     right_click_commands:
     - '[close]'
-    - '[player] trustlist'
+    - '[player] miao land info'
   untrust:
     material: IRON_DOOR
     slot: 29
@@ -89,10 +89,10 @@ items:
     - '&7撤销指定玩家的圈地权限'
     left_click_commands:
     - '[close]'
-    - '[player] guide untrust'
+    - '[player] miao land untrusthelp'
     right_click_commands:
     - '[close]'
-    - '[player] guide untrust'
+    - '[player] miao land untrusthelp'
   trapped:
     material: ENDER_PEARL
     slot: 31

@@ -21,3 +21,16 @@ sidebar:
 teams:
   max-members: 8
   invite-seconds: 300
+claims-3d:
+  max-side: 25
+  worlds: [world, world_nether, world_the_end]
+sleep:
+  worlds: [world]
+spawn-protection:
+  radius: 8
+  worlds:
+  - world
+  - world_nether
+  - world_the_end
+  - flat
+  - lobby

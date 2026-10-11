@@ -1,0 +1,56 @@
+pages:
+  page1:
+    gui-rows: 4
+    items:
+      '1':
+        material: COAL
+        buy: 6
+        sell: 0.3
+      '2':
+        material: RAW_IRON
+        buy: 8
+        sell: 0.5
+      '3':
+        material: IRON_INGOT
+        buy: 16
+        sell: 0.75
+      '4':
+        material: RAW_COPPER
+        buy: 4
+        sell: 0.1
+      '5':
+        material: COPPER_INGOT
+        buy: 8
+        sell: 0.15
+      '6':
+        material: RAW_GOLD
+        buy: 12
+        sell: 1
+      '7':
+        material: GOLD_INGOT
+        buy: 24
+        sell: 1.5
+      '8':
+        material: REDSTONE
+        buy: 4
+        sell: 0.15
+      '9':
+        material: LAPIS_LAZULI
+        buy: 6
+        sell: 0.3
+      '10':
+        material: DIAMOND
+        buy: 120
+        sell: 8
+      '11':
+        material: EMERALD
+        buy: 100
+        sell: 4
+      '12':
+        material: QUARTZ
+        buy: 8
+        sell: 0.5
+      '13':
+        material: AMETHYST_SHARD
+        buy: 8
+        sell: 0.25

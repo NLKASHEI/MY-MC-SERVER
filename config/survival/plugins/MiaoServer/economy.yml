@@ -1,0 +1,74 @@
+config:
+  jobs:
+    enabled: true
+    selection:
+      require_selection: false
+    income:
+      default:
+        income_per_xp: 0.0
+      use_xp: true
+      use_expression: false
+      use_final_xp: false
+      batching:
+        enabled: false
+sources:
+  mining:
+    coal_ore: 0.1
+    copper_ore: 0.08
+    iron_ore: 0.15
+    gold_ore: 0.5
+    lapis_ore: 0.3
+    redstone_ore: 0.2
+    diamond_ore: 2
+    emerald_ore: 3
+    nether_quartz_ore: 0.1
+    nether_gold_ore: 0.1
+    ancient_debris: 5
+    deepslate_coal_ore: 0.1
+    deepslate_copper_ore: 0.08
+    deepslate_iron_ore: 0.15
+    deepslate_gold_ore: 0.5
+    deepslate_lapis_ore: 0.3
+    deepslate_redstone_ore: 0.2
+    deepslate_diamond_ore: 2
+    deepslate_emerald_ore: 3
+  fighting: &id001
+    zombie: 0.3
+    husk: 0.3
+    drowned: 0.3
+    zombie_villager: 0.3
+    skeleton: 0.3
+    stray: 0.3
+    bogged: 0.3
+    creeper: 0.3
+    spider: 0.3
+    cave_spider: 0.3
+    silverfish: 0.3
+    endermite: 0.3
+    slime: 0.3
+    magma_cube: 0.3
+    zombified_piglin: 0.3
+    enderman: 0.5
+    witch: 0.5
+    phantom: 0.5
+    pillager: 0.5
+    vindicator: 0.5
+    vex: 0.5
+    guardian: 0.5
+    hoglin: 0.5
+    zoglin: 0.5
+    parched: 0.5
+    zombie_nautilus: 0.5
+    blaze: 1
+    wither_skeleton: 1
+    piglin_brute: 1
+    shulker: 1
+    breeze: 1
+    evoker: 2
+    ghast: 2
+    ravager: 3
+    elder_guardian: 5
+    warden: 10
+    wither: 20
+    ender_dragon: 30
+  archery: *id001

@@ -24,10 +24,10 @@ items:
     - '&7建筑保留，只操作当前圈地'
     left_click_commands:
     - '[close]'
-    - '[player] abandonclaim'
+    - '[player] miao land abandon'
     right_click_commands:
     - '[close]'
-    - '[player] abandonclaim'
+    - '[player] miao land abandon'
   heading:
     material: BOOK
     slot: 4

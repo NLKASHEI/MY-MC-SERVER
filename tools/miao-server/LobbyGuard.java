@@ -18,8 +18,10 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 /** Immutable lobby for players, including OP and WorldEdit actors. */
 final class LobbyGuard implements Listener {
+    private final MiaoServer plugin;
     static boolean lobby(World w) { return w != null && (w.getName().equals("lobby") || w.getName().equals("minecraft:lobby")); }
     LobbyGuard(MiaoServer p) {
+        plugin=p;
         // Also update the live configuration if WorldEdit already parsed its file during onLoad.
         WorldEdit.getInstance().getConfiguration().navigationWand = "minecraft:recovery_compass";
         Bukkit.getPluginManager().registerEvents(this, p); WorldEdit.getInstance().getEventBus().register(this);
@@ -46,11 +48,16 @@ final class LobbyGuard implements Listener {
         }
     }
     @Subscribe public void editing(EditSessionEvent e) {
-        if (e.getWorld() == null || !java.util.Set.of("lobby", "minecraft:lobby").contains(e.getWorld().getName()) || e.getStage() != EditSession.Stage.BEFORE_CHANGE) return;
+        if(e.getWorld()==null||e.getStage()!=EditSession.Stage.BEFORE_CHANGE)return;
+        World world=Bukkit.getWorld(e.getWorld().getName());boolean whole=lobby(world);
+        int radius=plugin.getConfig().getInt("spawn-protection.radius",8);
+        if(!whole&&(world==null||radius<0||!plugin.getConfig().getStringList("spawn-protection.worlds").contains(world.getName())))return;
+        Location spawn=world.getSpawnLocation();
         e.setExtent(new AbstractDelegateExtent(e.getExtent()) {
-            @Override public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 p, B b) throws WorldEditException { return false; }
-            @Override public boolean setBiome(BlockVector3 p, com.sk89q.worldedit.world.biome.BiomeType b) { return false; }
-            @Override public com.sk89q.worldedit.entity.Entity createEntity(com.sk89q.worldedit.util.Location l, com.sk89q.worldedit.entity.BaseEntity b) { return null; }
+            private boolean blocked(BlockVector3 p){return whole||(Math.abs((long)p.x()-spawn.getBlockX())<=radius&&Math.abs((long)p.z()-spawn.getBlockZ())<=radius);}
+            @Override public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 p, B b) throws WorldEditException { return blocked(p)?false:super.setBlock(p,b); }
+            @Override public boolean setBiome(BlockVector3 p, com.sk89q.worldedit.world.biome.BiomeType b) { return blocked(p)?false:super.setBiome(p,b); }
+            @Override public com.sk89q.worldedit.entity.Entity createEntity(com.sk89q.worldedit.util.Location l, com.sk89q.worldedit.entity.BaseEntity b) { return blocked(l.toVector().toBlockPoint())?null:super.createEntity(l,b); }
         });
     }
 }

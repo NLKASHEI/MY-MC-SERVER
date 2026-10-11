@@ -29,3 +29,5 @@ gui_menus:
     file: team_confirm.yml
   vein:
     file: vein.yml
+  systemshop:
+    file: systemshop.yml

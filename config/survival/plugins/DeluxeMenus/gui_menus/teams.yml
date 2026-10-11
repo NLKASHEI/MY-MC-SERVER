@@ -33,14 +33,14 @@ items:
     slot: 15
     display_name: '&e邀请伙伴'
     lore:
-    - '&7队长邀请在线且未组队的朋友'
-    - '&f聊天输入：/team invite 玩家'
+    - '&7所有队员都可邀请在线朋友'
+    - '&f点击玩家头像发送邀请'
     left_click_commands:
     - '[close]'
-    - '[message] &6邀请伙伴：&f/team invite 玩家'
+    - '[player] miao teaminvite'
     right_click_commands:
     - '[close]'
-    - '[message] &6邀请伙伴：&f/team invite 玩家'
+    - '[player] miao teaminvite'
   join:
     material: EMERALD
     slot: 20

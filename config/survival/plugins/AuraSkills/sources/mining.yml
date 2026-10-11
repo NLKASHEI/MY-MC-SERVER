@@ -1,0 +1,210 @@
+default:
+  type: block
+  trigger: break
+  check_replace: true
+  menu_item:
+    material: '{block}'
+  income: 0
+sources:
+  stone:
+    block: stone
+    xp: 0.2
+    income: 0
+  cobblestone:
+    block: cobblestone
+    xp: 0.2
+    income: 0
+  andesite:
+    block: andesite
+    xp: 0.2
+    income: 0
+  diorite:
+    block: diorite
+    xp: 0.2
+    income: 0
+  granite:
+    block: granite
+    xp: 0.2
+    income: 0
+  sandstone:
+    block: sandstone
+    xp: 0.2
+    income: 0
+  coal_ore:
+    block: coal_ore
+    xp: 1.0
+    income: 0.1
+  nether_quartz_ore:
+    block: nether_quartz_ore
+    xp: 1.8
+    income: 0.1
+  iron_ore:
+    block: iron_ore
+    xp: 1.8
+    income: 0.15
+  lapis_ore:
+    block: lapis_ore
+    xp: 30.6
+    income: 0.3
+  redstone_ore:
+    block: redstone_ore
+    xp: 5.9
+    income: 0.2
+  gold_ore:
+    block: gold_ore
+    xp: 17.8
+    income: 0.5
+  diamond_ore:
+    block: diamond_ore
+    xp: 47.3
+    income: 2
+  emerald_ore:
+    block: emerald_ore
+    xp: 100.0
+    income: 3
+  terracotta:
+    block: terracotta
+    xp: 0.5
+    income: 0
+  white_terracotta:
+    block: white_terracotta
+    xp: 0.5
+    income: 0
+  orange_terracotta:
+    block: orange_terracotta
+    xp: 0.5
+    income: 0
+  yellow_terracotta:
+    block: yellow_terracotta
+    xp: 0.5
+    income: 0
+  light_gray_terracotta:
+    block: light_gray_terracotta
+    xp: 0.5
+    income: 0
+  brown_terracotta:
+    block: brown_terracotta
+    xp: 0.5
+    income: 0
+  red_terracotta:
+    block: red_terracotta
+    xp: 0.5
+    income: 0
+  netherrack:
+    block: netherrack
+    xp: 0.1
+    income: 0
+  blackstone:
+    block: blackstone
+    xp: 0.3
+    income: 0
+  basalt:
+    block: basalt
+    xp: 0.4
+    income: 0
+  magma_block:
+    block: magma_block
+    xp: 0.7
+    income: 0
+  nether_gold_ore:
+    block: nether_gold_ore
+    xp: 10.0
+    income: 0.1
+  ancient_debris:
+    block: ancient_debris
+    xp: 500.0
+    income: 5
+  end_stone:
+    block: end_stone
+    xp: 0.5
+    income: 0
+  obsidian:
+    block: obsidian
+    xp: 10.0
+    income: 0
+  deepslate:
+    block: deepslate
+    xp: 0.4
+    income: 0
+  copper_ore:
+    block: copper_ore
+    xp: 3.5
+    income: 0.08
+  tuff:
+    block: tuff
+    xp: 0.5
+    income: 0
+  calcite:
+    block: calcite
+    xp: 0.8
+    income: 0
+  smooth_basalt:
+    block: smooth_basalt
+    xp: 0.8
+    income: 0
+  amethyst_block:
+    block: amethyst_block
+    xp: 4.0
+    income: 0
+  amethyst_cluster:
+    block: amethyst_cluster
+    xp: 6.0
+    support_block: side
+    income: 0
+  deepslate_coal_ore:
+    block: deepslate_coal_ore
+    xp: 1.2
+    income: 0.1
+  deepslate_iron_ore:
+    block: deepslate_iron_ore
+    xp: 2.2
+    income: 0.15
+  deepslate_copper_ore:
+    block: deepslate_copper_ore
+    xp: 4.2
+    income: 0.08
+  deepslate_gold_ore:
+    block: deepslate_gold_ore
+    xp: 21.4
+    income: 0.5
+  deepslate_redstone_ore:
+    block: deepslate_redstone_ore
+    xp: 7.1
+    income: 0.2
+  deepslate_lapis_ore:
+    block: deepslate_lapis_ore
+    xp: 36.7
+    income: 0.3
+  deepslate_emerald_ore:
+    block: deepslate_emerald_ore
+    xp: 120.0
+    income: 3
+  deepslate_diamond_ore:
+    block: deepslate_diamond_ore
+    xp: 56.8
+    income: 2
+  dripstone_block:
+    block: dripstone_block
+    xp: 3.2
+    income: 0
+  ice:
+    block: ice
+    xp: 0.3
+    income: 0
+  packed_ice:
+    block: packed_ice
+    xp: 0.8
+    income: 0
+  blue_ice:
+    block: blue_ice
+    xp: 1.3
+    income: 0
+  reinforced_deepslate:
+    block: reinforced_deepslate
+    xp: 125.0
+    income: 0
+tags:
+  mining_luck_applicable:
+  - '*'
+  speed_mine_applicable:
+  - '*'

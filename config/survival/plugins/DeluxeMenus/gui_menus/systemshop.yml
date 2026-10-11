@@ -1,0 +1,173 @@
+menu_title: '&8系统商店 · 南可熙的神奇妙妙服'
+size: 27
+items:
+  heading:
+    material: GOLD_INGOT
+    slot: 4
+    display_name: '&6&l系统商店'
+    lore:
+    - '&7选择分类，点击商品查看价格与数量'
+    - '&7金币余额：&e%vault_eco_balance_fixed%'
+  supplies:
+    material: CHEST
+    slot: 10
+    display_name: '&a基础补给'
+    lore:
+    - '&7方块、火把、食物与圈地工具'
+    - '&f点击查看商品'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao shop supplies'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao shop supplies'
+  resources:
+    material: DIAMOND
+    slot: 12
+    display_name: '&b矿产交易'
+    lore:
+    - '&7煤、铁、铜、金、红石与宝石'
+    - '&7购买补货，也可出售多余矿产'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao shop nlk_resources'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao shop nlk_resources'
+  farming:
+    material: WHEAT
+    slot: 14
+    display_name: '&e农渔收购'
+    lore:
+    - '&7作物、竹子、海带与鱼获'
+    - '&7系统收购，支持批量出售'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao shop nlk_farming'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao shop nlk_farming'
+  drops:
+    material: BONE
+    slot: 16
+    display_name: '&d掉落物收购'
+    lore:
+    - '&7骨头、火药、末影珍珠等掉落物'
+    - '&7把积攒的战利品换成金币'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao shop nlk_drops'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao shop nlk_drops'
+  sell:
+    material: HOPPER
+    slot: 21
+    display_name: '&e出售物品'
+    lore:
+    - '&7只放入愿意卖掉的物品'
+    - '&c关闭窗口即出售，无法撤销'
+    left_click_commands:
+    - '[close]'
+    - '[player] sellgui'
+    right_click_commands:
+    - '[close]'
+    - '[player] sellgui'
+  back:
+    material: ARROW
+    slot: 22
+    display_name: '&f返回指南针'
+    left_click_commands:
+    - '[close]'
+    - '[player] menu'
+    right_click_commands:
+    - '[close]'
+    - '[player] menu'
+  market:
+    material: BARREL
+    slot: 23
+    display_name: '&6玩家集市'
+    lore:
+    - '&7玩家箱子商店与开店帮助'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao menu market'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao menu market'
+  frame_0:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 0
+    display_name: ' '
+  frame_1:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 1
+    display_name: ' '
+  frame_2:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 2
+    display_name: ' '
+  frame_3:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 3
+    display_name: ' '
+  frame_5:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 5
+    display_name: ' '
+  frame_6:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 6
+    display_name: ' '
+  frame_7:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 7
+    display_name: ' '
+  frame_8:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 8
+    display_name: ' '
+  frame_9:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 9
+    display_name: ' '
+  frame_11:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 11
+    display_name: ' '
+  frame_13:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 13
+    display_name: ' '
+  frame_15:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 15
+    display_name: ' '
+  frame_17:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 17
+    display_name: ' '
+  frame_18:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 18
+    display_name: ' '
+  frame_19:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 19
+    display_name: ' '
+  frame_20:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 20
+    display_name: ' '
+  frame_24:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 24
+    display_name: ' '
+  frame_25:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 25
+    display_name: ' '
+  frame_26:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 26
+    display_name: ' '

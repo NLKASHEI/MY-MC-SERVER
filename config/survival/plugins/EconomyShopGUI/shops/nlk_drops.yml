@@ -1,0 +1,52 @@
+pages:
+  page1:
+    gui-rows: 4
+    items:
+      '1':
+        material: ROTTEN_FLESH
+        buy: -1
+        sell: 0.02
+      '2':
+        material: BONE
+        buy: -1
+        sell: 0.06
+      '3':
+        material: STRING
+        buy: -1
+        sell: 0.06
+      '4':
+        material: GUNPOWDER
+        buy: -1
+        sell: 0.15
+      '5':
+        material: ENDER_PEARL
+        buy: -1
+        sell: 0.5
+      '6':
+        material: SLIME_BALL
+        buy: -1
+        sell: 0.08
+      '7':
+        material: BLAZE_ROD
+        buy: -1
+        sell: 0.5
+      '8':
+        material: GHAST_TEAR
+        buy: -1
+        sell: 2
+      '9':
+        material: LEATHER
+        buy: -1
+        sell: 0.1
+      '10':
+        material: FEATHER
+        buy: -1
+        sell: 0.03
+      '11':
+        material: INK_SAC
+        buy: -1
+        sell: 0.1
+      '12':
+        material: GLOW_INK_SAC
+        buy: -1
+        sell: 0.2

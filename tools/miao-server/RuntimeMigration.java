@@ -13,6 +13,9 @@ final class RuntimeMigration {
         veinAndDistance(plugin);
         simulationDistance(plugin);
         respawnRules(plugin);
+        EconomySetup.apply(plugin);
+        ClaimsSetup.apply(plugin);
+        TeamInviteSetup.apply(plugin);
         File marker = new File(plugin.getDataFolder(), "ui-fixes-v080.done");
         if (marker.exists()) return;
         try {

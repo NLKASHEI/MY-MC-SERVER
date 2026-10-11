@@ -1,11 +1,14 @@
 name: MiaoServer
 prefix: NLK
-version: 0.9.7
+version: 0.9.8
 main: cn.nankexi.MiaoServer
 api-version: '26.2'
-depend: [GriefPrevention, AuthMe, floodgate, WorldEdit, Vault]
-loadbefore: [Backuper, DeluxeMenus, VeinMiner]
+depend: [GriefPrevention, AuthMe, floodgate, WorldEdit, WorldGuard, Vault]
+loadbefore: [Backuper, DeluxeMenus, VeinMiner, AuraSkills, EconomyShopGUI]
 commands:
+  land:
+    description: 立体领地与扩大申请
+    permission: survival.claims
   mteam:
     aliases: [team]
     description: 中文组队与共享领地
@@ -20,6 +23,8 @@ commands:
     description: 中文双端绑定流程
     permission: floodgate.command.linkaccount
 permissions:
+  survival.claims:
+    default: true
   survival.team:
     default: true
   miao.compass.teleport:

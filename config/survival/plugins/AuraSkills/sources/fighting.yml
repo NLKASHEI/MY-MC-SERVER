@@ -1,0 +1,268 @@
+default:
+  type: entity
+  entity: '{key}'
+  trigger: death
+  damager: player
+  menu_item:
+    material: '{key}_spawn_egg'
+  income: 0
+sources:
+  player:
+    xp: 50
+    menu_item:
+      material: player_head
+    income: 0
+  bat:
+    xp: 1.0
+    income: 0
+  cat:
+    xp: 1.0
+    income: 0
+  chicken:
+    xp: 1.0
+    income: 0
+  cod:
+    xp: 1.0
+    income: 0
+  cow:
+    xp: 2.0
+    income: 0
+  donkey:
+    xp: 2.0
+    income: 0
+  fox:
+    xp: 3.0
+    income: 0
+  giant:
+    xp: 10.0
+    menu_item:
+      material: zombie_spawn_egg
+    income: 0
+  horse:
+    xp: 2.0
+    income: 0
+  mooshroom:
+    xp: 2.0
+    income: 0
+  mule:
+    xp: 2.0
+    income: 0
+  ocelot:
+    xp: 1.0
+    income: 0
+  parrot:
+    xp: 1.0
+    income: 0
+  pig:
+    xp: 2.0
+    income: 0
+  rabbit:
+    xp: 1.0
+    income: 0
+  salmon:
+    xp: 1.0
+    income: 0
+  sheep:
+    xp: 2.0
+    income: 0
+  skeleton_horse:
+    xp: 3.0
+    income: 0
+  snow_golem:
+    xp: 3.0
+    income: 0
+  squid:
+    xp: 2.0
+    income: 0
+  strider:
+    xp: 3.0
+    income: 0
+  tropical_fish:
+    xp: 1.0
+    income: 0
+  turtle:
+    xp: 2.0
+    income: 0
+  villager:
+    xp: 2.0
+    income: 0
+  wandering_trader:
+    xp: 2.0
+    income: 0
+  bee:
+    xp: 3.0
+    income: 0
+  cave_spider:
+    xp: 5.0
+    income: 0.3
+  dolphin:
+    xp: 3.0
+    income: 0
+  enderman:
+    xp: 7.0
+    income: 0.5
+  iron_golem:
+    xp: 17.0
+    income: 0
+  llama:
+    xp: 4.0
+    income: 0
+  piglin:
+    xp: 5.0
+    income: 0
+  panda:
+    xp: 5.0
+    income: 0
+  polar_bear:
+    xp: 7.0
+    income: 0
+  pufferfish:
+    xp: 1.0
+    income: 0
+  spider:
+    xp: 5.0
+    income: 0.3
+  wolf:
+    xp: 4.0
+    income: 0
+  zombified_piglin:
+    xp: 4.0
+    income: 0.3
+  blaze:
+    xp: 10.0
+    income: 1
+  creeper:
+    xp: 10.0
+    income: 0.3
+  drowned:
+    xp: 7.0
+    income: 0.3
+  elder_guardian:
+    xp: 100.0
+    income: 5
+  endermite:
+    xp: 5.0
+    income: 0.3
+  evoker:
+    xp: 15.0
+    income: 2
+  ghast:
+    xp: 17.0
+    income: 2
+  guardian:
+    xp: 10.0
+    income: 0.5
+  hoglin:
+    xp: 12.0
+    income: 0.5
+  husk:
+    xp: 7.0
+    income: 0.3
+  illusioner:
+    xp: 17.0
+    menu_item:
+      material: evoker_spawn_egg
+    income: 0
+  magma_cube:
+    xp: 12.0
+    income: 0.3
+  phantom:
+    xp: 10.0
+    income: 0.5
+  piglin_brute:
+    xp: 35.0
+    income: 1
+  pillager:
+    xp: 10.0
+    income: 0.5
+  ravager:
+    xp: 100.0
+    income: 3
+  shulker:
+    xp: 15.0
+    income: 1
+  silverfish:
+    xp: 5.0
+    income: 0.3
+  skeleton:
+    xp: 7.0
+    income: 0.3
+  slime:
+    xp: 5.0
+    income: 0.3
+  stray:
+    xp: 8.0
+    income: 0.3
+  vex:
+    xp: 10.0
+    income: 0.5
+  vindicator:
+    xp: 10.0
+    income: 0.5
+  witch:
+    xp: 9.0
+    income: 0.5
+  wither_skeleton:
+    xp: 17.0
+    income: 1
+  zoglin:
+    xp: 12.0
+    income: 0.5
+  zombie:
+    xp: 7.0
+    income: 0.3
+  zombie_villager:
+    xp: 7.0
+    income: 0.3
+  ender_dragon:
+    xp: 7000.0
+    income: 30
+  wither:
+    xp: 7000.0
+    income: 20
+  axolotl:
+    xp: 3.5
+    income: 0
+  glow_squid:
+    xp: 2.5
+    income: 0
+  goat:
+    xp: 3.0
+    income: 0
+  allay:
+    xp: 0.2
+    income: 0
+  frog:
+    xp: 2.0
+    income: 0
+  tadpole:
+    xp: 1.2
+    income: 0
+  warden:
+    xp: 1000.0
+    income: 10
+  armadillo:
+    xp: 3.0
+    income: 0
+  bogged:
+    xp: 9.0
+    income: 0.3
+  breeze:
+    xp: 15.0
+    income: 1
+  camel:
+    xp: 2.0
+    income: 0
+  camel_husk:
+    xp: 2.0
+    income: 0
+  nautilus:
+    xp: 5.0
+    income: 0
+  parched:
+    xp: 8.0
+    income: 0.5
+  zombie_nautilus:
+    xp: 7.0
+    income: 0.5
+file_version: 1

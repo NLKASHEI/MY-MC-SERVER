@@ -1,0 +1,13 @@
+enable: true
+slot: 11
+title: '&8系统商店 · 矿产交易'
+bedrock-title: 系统商店 · 矿产交易
+hidden: false
+display-item: false
+economy: VAULT
+item:
+  material: IRON_INGOT
+  name: '&6矿产交易'
+  lore:
+  - '&7按件收购，出售前查看价格'
+  - '&7物品会被消耗，金币进入钱包'

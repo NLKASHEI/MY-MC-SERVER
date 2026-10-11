@@ -89,15 +89,17 @@ items:
   shop:
     material: EMERALD
     slot: 22
-    display_name: '&6交易中心 · 玩家集市'
+    display_name: '&6系统商店'
     lore:
-    - '&7补给商店与玩家箱子交易'
-    - '&7浏览店铺，查看开店教程'
-    - '&f点击打开交易中心'
-    left_click_commands: &id001
+    - '&7基础补给 · 矿产交易 · 农渔收购'
+    - '&7点击商品购买或出售，玩家集市在商店内'
+    - '&f点击打开可视化商店'
+    left_click_commands:
     - '[close]'
-    - '[player] market'
-    right_click_commands: *id001
+    - '[player] miao shop'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao shop'
   skills:
     material: EXPERIENCE_BOTTLE
     slot: 29

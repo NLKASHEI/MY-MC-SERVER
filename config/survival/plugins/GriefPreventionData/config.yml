@@ -32,14 +32,14 @@ GriefPrevention:
     Accrued Idle Threshold: 0
     AccruedIdlePercent: 0
     AbandonReturnRatio: 1.0
-    AutomaticNewPlayerClaimsRadius: 4
+    AutomaticNewPlayerClaimsRadius: -1
     AutomaticNewPlayerClaimsRadiusMinimum: 0
     ExtendIntoGroundDistance: 5
     MinimumWidth: 5
     MinimumArea: 100
     MaximumDepth: -2147483648
     InvestigationTool: STICK
-    ModificationTool: GOLDEN_SHOVEL
+    ModificationTool: IRON_HOE
     Expiration:
       ChestClaimDays: -1
       UnusedClaimDays: -1

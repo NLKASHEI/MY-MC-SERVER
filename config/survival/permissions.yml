@@ -25,7 +25,8 @@ survival.player:
     economyshopgui.shop: true
     economyshopgui.shop.supplies: true
     authme.player.*: true
-    griefprevention.createclaims: true
+    griefprevention.createclaims: false
+    survival.claims: true
     gsit.sit: true
     skinsrestorer.player: true
     gsit.sitclick: true
@@ -118,6 +119,16 @@ survival.player:
     veinminer.pattern.tunnel: false
     veinminer.pattern.staircase_up: false
     veinminer.pattern.staircase_down: false
+    economyshopgui.sellgui.supplies: true
+    economyshopgui.shop.nlk_resources: true
+    economyshopgui.sellgui.nlk_resources: true
+    economyshopgui.shop.nlk_farming: true
+    economyshopgui.sellgui.nlk_farming: true
+    economyshopgui.shop.nlk_drops: true
+    economyshopgui.sellgui.nlk_drops: true
+    economyshopgui.sellgui: true
+    essentials.back: true
+    essentials.back.ondeath: true
 survival.cleanup:
   description: 管理员手动执行保守掉落物清理
   default: op

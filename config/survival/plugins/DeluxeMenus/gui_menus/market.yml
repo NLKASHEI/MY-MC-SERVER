@@ -6,13 +6,17 @@ items:
   supplies:
     material: EMERALD
     slot: 11
-    display_name: '&a服务器补给店'
+    display_name: '&a系统商店 · 购买与收购'
     lore:
-    - '&7基础生存物资，使用金币购买'
-    left_click_commands: &id001
+    - '&7基础补给、矿产、农渔和掉落物'
+    - '&7购买消耗金币，收购发放金币'
+    - '&f点击查看商品与价格'
+    left_click_commands:
     - '[close]'
-    - '[player] shop'
-    right_click_commands: *id001
+    - '[player] miao shop'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao shop'
   browse:
     material: CHEST
     slot: 13
@@ -21,10 +25,10 @@ items:
     - '&7浏览玩家开设的商店'
     - '&7只有实际库存才能成交'
     - '&f点击打开商店列表'
-    left_click_commands: &id002
+    left_click_commands: &id001
     - '[close]'
     - '[player] qs browse'
-    right_click_commands: *id002
+    right_click_commands: *id001
   tutorial:
     material: WRITABLE_BOOK
     slot: 15
@@ -33,19 +37,19 @@ items:
     - '&7生存世界开店，每人最多 20 家'
     - '&7支持卖出与收购，创建及改价免费'
     - '&f点击查看操作说明'
-    left_click_commands: &id003
+    left_click_commands: &id002
     - '[close]'
     - '[player] guide market'
-    right_click_commands: *id003
+    right_click_commands: *id002
   back:
     material: ARROW
     slot: 22
     display_name: '&f返回玩家中心'
     lore: []
-    left_click_commands: &id004
+    left_click_commands: &id003
     - '[close]'
     - '[player] menu'
-    right_click_commands: *id004
+    right_click_commands: *id003
   border_0:
     material: LIGHT_BLUE_STAINED_GLASS_PANE
     slot: 0
@@ -118,18 +122,6 @@ items:
     display_name: ' '
     left_click_commands: []
     right_click_commands: []
-  border_21:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 21
-    display_name: ' '
-    left_click_commands: []
-    right_click_commands: []
-  border_23:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 23
-    display_name: ' '
-    left_click_commands: []
-    right_click_commands: []
   border_24:
     material: GRAY_STAINED_GLASS_PANE
     slot: 24
@@ -148,3 +140,31 @@ items:
     display_name: ' '
     left_click_commands: []
     right_click_commands: []
+  sell:
+    material: HOPPER
+    slot: 21
+    display_name: '&e出售物品'
+    lore:
+    - '&7只放入你愿意卖掉的物品'
+    - '&c关闭窗口即出售，无法撤销'
+    - '&7未收购物品会退回；两端都能使用'
+    left_click_commands:
+    - '[close]'
+    - '[player] sellgui'
+    right_click_commands:
+    - '[close]'
+    - '[player] sellgui'
+  income:
+    material: GOLD_INGOT
+    slot: 23
+    display_name: '&6金币从哪里来'
+    lore:
+    - '&7挖天然矿石、亲手打怪自动收入'
+    - '&7资源出售、在线奖励也能赚钱'
+    - '&7玩家商店交易会转移金币'
+    left_click_commands:
+    - '[close]'
+    - '[player] guide wallet'
+    right_click_commands:
+    - '[close]'
+    - '[player] guide wallet'

@@ -1,0 +1,13 @@
+enable: true
+slot: 15
+title: '&8系统商店 · 农渔收购'
+bedrock-title: 系统商店 · 农渔收购
+hidden: false
+display-item: false
+economy: VAULT
+item:
+  material: WHEAT
+  name: '&6农渔收购'
+  lore:
+  - '&7按件收购，出售前查看价格'
+  - '&7物品会被消耗，金币进入钱包'

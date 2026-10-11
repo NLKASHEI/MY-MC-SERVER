@@ -28,6 +28,22 @@ try {
     Copy-Item config/survival/plugins/DeluxeMenus/gui_menus/technical.yml "$folder/technical-menu.yml"
     Copy-Item config/survival/plugins/DeluxeMenus/gui_menus/vein.yml "$folder/vein-menu.yml"
     Copy-Item tools/miao-server/vein-messages.json "$folder/vein-messages.json"
+    Copy-Item config/survival/plugins/MiaoServer/economy.yml "$folder/economy-policy.yml"
+    Copy-Item config/survival/plugins/DeluxeMenus/gui_menus/market.yml "$folder/economy-market.yml"
+    Copy-Item config/survival/plugins/DeluxeMenus/gui_menus/systemshop.yml "$folder/systemshop-menu.yml"
+    Copy-Item config/survival/plugins/DeluxeMenus/gui_menus/travel.yml "$folder/economy-travel.yml"
+    foreach ($menu in @('claims','claim_confirm')) {
+      Copy-Item "config/survival/plugins/DeluxeMenus/gui_menus/$menu.yml" "$folder/claims-3d-$menu.yml"
+    }
+    Copy-Item config/survival/plugins/DeluxeMenus/gui_menus/teams.yml "$folder/team-invite-menu.yml"
+    foreach ($skill in @('mining','fighting','archery')) {
+      Copy-Item "config/survival/plugins/AuraSkills/sources/$skill.yml" "$folder/income-$skill.yml"
+    }
+    foreach ($category in @('nlk_resources','nlk_farming','nlk_drops')) {
+      foreach ($shopFolder in @('shops','sections')) {
+        Copy-Item "config/survival/plugins/EconomyShopGUI/$shopFolder/$category.yml" "$folder/economy-$shopFolder-$category.yml"
+      }
+    }
     Copy-Item assets/branding/server-icon.png "$folder/server-icon.png"
   }
   & (Join-Path $jdk 'jar.exe') --create --file $output -C $folder .

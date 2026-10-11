@@ -155,6 +155,10 @@ final class MiaoInterface implements Listener {
         if(a[0].equals("link")){link(p,Arrays.copyOfRange(a,1,a.length));return true;}
         if(a[0].equals("sidebar"))return sidebar(p,Arrays.copyOfRange(a,1,a.length));
         if(a[0].equals("menu")){openServiceMenu(p,a.length>1?a[1]:"survival");return true;}
+        if(a[0].equals("shop")){openShop(p,a.length>1?a[1]:null);return true;}
+        if(a[0].equals("deathback")){deathBack(p);return true;}
+        if(a[0].equals("land"))return plugin.land(p,Arrays.copyOfRange(a,1,a.length));
+        if(a[0].equals("teaminvite")){inviteMenu(p,0);return true;}
         return true;
     }
     private void linkHelp(Player p) {
@@ -191,6 +195,7 @@ final class MiaoInterface implements Listener {
             if(action.startsWith("[player] ")) {
                 String cmd=action.substring(9).trim();String root=cmd.split(" ",2)[0].toLowerCase(Locale.ROOT);
                 if(root.equals("accountlink")){link(p,new String[0]);continue;}
+                if(root.equals("team")){plugin.onCommand(p,plugin.getCommand("mteam"),"mteam",cmd.contains(" ")?cmd.substring(cmd.indexOf(' ')+1).split(" "):new String[0]);continue;}
                 if(root.equals("sidebar")){sidebar(p,cmd.contains(" ")?cmd.substring(cmd.indexOf(' ')+1).split(" "):new String[0]);continue;}
                 if(aliases.containsKey(root)){openMenu(p,aliases.get(root));continue;}
                 p.performCommand(cmd.replace("%player_name%",p.getName()).replace("%player%",p.getName()));
@@ -209,6 +214,34 @@ final class MiaoInterface implements Listener {
             }catch(Exception e){plugin.getLogger().log(java.util.logging.Level.SEVERE,"打开服务中心菜单失败",e);say(p,"菜单打开失败，请联系管理员查看日志。");}
         });
     }
+    private void openShop(Player p,String section) {
+        if(p.getWorld().getName().equals("flat")||p.getGameMode()==GameMode.CREATIVE||p.getGameMode()==GameMode.SPECTATOR){say(p,"请回到生存世界并使用生存模式交易。");return;}
+        if(section==null){openServiceMenu(p,"systemshop");return;}
+        if(!Set.of("supplies","nlk_resources","nlk_farming","nlk_drops").contains(section)||!p.hasPermission("economyshopgui.shop."+section)){say(p,"暂时无法打开该分类。");return;}
+        main(p,()->{
+            try {
+                var shop=Bukkit.getPluginManager().getPlugin("EconomyShopGUI");
+                if(shop==null||!shop.isEnabled())throw new IllegalStateException("EconomyShopGUI not enabled");
+                Object category=shop.getClass().getMethod("getSection",String.class).invoke(shop,section);
+                if(category==null)throw new IllegalStateException("Missing shop section: "+section);
+                Class<?> api=Class.forName("me.gypopo.economyshopgui.objects.shops.ShopSection",true,shop.getClass().getClassLoader());
+                api.getMethod("openShopSection",Player.class,int.class,boolean.class).invoke(category,p,1,true);
+            }catch(Exception e){plugin.getLogger().log(java.util.logging.Level.SEVERE,"打开系统商店失败",e);say(p,"商店暂时无法打开，请联系管理员查看日志。");}
+        });
+    }
+    private void deathBack(Player p) {
+        if(!p.hasPermission("essentials.back")||!p.hasPermission("essentials.back.ondeath")){say(p,"暂时无法返回死亡点。");return;}
+        Location death=p.getLastDeathLocation();
+        if(death==null||death.getWorld()==null){say(p,"还没有可返回的死亡记录。");return;}
+        main(p,()->{
+            try {
+                var essentials=Bukkit.getPluginManager().getPlugin("Essentials");
+                Object user=essentials.getClass().getMethod("getUser",Player.class).invoke(essentials,p);
+                user.getClass().getMethod("setLastLocation",Location.class).invoke(user,death);
+                p.performCommand("essentials:back");
+            }catch(Exception e){plugin.getLogger().log(java.util.logging.Level.SEVERE,"返回死亡点失败",e);say(p,"返回失败，请联系管理员查看日志。");}
+        });
+    }
     private void openMenu(Player p,String name) {
         if(!name.matches("[a-z_]+"))return;
         File f=new File(plugin.getDataFolder().getParentFile(),"DeluxeMenus/gui_menus/"+name+".yml");if(!f.isFile()){say(p,"菜单不存在，请联系管理员。");return;}
@@ -223,8 +256,20 @@ final class MiaoInterface implements Listener {
         if(!FloodgateApi.getInstance().sendForm(p.getUniqueId(),b.build()))say(p,"表单发送失败，请重新打开菜单。");
     }
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void menuCommand(PlayerCommandPreprocessEvent e) {
-        Player p=e.getPlayer();if(!bedrock(p)||!authenticated(p))return;
+        Player p=e.getPlayer();if(!authenticated(p))return;
         String cmd=e.getMessage().substring(1).toLowerCase(Locale.ROOT);String root=cmd.split(" ",2)[0];
+        String simple=root.contains(":")?root.substring(root.indexOf(':')+1):root;
+        if(plugin.inCuboid(p)&&Set.of("trust","untrust","trustlist","abandonclaim","containertrust","accesstrust","permissiontrust").contains(simple)) {
+            e.setCancelled(true);
+            String original=e.getMessage().substring(1);String[] args=original.contains(" ")?original.substring(original.indexOf(' ')+1).trim().split("\\s+"):new String[0];
+            if(Set.of("containertrust","accesstrust","permissiontrust").contains(simple)){say(p,"立体领地使用好友建造信任；精细访问命令仅适用于旧领地。");return;}
+            String action=simple.equals("trustlist")?"info":simple.equals("abandonclaim")?"delete":simple;
+            String[] forwarded=new String[args.length+1];forwarded[0]=action;System.arraycopy(args,0,forwarded,1,args.length);plugin.land(p,forwarded);return;
+        }
+        if(root.equals("team")){e.setCancelled(true);String original=e.getMessage().substring(1);main(p,()->plugin.onCommand(p,plugin.getCommand("mteam"),"mteam",original.contains(" ")?original.substring(original.indexOf(' ')+1).split(" "):new String[0]));return;}
+        if(root.equals("back")||root.equals("essentials:back")){e.setCancelled(true);deathBack(p);return;}
+        if(root.equals("shop")){e.setCancelled(true);openShop(p,cmd.contains(" ")?cmd.substring(cmd.indexOf(' ')+1):null);return;}
+        if(!bedrock(p))return;
         if(!aliases.containsKey(root))return;e.setCancelled(true);openMenu(p,aliases.get(root));
     }
     @EventHandler(priority=EventPriority.HIGHEST) public void click(InventoryClickEvent e) {
@@ -234,6 +279,11 @@ final class MiaoInterface implements Listener {
         main(p,()->clicked(p,h,action));
     }
     private void clicked(Player p,Holder h,String action) {
+        if(h.type.equals("team-invite")) {
+            if(action.equals("back")){p.closeInventory();openServiceMenu(p,"teams");return;}
+            if(action.startsWith("page ")){inviteMenu(p,Integer.parseInt(action.substring(5)));return;}
+            p.closeInventory();inviteTarget(p,UUID.fromString(action));return;
+        }
         if(h.type.equals("link")) {
             Player target=Bukkit.getPlayer(UUID.fromString(action));p.closeInventory();
             if(target==null||!bedrock(target)||!authenticated(target)){say(p,"该手机账号已离线，请重新选择。");return;}
@@ -246,6 +296,33 @@ final class MiaoInterface implements Listener {
         sidebar(p,action.split(" "));if(!action.equals("settings"))settingsInventory(p);
     }
     @EventHandler(priority=EventPriority.HIGHEST) public void drag(InventoryDragEvent e) { if(e.getView().getTopInventory().getHolder() instanceof Holder)e.setCancelled(true); }
+    private void inviteTarget(Player p,UUID id) {
+        Player target=Bukkit.getPlayer(id);
+        if(target==null||!plugin.canInvite(p)||!plugin.inviteCandidate(p,target)){say(p,"队伍权限或玩家状态已变化，请重新选择。");return;}
+        plugin.onCommand(p,plugin.getCommand("mteam"),"mteam",new String[]{"invite",target.getName()});
+    }
+    private void inviteMenu(Player p,int requestedPage) {
+        if(!plugin.canInvite(p)){say(p,"请先加入队伍，并确认队伍未满；队员也能邀请伙伴。");return;}
+        List<? extends Player> players=Bukkit.getOnlinePlayers().stream().filter(q->plugin.inviteCandidate(p,q)).sorted(Comparator.comparing(Player::getName,String.CASE_INSENSITIVE_ORDER)).toList();
+        int page=Math.max(0,Math.min(requestedPage,Math.max(0,(players.size()-1)/28))),start=page*28,end=Math.min(start+28,players.size());
+        if(bedrock(p)) {
+            List<? extends Player> shown=players.subList(start,end);var form=SimpleForm.builder().title("邀请伙伴 · "+(page+1)+"页").content(players.isEmpty()?"暂时没有可邀请的在线玩家。":"点击玩家发送邀请，对方接受后才会加入。");
+            for(Player target:shown)form.button("§e"+target.getName()+"\n§7点击发送队伍邀请");
+            if(page>0)form.button("上一页");if(end<players.size())form.button("下一页");form.button("返回伙伴小队");
+            form.validResultHandler(result->main(p,()->{int choice=result.clickedButtonId();if(choice<shown.size()){inviteTarget(p,shown.get(choice).getUniqueId());return;}int cursor=shown.size();if(page>0&&choice==cursor++){inviteMenu(p,page-1);return;}if(end<players.size()&&choice==cursor++){inviteMenu(p,page+1);return;}openServiceMenu(p,"teams");}));
+            FloodgateApi.getInstance().sendForm(p.getUniqueId(),form.build());return;
+        }
+        Holder h=new Holder(p,"team-invite");h.inventory=Bukkit.createInventory(h,54,"§8邀请在线伙伴 · "+(page+1)+"页");
+        for(int slot=0;slot<54;slot++){ItemStack frame=new ItemStack(Material.GRAY_STAINED_GLASS_PANE);var meta=frame.getItemMeta();meta.setDisplayName(" ");frame.setItemMeta(meta);h.inventory.setItem(slot,frame);}
+        for(int index=start;index<end;index++) {
+            Player target=players.get(index);int offset=index-start,slot=10+(offset/7)*9+offset%7;
+            put(h,slot,Material.PLAYER_HEAD,"§e"+target.getName(),target.getUniqueId().toString(),"§7点击邀请加入你的队伍","§7对方接受后加入，五分钟有效");
+            ItemStack head=h.inventory.getItem(slot);var meta=(org.bukkit.inventory.meta.SkullMeta)head.getItemMeta();meta.setOwningPlayer(target);head.setItemMeta(meta);
+        }
+        put(h,4,Material.BOOK,"§6一起安家 · 选择伙伴","back",players.isEmpty()?"§7暂时没有可邀请玩家":"§7已过滤自己、假人、未登录及已组队玩家");
+        if(page>0)put(h,45,Material.ARROW,"§f上一页","page "+(page-1));if(end<players.size())put(h,53,Material.ARROW,"§f下一页","page "+(page+1));
+        put(h,49,Material.COMPASS,"§f返回伙伴小队","back");p.openInventory(h.inventory);
+    }
     private boolean guide(ItemStack item) {
         return item!=null&&item.getType()==Material.COMPASS&&item.hasItemMeta()
             &&"生存指南针".equals(ChatColor.stripColor(item.getItemMeta().getDisplayName()));

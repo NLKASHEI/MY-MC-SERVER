@@ -32,6 +32,12 @@ public final class MiaoServer extends JavaPlugin implements Listener {
     private volatile int online;
     private MiaoInterface ui;
     private LobbyGuard lobbyGuard;
+    private CuboidClaims cuboids;
+    boolean authenticated(Player p) { return ui != null && ui.authenticated(p); }
+    boolean land(Player p, String[] args) { return cuboids.command(p,args); }
+    boolean inCuboid(Player p) { return cuboids != null && cuboids.at(p.getLocation()) != null; }
+    boolean canInvite(Player p) { String t=team(p.getUniqueId());return authenticated(p)&&p.hasPermission("survival.team")&&t!=null&&members(t).size()<getConfig().getInt("teams.max-members",8); }
+    boolean inviteCandidate(Player p,Player q) { return !p.getUniqueId().equals(q.getUniqueId())&&authenticated(q)&&!dummy(q)&&team(q.getUniqueId())==null; }
     private record Invitation(String team, long expires) {}
     private DataStore claims() { return GriefPrevention.instance.dataStore; }
 
@@ -78,6 +84,10 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         ui = new MiaoInterface(this);
         lobbyGuard = new LobbyGuard(this);
         new DatabaseBackups(this);
+        new EconomyAccess(this);
+        new SpawnGuard(this);
+        cuboids = new CuboidClaims(this);
+        new MajoritySleep(this);
         reconcile();
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             online = (int) Bukkit.getOnlinePlayers().stream().filter(p -> !dummy(p)).count();
@@ -122,11 +132,11 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         ConfigurationSection s = data.getConfigurationSection(path);
         return s == null ? Set.of() : new HashSet<>(s.getKeys(false));
     }
-    private String team(UUID player) {
+    String team(UUID player) {
         for (String t : keys("teams")) if (members(t).contains(player.toString())) return t;
         return null;
     }
-    private List<String> members(String t) { return data.getStringList("teams." + t + ".members"); }
+    List<String> members(String t) { return data.getStringList("teams." + t + ".members"); }
     private boolean leader(Player p, String t) { return p.getUniqueId().toString().equals(data.getString("teams." + t + ".owner")); }
     private String title(String t) { return t == null ? "未加入" : data.getString("teams." + t + ".name", "队伍"); }
     private void notifyTeam(String t, String text) {
@@ -147,6 +157,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         data.set(root + ".grants." + id, null); return true;
     }
     private void reconcile() {
+        if(cuboids!=null)cuboids.syncTeams();
         boolean changed = false;
         for (String key : keys("claims")) {
             String root = "claims." + key;
@@ -156,7 +167,8 @@ public final class MiaoServer extends JavaPlugin implements Listener {
                 && Objects.equals(owner, c.getOwnerID().toString()) && keys("teams").contains(t) && members(t).contains(owner);
             Set<String> wanted = valid ? new HashSet<>(members(t)) : new HashSet<>(); wanted.remove(owner);
             for (String id : keys(root + ".grants")) if (!wanted.contains(id)) {
-                if (c != null && Objects.equals(owner, String.valueOf(c.getOwnerID()))) restore(c, root, id);
+                // Ownership changes end this journal's automatic grants as well.
+                if (c != null) restore(c, root, id);
                 else data.set(root + ".grants." + id, null);
                 changed = true;
             }
@@ -185,6 +197,9 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         if (command.getName().equals("sidebar")) return ui.sidebar(p, a);
         if (command.getName().equals("miao")) return ui.command(p, a);
         if (command.getName().equals("accountlink")) return ui.command(p, new String[]{"link"});
+        if (command.getName().equals("land")) return land(p,a);
+        if(!ui.authenticated(p)){say(p,"请先完成登录。");return true;}
+        if(!p.hasPermission("survival.team")){say(p,"你没有使用组队系统的权限。");return true;}
         String t = team(p.getUniqueId()), sub = a.length == 0 ? "info" : a[0].toLowerCase(Locale.ROOT);
         switch (sub) {
             case "create" -> {
@@ -196,7 +211,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
             }
             case "invite" -> {
                 Player q = a.length == 2 ? Bukkit.getPlayerExact(a[1]) : null;
-                if (t == null || !leader(p, t) || q == null || dummy(q) || team(q.getUniqueId()) != null) { say(p, "队长使用 /team invite 在线且未组队的玩家。"); break; }
+                if (!canInvite(p) || q == null || !inviteCandidate(p,q)) { say(p, "队员均可邀请在线且未组队的玩家；请确认队伍未满。"); break; }
                 invites.put(q.getUniqueId(), new Invitation(t, System.currentTimeMillis() + getConfig().getLong("teams.invite-seconds", 300) * 1000));
                 say(q, p.getName() + " 邀请你加入「" + title(t) + "」，五分钟内输入 /team join 接受。"); say(p, "邀请已发送。");
             }
@@ -225,17 +240,33 @@ public final class MiaoServer extends JavaPlugin implements Listener {
                 if (t == null || !leader(p, t) || a.length != 2 || !a[1].equals("confirm")) { say(p, "队长确认解散：/team disband confirm。只取消共享，不删除领地或建筑。"); break; }
                 notifyTeam(t, "队伍已解散，共享权限已撤销，领地和建筑保留。"); data.set("teams." + t, null); save(); reconcile();
             }
-            case "share", "unshare" -> {
+            case "unshare" -> {
+                if(cuboids.sharing(p,t,true))break;
+                Claim c=claims().getClaimAt(p.getLocation(),true,null);
+                if(c==null||c.parent!=null||c.isAdminClaim()) {say(p,"请站在要取消共享的生存主领地内；子领地单独管理。");break;}
+                if(!p.getUniqueId().equals(c.getOwnerID())&&!p.isOp()){say(p,"只有地主或 OP 可以取消这块领地的共享。");break;}
+                String r="claims."+c.getID();
+                if(!data.contains(r)){say(p,"这块领地没有启用队伍共享。");break;}
+                data.set(r+".team","");save();reconcile();say(p,"已取消队伍共享，领地归属与独立手动信任保留。");
+            }
+            case "share" -> {
+                if(cuboids.sharing(p,t,false))break;
+                // Clean a transfer/leave journal before a new owner explicitly shares again.
+                reconcile();
                 Claim c = ownedClaim(p);
                 if (c == null || t == null || Set.of("flat", "lobby").contains(p.getWorld().getName())) { say(p, "请在生存区自己拥有的主领地内操作，并先加入队伍；子领地单独管理。"); break; }
                 String r = "claims." + c.getID();
-                if (sub.equals("share")) {
-                    if (data.contains(r)) { say(p, "这块领地已经共享，先取消共享再变更绑定。"); break; }
+                    if(data.contains(r)) {
+                        if(!t.equals(data.getString(r+".team"))){say(p,"这块领地已绑定其他队伍，请先取消共享。");break;}
+                        reconcile();
+                        for(String id:members(t))if(!id.equals(p.getUniqueId().toString())) {
+                            ClaimPermission current=c.getPermission(id);
+                            if(current==null||!ClaimPermission.Build.isGrantedBy(current))c.setPermission(id,ClaimPermission.Build);
+                        }
+                        claims().saveClaim(c);say(p,"已重新确认队伍共享，修复队友的建造与箱子权限。");break;
+                    }
                     data.set(r + ".team", t); data.set(r + ".owner", p.getUniqueId().toString()); save(); reconcile();
                     say(p, "领地已共享给「" + title(t) + "」；成员可建造和使用箱子，不能转授权。退队自动撤销。");
-                } else {
-                    data.set(r + ".team", ""); save(); reconcile(); say(p, "已取消队伍共享，保留独立手动信任。");
-                }
             }
             case "chat" -> {
                 if (t == null || a.length < 2) { say(p, "队内聊天：/team chat 消息。"); break; }

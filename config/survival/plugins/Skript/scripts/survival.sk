@@ -33,9 +33,9 @@ command /guide [<text>]:
     executable by: players
     trigger:
         if arg-1 is "claims":
-            send "{@prefix} &e金铲右键选择两角圈地，木棍右键查看归属。"
-            send "&7/trust 玩家：授权建造；/untrust 玩家：撤销；/claimslist：查看圈地。"
-            send "&7/abandonclaim：放弃当前位置圈地；初始 500 格，每小时增加 100 格。"
+            send "{@prefix} &e金铲右键两个立体对角点，长宽高每边最多 25 格；粒子仅自己可见。"
+            send "&7/land trust 玩家：建造信任；/land untrust 玩家：撤销；指南针确认创建。"
+            send "&7超大选区在领地管家申请，由 OP 批准；旧领地继续保留保护。"
         else if arg-1 is "compass":
             if metadata value "fakeplayer:spawned_at" of player is set:
                 if {survival.bot-location::%uuid of player%} is set:
@@ -68,7 +68,7 @@ command /guide [<text>]:
             send "{@prefix} &7/permissiontrust 玩家名：允许管理授权，请只给可信好友。"
         else if arg-1 is "wallet":
             send "{@prefix} &e输入 /balance 查看金币；/pay 玩家名 金额 转账。"
-            send "{@prefix} &7主城与生存共用钱包，创造世界禁止交易。"
+            send "{@prefix} &7挖天然矿石、亲手打怪自动赚金币；交易中心可出售资源，在线奖励也发金币。"
         else if arg-1 is "password":
             send "{@prefix} &e/changepassword 旧密码 新密码：修改服内登录密码。"
             send "{@prefix} &7在聊天命令中填写，不要发送普通聊天消息或公开密码。"

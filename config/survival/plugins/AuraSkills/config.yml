@@ -116,9 +116,9 @@ boss_bar:
   money_format: '0.00'
   animate_progress: true
 jobs:
-  enabled: false
+  enabled: true
   selection:
-    require_selection: true
+    require_selection: false
     default_job_limit: 2
     disable_unselected_xp: false
     cooldown_sec: 0
@@ -126,9 +126,9 @@ jobs:
     use_xp: true
     use_expression: false
     default:
-      income_per_xp: 0.1
+      income_per_xp: 0.0
       expression: 0.1*xp
-    use_final_xp: true
+    use_final_xp: false
     batching:
       enabled: false
       interval_ms: 2000

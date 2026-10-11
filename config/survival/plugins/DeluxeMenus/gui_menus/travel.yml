@@ -163,13 +163,6 @@ items:
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_21:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 21
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
   frame_23:
     material: LIGHT_BLUE_STAINED_GLASS_PANE
     slot: 23
@@ -198,3 +191,17 @@ items:
     lore: []
     left_click_commands: []
     right_click_commands: []
+  deathback:
+    material: RECOVERY_COMPASS
+    slot: 21
+    display_name: '&e返回死亡点'
+    lore:
+    - '&7回到最近一次死亡的位置'
+    - '&7保留传送等待、安全检查与冷却'
+    - '&c危险地区可能无法直接返回'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao deathback'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao deathback'

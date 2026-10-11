@@ -10,6 +10,8 @@ Windows 云服务器使用的 Paper 26.2 原版生存辅助服务端。Java 离�
 
 ## 快速使用
 
+金币来自初始赠送、在线活跃奖励、天然矿石开采、亲手打怪和系统收购。指南针交易中心整合系统商店、出售窗口与玩家箱子交易，详见 [金币与交易](docs/operations/economy.md)。
+
 完整部署包：从 [GitHub Release](https://github.com/NLKASHEI/MY-MC-SERVER/releases/latest) 下载 ZIP 和 SHA256 校验文件。GitHub 自动生成的 Source code 仅是源码，不包含 Java 和插件。
 
 以后更新：服务器控制台输入 `stop`，退出后双击 **一键更新.bat**，程序自动获取我们发布的正式更新包、核验 SHA256、完整备份并替换变化的文件。存档、玩家数据、密钥、内存设置保留；本地改过的配置保留，冲突新版另存为 `.new`，详见 [更新指南](docs/operations/update-guide.md)。无需安装 Git、Python 或登录 GitHub。
@@ -55,3 +57,5 @@ JAR 和 Java 保留各自上游许可证。仓库保存项目配置、脚本、�
 新增 Backuper 定时备份与保留清理、QuickShop-Hikari 玩家箱子交易，以及 Java 遥远地平线服务端支持。创世神 WorldEdit 已安装，仅供管理员使用。详见 [备份、集市与远景指南](docs/operations/backup-market-dh.md)。
 
 连锁挖矿使用 VeinMiner 2.4.1：指南针 → 生电工具箱 → 连锁挖矿，默认蹲下触发，可选择自动触发；只连矿石、最多 32 块，正常消耗耐久与饥饿。服务端视距 20、模拟距离 15。已有 ViaVersion / ViaBackwards 5.12.1 支持 Java 协议版本兼容，详见 [挖矿与版本指南](docs/operations/vein-version.md)。
+
+新领地长、宽、高分别最多 25 格，金铲选两个立体角点、私人粒子预览，超限需 OP 审批；旧领地保留。队员可通过在线玩家头像邀请伙伴，PE 使用原生列表。生存世界 51% 入睡即可跳过夜晚。详见 [立体领地](docs/operations/claims-3d.md)。
