@@ -44,6 +44,7 @@ backup:
   - plugins/Backuper.jar
   - plugins/DHSupport.jar
   - plugins/MiaoServer.jar
+  - plugins/VeinMiner.jar
   - plugins/LuckPerms/luckperms-h2-v2.mv.db
   - plugins/QuickShop-Hikari/shops.mv.db
   - plugins/PacketEvents.jar

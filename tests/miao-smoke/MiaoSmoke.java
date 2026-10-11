@@ -60,6 +60,16 @@ public class MiaoSmoke extends JavaPlugin {
    }
    ok(menuSlots.size()==45&&menu.getInt("items.sidebar.slot")==33,"complete grid and growth button");
    ok(menu.getStringList("items.sidebar.left_click_commands").contains("[player] sidebar settings"),"growth action preserved");
+   var vein=Bukkit.getPluginManager().getPlugin("VeinMiner");ok(vein!=null&&vein.isEnabled(),"VeinMiner loaded on Paper 26.2");
+   var veinConfig=YamlConfiguration.loadConfiguration(new java.io.File(vein.getDataFolder(),"config.yml"));
+   ok(veinConfig.getInt("MaxVeinSize")==32&&!veinConfig.getBoolean("OnlyDamageOnFirstBlock"),"bounded vein with normal durability");
+   ok(veinConfig.getStringList("DisabledWorlds").containsAll(List.of("lobby","flat")),"vein disabled in lobby and creative world");
+   var technical=YamlConfiguration.loadConfiguration(new java.io.File(m.getDataFolder().getParentFile(),"DeluxeMenus/gui_menus/technical.yml"));
+   ok(technical.getStringList("items.vein.left_click_commands").contains("[openguimenu] vein"),"vein menu attached");
+   ok(new java.io.File(vein.getDataFolder(),"messages.json").isFile(),"localized messages installed");
+   var permissionFile=new YamlConfiguration();permissionFile.options().pathSeparator('|');permissionFile.load(new java.io.File(m.getDataFolder().getParentFile().getParentFile(),"permissions.yml"));
+   ok(permissionFile.getBoolean("survival.player|children|veinminer.command.toggle"),"permission migration keeps literal dotted keys");
+   ok(w.getViewDistance()==20,"runtime view distance 20");
    String setting="players."+owner+".sidebar.enabled";
    preferences.set(setting,false);render.invoke(m,p);ok(board[0].getObjective(DisplaySlot.SIDEBAR)==null,"sidebar disable detaches");
    preferences.set(setting,true);render.invoke(m,p);ok(board[0].getObjective(DisplaySlot.SIDEBAR)!=null,"sidebar enabled again");preferences.set(setting,null);

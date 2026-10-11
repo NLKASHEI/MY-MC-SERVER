@@ -112,6 +112,12 @@ survival.player:
     quickshop.history.owned: true
     quickshop.browse.teleport: false
     survival.team: true
+    veinminer.command.toggle: true
+    veinminer.command.mode: true
+    veinminer.veinmine.pickaxe: true
+    veinminer.pattern.tunnel: false
+    veinminer.pattern.staircase_up: false
+    veinminer.pattern.staircase_down: false
 survival.cleanup:
   description: 管理员手动执行保守掉落物清理
   default: op
@@ -137,3 +143,4 @@ survival.dummy:
     quickshop.use: false
     quickshop.create.sell: false
     quickshop.create.buy: false
+    veinminer.veinmine.*: false

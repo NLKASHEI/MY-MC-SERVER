@@ -1,0 +1,175 @@
+menu_title: '&8连锁挖矿'
+open_command:
+- vein-menu
+size: 27
+items:
+  toggle:
+    material: IRON_PICKAXE
+    slot: 10
+    display_name: '&a连锁挖矿开关'
+    lore:
+    - '&7开启 / 关闭自己的连锁挖矿'
+    - '&7只连同类矿石，最多 32 块'
+    - '&7正常消耗耐久与饥饿，遵守领地权限'
+    left_click_commands:
+    - '[close]'
+    - '[player] veinminer toggle'
+    right_click_commands:
+    - '[close]'
+    - '[player] veinminer toggle'
+  sneak:
+    material: LEATHER_BOOTS
+    slot: 12
+    display_name: '&b蹲下触发'
+    lore:
+    - '&7PC 按住 Shift，PE 点击潜行'
+    - '&7蹲下挖矿时才触发连锁'
+    left_click_commands:
+    - '[close]'
+    - '[player] veinminer mode sneak'
+    right_click_commands:
+    - '[close]'
+    - '[player] veinminer mode sneak'
+  always:
+    material: REDSTONE_TORCH
+    slot: 14
+    display_name: '&e自动触发'
+    lore:
+    - '&7开关处于开启状态时，挖矿自动连锁'
+    - '&7手机玩家无需一直潜行'
+    - '&7不在主城 / 创造世界生效'
+    left_click_commands:
+    - '[close]'
+    - '[player] veinminer mode always'
+    right_click_commands:
+    - '[close]'
+    - '[player] veinminer mode always'
+  back:
+    material: ARROW
+    slot: 22
+    display_name: '&f返回工具箱'
+    lore:
+    - '&7回到生电与挖矿工具'
+    left_click_commands:
+    - '[openguimenu] technical'
+    right_click_commands:
+    - '[openguimenu] technical'
+  frame_0:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 0
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_1:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 1
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_2:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 2
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_3:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 3
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_4:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 4
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_5:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 5
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_6:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 6
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_7:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 7
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_8:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 8
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_18:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 18
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_19:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 19
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_20:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 20
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_21:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 21
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_23:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 23
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_24:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 24
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_25:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 25
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  frame_26:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 26
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []

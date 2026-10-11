@@ -51,6 +51,12 @@ public final class MiaoServer extends JavaPlugin implements Listener {
     }
     @Override public void onEnable() {
         saveDefaultConfig(); store = new File(getDataFolder(), "teams.yml");
+        File distanceMarker=new File(getDataFolder(),"view-distance-runtime-v095.done");
+        if(!distanceMarker.exists()) {
+            Bukkit.getWorlds().forEach(w->w.setViewDistance(20));
+            try { Files.writeString(distanceMarker.toPath(),"First startup applied view-distance=20\n"); }
+            catch(IOException e){throw new IllegalStateException("Cannot record view distance migration",e);}
+        }
         data = new YamlConfiguration();
         try { if (store.exists()) data.load(store); }
         catch (Exception e) { throw new IllegalStateException("Refusing to replace unreadable team data", e); }

@@ -1,0 +1,19 @@
+Pickaxe:
+  Items:
+  - minecraft:wooden_pickaxe
+  - minecraft:stone_pickaxe
+  - minecraft:golden_pickaxe
+  - minecraft:iron_pickaxe
+  - minecraft:diamond_pickaxe
+  - minecraft:netherite_pickaxe
+  BlockList:
+  - '#minecraft:coal_ores'
+  - '#minecraft:copper_ores'
+  - '#minecraft:diamond_ores'
+  - '#minecraft:emerald_ores'
+  - '#minecraft:gold_ores'
+  - '#minecraft:iron_ores'
+  - '#minecraft:lapis_ores'
+  - '#minecraft:redstone_ores'
+  - minecraft:ancient_debris
+  - minecraft:nether_quartz_ore

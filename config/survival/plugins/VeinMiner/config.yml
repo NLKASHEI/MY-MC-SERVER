@@ -1,0 +1,41 @@
+MetricsEnabled: false
+PerformUpdateChecks: false
+DefaultActivationStrategy: SNEAK
+DefaultVeinMiningPattern: veinminer:default
+CollectItemsAtSource: true
+CollectExperienceAtSource: true
+OnlyDamageOnFirstBlock: false
+NerfMcMMO: false
+Jobs:
+  NerfExpGain: false
+  NerfCurrencyGain: false
+RepairFriendly: false
+RepairFriendlyDurability: 1
+MaxVeinSize: 32
+Cost: 0.0
+DisabledWorlds:
+- lobby
+- flat
+DisabledGameModes:
+- CREATIVE
+- SPECTATOR
+- ADVENTURE
+Hunger:
+  HungerModifier: 1.0
+  MinimumFoodLevel: 4
+Client:
+  AllowActivationKeybind: false
+  AllowPatternSwitchingKeybind: false
+  AllowWireframeRendering: false
+Storage:
+  Type: SQLite
+  JSON:
+    Directory: '%plugin%/playerdata/'
+  MySQL:
+    Host: localhost
+    Port: 3306
+    Username: username
+    Password: password
+    Database: veinminer
+    TablePrefix: veinminer_
+Aliases: {}

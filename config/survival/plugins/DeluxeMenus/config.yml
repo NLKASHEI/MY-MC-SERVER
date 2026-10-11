@@ -27,3 +27,5 @@ gui_menus:
     file: teams.yml
   team_confirm:
     file: team_confirm.yml
+  vein:
+    file: vein.yml

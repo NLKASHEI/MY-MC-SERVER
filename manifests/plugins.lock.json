@@ -183,14 +183,20 @@
   },
   {
     "name": "MiaoServer",
-    "version": "0.9.4",
-    "url": "https://github.com/NLKASHEI/MY-MC-SERVER/releases/download/v0.9.4/MiaoServer-0.9.4.jar",
-    "sha256": "933e1c89520860c26ccb1c5c2a9ccf920874fe778450001cc7cb41e7af89da51"
+    "version": "0.9.5",
+    "url": "https://github.com/NLKASHEI/MY-MC-SERVER/releases/download/v0.9.5/MiaoServer-0.9.5.jar",
+    "sha256": "5041513cf427c5ee613c692d5699a3f3c1b4935c4c70dcc15d21bb4189cea4cd"
   },
   {
     "name": "PacketEvents",
     "version": "2.14.0+spigot",
     "url": "https://cdn.modrinth.com/data/HYKaKraK/versions/m78nFxYg/packetevents-spigot-2.14.0.jar",
     "sha256": "060087c58ec268eae7dd0eb1f17ac3bea1eaadda1693414141ff64e506091bd7"
+  },
+  {
+    "name": "VeinMiner",
+    "version": "2.4.1",
+    "url": "https://github.com/2008Choco/VeinMiner/releases/download/v2.4.1/VeinMiner-Bukkit-2.4.1.jar",
+    "sha256": "2d2e85d89db6c284c43494e2ceb48e730d1e378fa8b02e41232ef187159134ab"
   }
 ]

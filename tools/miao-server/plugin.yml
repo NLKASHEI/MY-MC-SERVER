@@ -1,10 +1,10 @@
 name: MiaoServer
 prefix: NLK
-version: 0.9.4
+version: 0.9.5
 main: cn.nankexi.MiaoServer
 api-version: '26.2'
 depend: [GriefPrevention, AuthMe, floodgate, WorldEdit, Vault]
-loadbefore: [Backuper, DeluxeMenus]
+loadbefore: [Backuper, DeluxeMenus, VeinMiner]
 commands:
   mteam:
     aliases: [team]

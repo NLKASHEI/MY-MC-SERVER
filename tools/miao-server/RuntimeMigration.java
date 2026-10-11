@@ -10,6 +10,7 @@ final class RuntimeMigration {
     static void apply(MiaoServer plugin) {
         branding(plugin);
         menuLayout(plugin);
+        veinAndDistance(plugin);
         File marker = new File(plugin.getDataFolder(), "ui-fixes-v080.done");
         if (marker.exists()) return;
         try {
@@ -134,6 +135,70 @@ final class RuntimeMigration {
             plugin.getDataFolder().mkdirs();Files.writeString(marker.toPath(),"Compact 5x3 layout; existing button actions preserved\n");
             plugin.getLogger().info("指南针已重排为五列三排，保留原有按钮功能与本地文案。");
         }catch(Exception e){throw new IllegalStateException("Cannot migrate compass menu layout",e);}
+    }
+    private static void veinAndDistance(MiaoServer plugin) {
+        File marker=new File(plugin.getDataFolder(),"vein-distance-v095-v2.done");
+        if(marker.exists())return;
+        try {
+            File plugins=plugin.getDataFolder().getParentFile();
+            File messages=new File(plugins,"VeinMiner/messages.json");
+            if(!messages.exists()) {
+                messages.getParentFile().mkdirs();
+                try(InputStream in=plugin.getResource("vein-messages.json")){if(in==null)throw new IOException("Missing vein messages");Files.copy(in,messages.toPath());}
+            }
+            File menu=new File(plugins,"DeluxeMenus/gui_menus/vein.yml");
+            if(!menu.exists())try(InputStream in=plugin.getResource("vein-menu.yml")){if(in==null)throw new IOException("Missing vein menu");Files.copy(in,menu.toPath());}
+            File config=new File(plugins,"DeluxeMenus/config.yml");
+            YamlConfiguration y=YamlConfiguration.loadConfiguration(config);
+            if(!y.contains("gui_menus.vein")){y.set("gui_menus.vein.file","vein.yml");write095(config,y);}
+            File technical=new File(plugins,"DeluxeMenus/gui_menus/technical.yml");
+            y=YamlConfiguration.loadConfiguration(technical);
+            if(!y.contains("items.vein")) {
+                boolean occupied=false;
+                var items=y.getConfigurationSection("items");
+                if(items!=null)for(String key:items.getKeys(false))if(y.getInt("items."+key+".slot",-1)==25)occupied=true;
+                if(!occupied)try(InputStream in=plugin.getResource("technical-menu.yml")) {
+                    var template=YamlConfiguration.loadConfiguration(new InputStreamReader(in,java.nio.charset.StandardCharsets.UTF_8));
+                    y.set("items.vein",template.getConfigurationSection("items.vein").getValues(true));
+                    Map<String,Integer> oldSlots=Map.of("stop",20,"kick",22,"help",24);
+                    boolean standard=oldSlots.entrySet().stream().allMatch(e->ySlot(technical,e.getKey(),e.getValue()));
+                    if(standard)for(String key:oldSlots.keySet())y.set("items."+key+".slot",template.getInt("items."+key+".slot"));
+                    write095(technical,y);
+                }
+            }
+            File permissions=new File(plugins.getParentFile(),"permissions.yml");
+            y=new YamlConfiguration();y.options().pathSeparator('|');if(permissions.exists())y.load(permissions);boolean changed=false;
+            for(String node:List.of("veinminer.command.toggle","veinminer.command.mode","veinminer.veinmine.pickaxe")) {
+                String path="survival.player|children|"+node;
+                if(!y.contains(path)){y.set(path,true);changed=true;}
+            }
+            for(String node:List.of("veinminer.pattern.tunnel","veinminer.pattern.staircase_up","veinminer.pattern.staircase_down")) {
+                String path="survival.player|children|"+node;
+                if(!y.contains(path)){y.set(path,false);changed=true;}
+            }
+            if(!y.contains("survival.dummy|children|veinminer.veinmine.*")){y.set("survival.dummy|children|veinminer.veinmine.*",false);changed=true;}
+            if(changed)write095(permissions,y);
+            File properties=new File(plugins.getParentFile(),"server.properties");
+            String text=Files.readString(properties.toPath());
+            String updated=text.replaceAll("(?m)^view-distance=[^\\r\\n]*","view-distance=20");
+            if(updated.equals(text)&&!text.matches("(?s).*\\bview-distance=.*"))updated=text+"\nview-distance=20\n";
+            if(!updated.equals(text)) {
+                File backup=new File(properties.getParentFile(),"server.properties.before-v095");
+                if(!backup.exists())Files.copy(properties.toPath(),backup.toPath());
+                Files.writeString(properties.toPath(),updated);
+            }
+            plugin.getDataFolder().mkdirs();Files.writeString(marker.toPath(),"Vein menu installed; view-distance=20; local settings preserved\n");
+            plugin.getLogger().info("连锁挖矿已接入工具箱；服务端视距设为 20，模拟距离保持原值。");
+        }catch(Exception e){throw new IllegalStateException("Cannot apply vein mining and view distance settings",e);}
+    }
+    private static boolean ySlot(File file,String key,int expected) {
+        return YamlConfiguration.loadConfiguration(file).getInt("items."+key+".slot",-1)==expected;
+    }
+    private static void write095(File file,YamlConfiguration y)throws IOException {
+        File backup=new File(file.getParentFile(),file.getName()+".before-v095");
+        if(file.exists()&&!backup.exists())Files.copy(file.toPath(),backup.toPath());
+        File tmp=new File(file.getParentFile(),file.getName()+".nlk-tmp");y.save(tmp);
+        Files.move(tmp.toPath(),file.toPath(),StandardCopyOption.REPLACE_EXISTING);
     }
     private static void patch(MiaoServer p, String name, Map<String, Object> values) throws Exception {
         File file = new File(p.getDataFolder().getParentFile(), name);
