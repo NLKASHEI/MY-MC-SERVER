@@ -98,7 +98,7 @@ final class CrossplaySync implements Listener {
         Account own=current(p);record(own);save();Binding b=binding(own.id());
         if(b!=null){say(p,"双端进度来源：「"+b.source()+"」。当前使用同一份数据，另一端登录也会继承。");return;}
         if(!p.hasPermission("floodgate.command.linkaccount"))return;
-        List<Account> peers=accounts.values().stream().filter(q->candidate(own,q,true)&&binding(q.id())==null&&q.first()<=own.first()).sorted(Comparator.comparingLong(Account::first)).limit(4).toList();
+        List<Account> peers=accounts.values().stream().filter(q->candidate(own,q,true)&&binding(q.id())==null).sorted(Comparator.comparingLong(Account::first)).limit(4).toList();
         if(peers.isEmpty())return;
         say(p,"检测到同 IP 的另一个平台账号。你可以验证其服内密码并继承它的进度，也可以忽略，稍后在账号菜单手动绑定。");
         if(ui.bedrock(p))picker(p,peers,0,"发现可同步的进度");

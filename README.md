@@ -64,4 +64,4 @@ JAR 和 Java 保留各自上游许可证。仓库保存项目配置、脚本、�
 
 0.9.9 同时新增公开昵称与私人好友备注，PC 头像菜单、PE 原生表单，实际账号和 UUID 不变；见 [昵称与备注](docs/operations/player-names.md)。
 
-双端绑定支持同 IP 候选提示、对方账号密码验证，以及选择 PE/PC 进度来源；见 [双端进度同步](docs/operations/crossplay-sync.md)。新部署包启动内存 4–12GB，已有云服保留本地内存设置。
+双端绑定支持同 IP 候选提示、对方账号密码验证，以及选择 PE/PC 进度来源；见 [双端进度同步](docs/operations/crossplay-sync.md)。新部署包启动内存 4–12GB，旧默认 2–6GB 首次启动有备份地合并升级，自行调整的内存保留。

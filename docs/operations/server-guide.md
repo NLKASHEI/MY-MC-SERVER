@@ -4,7 +4,7 @@
 
 完整部署包自带 Windows x64 Java 25。解压到本地磁盘，阅读 https://aka.ms/MinecraftEULA，接受后将 `servers/survival/eula.txt` 设为 `eula=true`，双击 `启动服务器.bat`。
 
-`server-settings.json` 按服主 16GB 机器设置初始堆内存 4GB、最大 12GB。已有云服的一键更新保留这个文件，需要在云服把 `memoryMin` 改为 `4G`、`memoryMax` 改为 `12G`，停服后重新启动生效。
+`server-settings.json` 按服主 16GB 机器设置初始堆内存 4GB、最大 12GB。已有云服更新后首次启动，只把原默认 `2G/6G` 合并为 `4G/12G`，保留其他字段并备份原文件。自行调整过的内存配置保留；已迁移后即使重新改为 `2G/6G`，也不会再次覆盖。
 
 云安全组和 Windows 防火墙开放 Java TCP 25565、基岩 UDP 8585。当前 Geyser 使用 RakNet 监听；以后启用 NetherNet 时需要按其配置重新核查 TCP/UDP 和公告地址。本项目没有修改测试电脑的防火墙。
 
