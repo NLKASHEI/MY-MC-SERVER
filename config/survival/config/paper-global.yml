@@ -1,0 +1,7 @@
+_version: 31
+unsupported-settings:
+  allow-piston-duplication: true
+  allow-headless-pistons: true
+  allow-permanent-block-break-exploits: true
+  allow-unsafe-end-portal-teleportation: true
+  skip-tripwire-hook-placement-validation: true
