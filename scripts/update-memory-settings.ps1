@@ -13,4 +13,5 @@ $settings.memoryMax = '12G'
 $temp = $SettingsFile + '.memory-tmp'
 $settings | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $temp -Encoding UTF8
 Move-Item -LiteralPath $temp -Destination $SettingsFile -Force
-Write-Host '旧默认启动内存已更新为 4–12GB；原配置保存在 server-settings.json.before-memory-v099。'
+# Keep this source ASCII: Windows PowerShell 5.1 reads BOM-less scripts as ANSI.
+Write-Host 'Default memory updated to 4-12GB. Backup: server-settings.json.before-memory-v099'
