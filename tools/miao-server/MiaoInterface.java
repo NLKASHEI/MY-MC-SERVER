@@ -24,6 +24,7 @@ import org.geysermc.cumulus.form.*;
 final class MiaoInterface implements Listener {
     private final MiaoServer plugin;
     final PlayerNames names;
+    final CrossplaySync sync;
     private final YamlConfiguration prefs = new YamlConfiguration();
     private final File file;
     private final Map<UUID, Long> started = new HashMap<>(), checkpoint = new HashMap<>();
@@ -45,6 +46,7 @@ final class MiaoInterface implements Listener {
         plugin=p; file=new File(p.getDataFolder(),"preferences.yml");
         World lobby=Bukkit.getWorld("lobby");initialLobbySpawn=lobby==null?null:lobby.getSpawnLocation().clone();
         try { if (file.exists()) prefs.load(file); } catch(Exception e) { throw new IllegalStateException("Cannot read sidebar preferences",e); }
+        sync=new CrossplaySync(p,this);
         names=new PlayerNames(p,this);
         scanMenus(); Bukkit.getPluginManager().registerEvents(this,p);
         Bukkit.getScheduler().runTaskTimer(p,()->{ for(Player player:Bukkit.getOnlinePlayers()) { flushTime(player); if(authenticated(player)) decorate(player); } save(); },1200,1200);
@@ -154,7 +156,7 @@ final class MiaoInterface implements Listener {
     boolean command(Player p,String[] a) {
         if(!authenticated(p)){say(p,"请先完成登录。");return true;}
         if(a.length==0){openServiceMenu(p,"survival");return true;}
-        if(a[0].equals("link")){link(p,Arrays.copyOfRange(a,1,a.length));return true;}
+        if(a[0].equals("link")||a[0].equals("sync")){sync.command(p,Arrays.copyOfRange(a,1,a.length));return true;}
         if(a[0].equals("sidebar"))return sidebar(p,Arrays.copyOfRange(a,1,a.length));
         if(a[0].equals("menu")){openServiceMenu(p,a.length>1?a[1]:"survival");return true;}
         if(a[0].equals("shop")){openShop(p,a.length>1?a[1]:null);return true;}
@@ -165,13 +167,6 @@ final class MiaoInterface implements Listener {
         if(a[0].equals("names")){names.command(p,Arrays.copyOfRange(a,1,a.length));return true;}
         return true;
     }
-    private void linkHelp(Player p) {
-        // Account identity stays separate from the public web map.
-        say(p,"绑定后固定使用 Java 身份，与谁先输入命令无关。先转移旧 PE 物品，绑定不自动合并存档。");
-        say(p,"Java：/linkaccount 手机Xbox名（不带 . 或 [PE]，空格用引号包住）。");
-        say(p,"PE：/linkaccount Java账号名 验证码；然后重连，使用 Java 账号的服内密码。");
-        say(p,"想保留旧 PE 进度作为基础，请先联系管理员迁移，不要直接绑定。");
-    }
     private void mapLink(Player p) {
         String url=plugin.getConfig().getString("online-map.url","");
         try {var uri=java.net.URI.create(url);if(!Set.of("http","https").contains(uri.getScheme())||uri.getHost()==null||uri.getUserInfo()!=null)throw new IllegalArgumentException();}
@@ -180,20 +175,7 @@ final class MiaoInterface implements Listener {
         if(bedrock(p))FloodgateApi.getInstance().sendForm(p.getUniqueId(),SimpleForm.builder().title("南可熙 · 在线地图").content("浏览器可查看三维地图和建筑。\n\n"+url+"\n\n若手机无法点击聊天链接，请复制地址到浏览器。地图更新有渲染延迟。").button("返回指南针").validResultHandler(r->main(p,()->openServiceMenu(p,"survival"))).build());
     }
     private void link(Player p,String[] args) {
-        linkHelp(p);
-        if(bedrock(p)) {
-            CustomForm form=CustomForm.builder().title("完成 PC / PE 绑定").label("先在 Java 上发起绑定，再填写 Java 账号名和验证码。这里不收集密码。")
-                .input("Java 账号名","例如 NLKASHEI").input("绑定验证码","由 Java 端收到")
-                .validResultHandler(r->{String name=r.asInput(1).trim(),code=r.asInput(2).trim();main(p,()->{
-                    if(!name.matches("[A-Za-z0-9_]{1,16}")||!code.matches("[A-Za-z0-9-]{1,64}")){say(p,"账号名或验证码格式不正确。");return;}
-                    p.performCommand("linkaccount "+name+" "+code);
-                });}).build();FloodgateApi.getInstance().sendForm(p.getUniqueId(),form);
-        } else {
-            List<? extends Player> candidates=Bukkit.getOnlinePlayers().stream().filter(q->bedrock(q)&&authenticated(q)&&!FloodgateApi.getInstance().getPlayer(q.getUniqueId()).isLinked()).limit(21).toList();
-            if(candidates.isEmpty()){say(p,"请先让未绑定的 PE 账号登录，再点这个按钮；或按上面的命令填写 Xbox 名。");return;}
-            Holder h=new Holder(p,"link");h.inventory=Bukkit.createInventory(h,27,"§8选择你的 PE 账号 · 发起绑定");
-            for(int i=0;i<candidates.size();i++){Player q=candidates.get(i);put(h,i,Material.PLAYER_HEAD,"§b"+display(q),q.getUniqueId().toString(),"§7只选择你自己拥有的手机账号","§7对方输入验证码后才完成绑定","§c绑定采用当前 Java 身份，不会合并旧存档");}p.openInventory(h.inventory);
-        }
+        sync.command(p,args);
     }
     private void scanMenus() {
         File dir=new File(plugin.getDataFolder().getParentFile(),"DeluxeMenus/gui_menus");File[] files=dir.listFiles((d,n)->n.endsWith(".yml"));if(files==null)return;
@@ -383,6 +365,12 @@ final class MiaoInterface implements Listener {
             boolean compass=false;for(ItemStack i:p.getInventory().getContents())if(i!=null&&i.getType()==Material.COMPASS&&i.hasItemMeta()&&i.getItemMeta().getDisplayName().equals("§a生存指南针"))compass=true;
             if(!compass){ItemStack i=new ItemStack(Material.COMPASS);ItemMeta meta=i.getItemMeta();meta.setDisplayName("§a生存指南针");meta.setLore(List.of("§7右键打开服务中心","§7管理员左键传送，普通玩家左键无操作"));i.setItemMeta(meta);p.getInventory().addItem(i);}
             say(p,"欢迎来到 §6南可熙的神奇妙妙服§f！右键指南针选择世界。");
+            String version=plugin.getDescription().getVersion();
+            if(!version.equals(prefs.getString(path(p)+".update-notice-version"))) {
+                say(p,"服务器已更新到 §a"+version+"§f：修复商店返回，新增在线地图、昵称备注和双端进度来源选择。");
+                prefs.set(path(p)+".update-notice-version",version);dirty=true;
+            }
+            sync.login(p);
             save();
         },20);
     }

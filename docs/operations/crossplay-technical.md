@@ -21,17 +21,19 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-public-netwo
 
 ## 一次绑定，共用身份
 
-1. Java 使用以后长期使用的固定名字注册并 `/login`，这是主账号。离线名字的大小写也应保持一致。
+新版优先用 [双端进度同步](crossplay-sync.md)：同 IP 提示候选，账号菜单可选择保留 PE 或 PC 进度，验证对方服内密码后绑定，旧存档保留。以下为原 Floodgate 验证码绑定方式，只适用于保留 Java 进度。
+
+1. Java 使用以后长期使用的固定名字注册并 `/login`，这是验证码绑定的主账号。离线名字的大小写也应保持一致。
 2. PE 使用 Xbox 身份经 Floodgate 入服，先按 AuthMe 提示注册、登录。未绑定时拥有独立数据；聊天、列表和侧边栏显示 `[PE]`，底层登录名保留 `.` 以兼容已有 AuthMe 账户。
-3. Java 点账号菜单的绑定按钮，选择自己的已登录 PE 账号，或输入 `/linkaccount Xbox名` 取得验证码。PE 点同一按钮，在原生表单填写 Java 名称与验证码，或输入 `/linkaccount Java名 验证码`。Xbox 名不加服务器前缀，有空格时加引号。验证码五分钟有效。
+3. Java 输入 `/linkaccount Xbox名` 取得验证码，PE 输入 `/linkaccount Java名 验证码`。Xbox 名不加服务器前缀，有空格时加引号。验证码五分钟有效。新版账号菜单采用密码验证和进度来源选择。
 4. 绑定后重连 PE，身份切换为 Java 主账号，使用 Java 主账号的服内密码登录。两端依次登录，共用同一份 UUID 数据；同一账号不能同时双端在线。
 5. 需要解除时使用 `/unlinkaccount`。解除后 PE 恢复其原本独立身份和数据。
 
-Floodgate 最终固定使用 Java 身份，谁先输入命令不会改变存档来源；全球绑定服允许任一端先输入的流程与本服本地命令不同。要把旧 PE 进度作为新基础，需要先备份并迁移各插件数据，不会自动合并两套物品、金币、领地或技能。详见 [官方说明](https://geysermc.org/wiki/floodgate/linking/)。
+原 Floodgate 验证码绑定固定使用 Java 身份，谁先输入命令不会改变存档来源；要继承 PE 进度，请改用新版账号菜单。新版保留来源 UUID，两端使用同一份数据，不会自动合并两套物品、金币、领地或技能。官方常规流程见 [官方说明](https://geysermc.org/wiki/floodgate/linking/)。
 
 共用内容包括原版背包/末影箱/经验/位置/进度，以及 Essentials 金币与家、GriefPrevention 圈地、LuckPerms 权限、在线奖励记录、AuraSkills 等级。创造超平坦的背包仍与生存隔离；账号绑定不取消世界隔离。各插件升级或改动存储键后需重新验收。
 
-**两份已有进度不会自动合并。** 绑定采用 Java 进度，旧 PE 数据保留但绑定期间不可访问。先把 PE 的物品、金币转到 Java；圈地授权/转让由管理员核实后操作，技能如需迁移要先备份再使用插件专用转移命令。不要直接覆盖整个 playerdata 或数据库。
+**两份已有进度不会自动合并。** 新菜单让玩家选择保留哪份，另一份保留但绑定期间不可访问；常规验证码流程仍保留 Java 进度。不要直接覆盖整个 playerdata 或数据库，也不要删除新版的 `crossplay-sync.yml` 身份日志。
 
 当前使用本服 SQLite 本地绑定，关闭全局绑定，避免全局正版 UUID 与离线 Java UUID 不一致。SQLite 扩展位于 `plugins/floodgate/floodgate-sqlite-database.jar`，由独立哈希清单管理，不能放到 plugins 根目录当作 Bukkit 插件。绑定库、Floodgate 密钥、AuthMe 数据库都是运行数据，必须随整服备份，不能上传 Git 或混入新服部署包。
 

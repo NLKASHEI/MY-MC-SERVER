@@ -4,7 +4,7 @@
 
 完整部署包自带 Windows x64 Java 25。解压到本地磁盘，阅读 https://aka.ms/MinecraftEULA，接受后将 `servers/survival/eula.txt` 设为 `eula=true`，双击 `启动服务器.bat`。
 
-`server-settings.json` 中初始堆内存 2GB、最大 6GB，只是可调模板，不代表已按某台云服务器容量优化。必须给 Windows 留出内存。人数和硬件确定后再调视距、模拟距离、预生成范围。
+`server-settings.json` 按服主 16GB 机器设置初始堆内存 4GB、最大 12GB。已有云服的一键更新保留这个文件，需要在云服把 `memoryMin` 改为 `4G`、`memoryMax` 改为 `12G`，停服后重新启动生效。
 
 云安全组和 Windows 防火墙开放 Java TCP 25565、基岩 UDP 8585。当前 Geyser 使用 RakNet 监听；以后启用 NetherNet 时需要按其配置重新核查 TCP/UDP 和公告地址。本项目没有修改测试电脑的防火墙。
 
@@ -14,7 +14,7 @@ Java 玩家填写 `s9-4.yxjsmc.cn:20005`；基岩填写地址 `s9-4.yxjsmc.cn`�
 
 当前 Java 与基岩玩家均需首次 `/register 密码 重复密码`，以后 `/login 密码`。Floodgate 验证基岩身份，AuthMe 处理服内密码。基岩底层账号名保留 `.` 前缀和空格替换规则，聊天、列表与侧边栏显示 `[PE]`，不改变已有登录账户。
 
-已启用 Floodgate 本地 SQLite 绑定，关闭全局绑定，没有按前缀自动登录。绑定后 PE 使用 Java 主账号的数据与密码；旧 PE 数据不会自动合并。详见 [双端与生电指南](crossplay-technical.md)。离线 Java 可选择的名字需要由注册密码保护。首次开服先注册管理员账号，再从服务端控制台 `op 账号名`；上线稳定后用 LuckPerms 单独分配管理员权限。不要给普通玩家管理通配权限。
+已启用 Floodgate 本地 SQLite 绑定，关闭全局绑定，没有按前缀自动登录。新版账号菜单支持选择保留 PE 或 PC 进度，验证另一账号的密码后共用所选 UUID；同 IP 仅提示候选，两份旧数据不叠加。两端重连后均使用 Java 账号的服内密码。详见 [双端进度同步](crossplay-sync.md)。离线 Java 名字由注册密码保护。首次开服先注册管理员账号，再从控制台 `op 账号名`；上线稳定后用 LuckPerms 单独分配管理员权限。
 
 普通权限来自 `permissions.yml`。LuckPerms 用于以后设置管理员、赞助等级等角色。不要给玩家 OP 来解决某个功能缺权限的问题。
 

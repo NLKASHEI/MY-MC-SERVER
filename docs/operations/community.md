@@ -20,7 +20,7 @@ PE 的十三个指南针菜单使用 Floodgate 原生按钮表单；读取同一
 
 指南针右键只开服务中心；有 `miao.compass.teleport` 权限的管理员左键可跳到视线目标上方。WorldEdit 导航工具改为追溯指南针，普通指南针不再触发其右键穿墙。
 
-PE 在聊天、玩家列表和侧边栏显示 `[PE]`，底层 Floodgate 名称仍保留原前缀，以免改名造成 AuthMe 账户分离。已绑定 PE 也显示 `[PE]`，实际数据仍是 Java 身份。
+PE 在聊天、玩家列表和侧边栏显示 `[PE]`，未绑定的底层 Floodgate 名称仍保留原前缀。新版绑定时可选择 PE 或 Java 进度，详情见 [双端进度同步](crossplay-sync.md)；已绑定 PE 仍显示 `[PE]`。
 
 ## 一起安家
 

@@ -12,6 +12,9 @@ foreach ($folder in @('scripts','docs','skills','manifests','config')) {
   $paths += @(Get-ChildItem (Join-Path $root $folder) -File -Recurse | ForEach-Object { $_.FullName.Substring($root.Length + 1).Replace('\','/') })
 }
 foreach ($path in ($paths | Sort-Object -Unique)) {
+  # Older permanent updaters allow YAML/text configs only. BlueMap HOCON is
+  # embedded in the locked MiaoServer JAR and installed only when missing.
+  if ($path -match '^config/survival/plugins/BlueMap/.+\.conf$') { continue }
   $source = Join-Path $root $path
   $target = Join-Path $stage $path
   New-Item -ItemType Directory -Force (Split-Path $target) | Out-Null

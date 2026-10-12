@@ -101,7 +101,7 @@ command /guide [<text>]:
         else if arg-1 is "linking":
             send "{@prefix} &e先登录两个账号，点击账号菜单的绑定按钮，或使用 /accountlink。"
             send "&7Java 输入 /linkaccount 手机Xbox名；PE 输入 /linkaccount Java账号名 验证码。"
-            send "&7绑定后共用 Java 进度，不自动合并旧 PE 背包；绑定前先转移物品。"
+            send "&7可选择保留 PE 或 PC 进度，验证对方的服内密码；旧数据保留，不叠加背包金币。"
             send "&7同一账号不能双端同时在线；/unlinkaccount 解除绑定。"
         else if arg-1 is "fun":
             send "{@prefix} &e空手右键台阶、半砖或地毯坐下，潜行站起。"

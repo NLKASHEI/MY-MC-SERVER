@@ -21,9 +21,9 @@ items:
     slot: 10
     display_name: '&a开始 PC / PE 绑定'
     lore:
-    - '&7Java 选择已登录的 PE 账号发起绑定'
-    - '&7PE 表单填写 Java 名称和验证码'
-    - '&c采用 Java 身份；不自动合并旧数据'
+    - '&7选择保留 PE 或 PC 的进度'
+    - '&7验证另一个账号的服内密码后绑定'
+    - '&c旧数据保留，物品金币不会叠加'
     left_click_commands:
     - '[close]'
     - '[player] accountlink'

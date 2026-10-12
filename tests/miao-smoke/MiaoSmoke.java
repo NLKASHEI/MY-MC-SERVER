@@ -64,6 +64,7 @@ public class MiaoSmoke extends JavaPlugin {
    World w=Bukkit.getWorld("world");
    cuboidCheck(m,test,w);
    namesCheck(m,w);
+   syncCheck(m,w);
    claim=GriefPrevention.instance.dataStore.createClaim(w,1000000,1000010,-60,319,1000000,1000010,owner,null,null,null).claim;
    ok(claim!=null,"fixture claim");
    claim.setPermission(member.toString(),ClaimPermission.Container);
@@ -223,6 +224,43 @@ public class MiaoSmoke extends JavaPlugin {
   return (Player)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{Player.class},(obj,method,args)->switch(method.getName()) {
    case "getUniqueId"->id;case "getName"->name;case "getWorld"->world;case "getLocation"->location;case "isOp"->op;case "hasPermission"->true;case "hasMetadata"->false;case "sendMessage"->null;case "getServer"->Bukkit.getServer();
    default->{Class<?> c=method.getReturnType();yield c==boolean.class?false:c==int.class?0:null;}
+  });
+ }
+ void syncCheck(MiaoServer m,World world)throws Exception {
+  Object ui=get(m,"ui"),sync=get(ui,"sync");Class<?> type=sync.getClass();
+  Class<?> account=Class.forName("cn.nankexi.CrossplaySync$Account",true,m.getClass().getClassLoader());var constructor=account.getDeclaredConstructors()[0];constructor.setAccessible(true);
+  UUID javaId=UUID.randomUUID(),peId=new UUID(0,Math.abs(UUID.randomUUID().getLeastSignificantBits()));
+  Object javaAccount=constructor.newInstance(javaId,"SyncJavaFixture",false,"same-ip",200L),pe=constructor.newInstance(peId,"SyncPeFixture",true,"same-ip",100L),otherIp=constructor.newInstance(UUID.randomUUID(),"OtherPe",true,"different-ip",90L),samePlatform=constructor.newInstance(UUID.randomUUID(),"OtherJava",false,"same-ip",90L);
+  Method candidate=type.getDeclaredMethod("candidate",account,account,boolean.class);candidate.setAccessible(true);Method source=type.getDeclaredMethod("source",account,account,boolean.class);source.setAccessible(true);
+  ok((boolean)candidate.invoke(null,javaAccount,pe,true)&&!(boolean)candidate.invoke(null,javaAccount,otherIp,true)&&!(boolean)candidate.invoke(null,javaAccount,samePlatform,true),"IP suggestions require opposite platform and same IP");
+  ok((boolean)candidate.invoke(null,javaAccount,otherIp,false),"manual binding does not require shared IP");
+  ok(source.invoke(null,javaAccount,pe,false).equals(peId)&&source.invoke(null,javaAccount,pe,true).equals(javaId),"PC may inherit PE or retain Java data");
+  ok(source.invoke(null,pe,javaAccount,false).equals(javaId)&&source.invoke(null,pe,javaAccount,true).equals(peId),"PE may inherit Java or retain PE data");
+  var binding=Class.forName("cn.nankexi.CrossplaySync$Binding",true,m.getClass().getClassLoader());var bc=binding.getDeclaredConstructors()[0];bc.setAccessible(true);Field field=type.getDeclaredField("bindings");field.setAccessible(true);Object original=field.get(sync);
+  Method profile=type.getDeclaredMethod("profile",org.bukkit.event.player.AsyncPlayerPreLoginEvent.class);profile.setAccessible(true);
+  try {
+   field.set(sync,Map.of("syncjavafixture",bc.newInstance("SyncJavaFixture",javaId,peId,peId,"PE source","ACTIVE")));
+   var event=new org.bukkit.event.player.AsyncPlayerPreLoginEvent("SyncJavaFixture",java.net.InetAddress.getLoopbackAddress(),javaId);profile.invoke(sync,event);
+   ok(event.getUniqueId().equals(peId)&&event.getName().equals("SyncJavaFixture"),"Java uses selected original PE UUID without changing Java login name");
+   var stranger=new org.bukkit.event.player.AsyncPlayerPreLoginEvent("AnotherFixture",java.net.InetAddress.getLoopbackAddress(),javaId);profile.invoke(sync,stranger);ok(stranger.getUniqueId().equals(javaId),"unrelated login profile untouched");
+   field.set(sync,Map.of("syncjavafixture",bc.newInstance("SyncJavaFixture",javaId,peId,peId,"PE source","PREPARED")));
+   var pending=new org.bukkit.event.player.AsyncPlayerPreLoginEvent("SyncJavaFixture",java.net.InetAddress.getLoopbackAddress(),javaId);profile.invoke(sync,pending);ok(pending.getLoginResult()!=org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result.ALLOWED,"incomplete journal cannot admit player under wrong UUID");
+   Class<?> input=Class.forName("cn.nankexi.CrossplaySync$Input",true,m.getClass().getClassLoader());var ic=input.getDeclaredConstructors()[0];ic.setAccessible(true);Player p=actor(javaId,"SyncJavaFixture",world,world.getSpawnLocation(),false);
+   ((Map)get(sync,"inputs")).put(javaId,ic.newInstance(pe,false,0L));
+   var message=net.kyori.adventure.text.Component.text("private-password-fixture");var chat=new io.papermc.paper.event.player.AsyncChatEvent(false,p,new HashSet<>(),io.papermc.paper.chat.ChatRenderer.defaultRenderer(),message,message,net.kyori.adventure.chat.SignedMessage.system("test",null));
+   Method capture=type.getDeclaredMethod("input",io.papermc.paper.event.player.AsyncChatEvent.class);capture.setAccessible(true);capture.invoke(sync,chat);ok(chat.isCancelled(),"even expired password input never broadcasts");
+  }finally{field.set(sync,original);var cache=(fr.xephi.authme.data.auth.PlayerCache)get(fr.xephi.authme.api.v3.AuthMeApi.getInstance(),"playerCache");cache.removePlayer("syncjavafixture");}
+  Bukkit.getScheduler().runTaskAsynchronously(this,()->{
+   var auth=fr.xephi.authme.api.v3.AuthMeApi.getInstance();String name="syncauth"+UUID.randomUUID().toString().substring(0,6);boolean registered=false;var api=org.geysermc.floodgate.api.FloodgateApi.getInstance().getPlayerLink();
+   try {
+    registered=auth.registerPlayer(name,"Fixture-Only-Password!42");ok(registered,"disposable password account registered");ok(auth.checkPassword(name,"Fixture-Only-Password!42")&&!auth.checkPassword(name,"incorrect-password"),"source password proof distinguishes success and failure");
+    for(UUID shared:List.of(peId,javaId)) {
+     api.linkPlayer(peId,shared,"SyncJavaFixture").get(10,java.util.concurrent.TimeUnit.SECONDS);var linked=api.getLinkedPlayer(peId).get(10,java.util.concurrent.TimeUnit.SECONDS);
+     ok(linked!=null&&linked.getJavaUniqueId().equals(shared)&&linked.getJavaUsername().equals("SyncJavaFixture"),"Floodgate persists selected PE/Java source UUID");api.unlinkPlayer(peId).get(10,java.util.concurrent.TimeUnit.SECONDS);ok(api.getLinkedPlayer(peId).get(10,java.util.concurrent.TimeUnit.SECONDS)==null,"unlink removes shared UUID association");
+    }
+    getLogger().info("SYNC_SMOKE_PASS: same-IP suggestion rules, both source directions, Paper UUID profile, partial-journal lock, private input capture, AuthMe password proof and actual Floodgate SQLite roundtrip/unlink");
+   }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_SMOKE_FAIL",e);}
+   finally {try{api.unlinkPlayer(peId).get(10,java.util.concurrent.TimeUnit.SECONDS);}catch(Exception ignored){}if(registered)auth.forceUnregister(name);}
   });
  }
  void namesCheck(MiaoServer m,World world)throws Exception {

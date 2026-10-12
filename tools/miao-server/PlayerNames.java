@@ -88,6 +88,7 @@ final class PlayerNames implements Listener {
         say(p,"请从菜单操作，或 /miao names nick 昵称；/miao names note 实际账号 备注。省略文字可恢复或删除。");
     }
     private void edit(Player p,UUID target,String account) {
+        ui.sync.cancelInput(p);
         String current=target==null?nicknames.getOrDefault(p.getUniqueId(),""):notes.getOrDefault(p.getUniqueId(),Map.of()).getOrDefault(target,"");
         if(ui.bedrock(p)) {
             var form=CustomForm.builder().title(target==null?"我的公开昵称":"私人备注 · "+account)
@@ -108,6 +109,7 @@ final class PlayerNames implements Listener {
         for(int i=0;i<size;i++)put(h,i,Material.GRAY_STAINED_GLASS_PANE," ",()->{});return h;
     }
     void menu(Player p) {
+        ui.sync.cancelInput(p);
         inputs.remove(p.getUniqueId());
         if(ui.bedrock(p)) {
             FloodgateApi.getInstance().sendForm(p.getUniqueId(),SimpleForm.builder().title("昵称与私人备注").content("公开昵称："+ui.display(p)+"\n实际账号："+p.getName()+"\n私人备注只影响你的聊天与玩家选择列表。")
@@ -120,6 +122,7 @@ final class PlayerNames implements Listener {
         put(h,16,Material.MILK_BUCKET,"§e恢复我的原名",()->set(p,null,""));
         put(h,22,Material.ARROW,"§f返回指南针",()->ui.command(p,new String[]{"menu"}));p.openInventory(h.inventory);
     }
+    void cancelInput(Player p){inputs.remove(p.getUniqueId());}
     private void targets(Player p,int requested) {
         Map<UUID,OfflinePlayer> known=new HashMap<>();
         for(Player q:Bukkit.getOnlinePlayers())if(ui.authenticated(q)&&!q.getUniqueId().equals(p.getUniqueId()))known.put(q.getUniqueId(),q);
