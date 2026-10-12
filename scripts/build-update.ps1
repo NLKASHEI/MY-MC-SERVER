@@ -18,6 +18,7 @@ foreach ($path in ($paths | Sort-Object -Unique)) {
   # Old permanent updaters only accept plugin config templates. The startup
   # migration merges these technical settings into existing Paper config.
   if ($path -eq 'config/survival/config/paper-global.yml') { continue }
+  if ($path -eq 'config/survival/bukkit.yml') { continue }
   $source = Join-Path $root $path
   $target = Join-Path $stage $path
   New-Item -ItemType Directory -Force (Split-Path $target) | Out-Null

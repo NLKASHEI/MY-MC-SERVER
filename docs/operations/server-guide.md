@@ -12,6 +12,8 @@ Java 玩家填写 `s9-4.yxjsmc.cn:20005`；基岩填写地址 `s9-4.yxjsmc.cn`�
 
 ## 账号与权限
 
+0.9.12 将 `bukkit.yml` 的 `spawn-limits.monsters` 基准调为 100（原为 70）。云服更新后首次启动自动合并，备份为 `bukkit.yml.before-mob-cap-v0912`，完成标记 `.mob-cap-v0912-applied`，其他类别与频率保留。Paper 的每世界 `entities.spawning.spawn-limits.monster` 为 `-1` 时继承此值；自行设过显式每世界上限的配置仍优先。提高基准不保证产量同比增加，留意多人在线时 TPS。
+
 ### TNT 复制
 
 0.9.11 开启 TNT／地毯／铁轨复制、无头活塞、破基岩、末地传送门刷沙和绊线钩复制。已有云服停服后运行原有一键更新，再启动，由 `scripts/update-technical-settings.ps1` 只合并 `servers/survival/config/paper-global.yml` 的五个对应开关，保留其他配置；原文件备份为 `.before-technical-v0911`，完成标记为 `.technical-v0911-applied`，以后自行调整不会反复覆盖。新部署提供对应模板。保持原版红石实现和漏斗保护事件，保护区仍按原有领地规则处理活塞与爆炸。设置依据：[Paper 原版行为说明](https://docs.papermc.io/paper/vanilla/)。
