@@ -10,6 +10,7 @@ final class RuntimeMigration {
     static void apply(MiaoServer plugin) {
         branding(plugin);
         menuLayout(plugin);
+        WalletIconRepair.apply(plugin);
         veinAndDistance(plugin);
         simulationDistance(plugin);
         respawnRules(plugin);

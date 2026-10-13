@@ -194,7 +194,8 @@ items:
     - '[close]'
     - '[player] account-menu'
   balance:
-    material: GOLD_INGOT
+    material: GOLD_NUGGET
+    amount: 1
     slot: 23
     display_name: '&e我的钱包'
     lore:

@@ -53,3 +53,5 @@
 FakePlayer-CE 与 CommandAPI 成对检查版本和权限，CommandAPI 必须取 Paper JAR。Floodgate SQLite 扩展由 `manifests/extensions.lock.json` 管理，目前更新检查会提示人工审核；停服备份后只替换该清单指向的 `plugins/floodgate/floodgate-sqlite-database.jar`，保留绑定数据库和密钥。切勿把扩展移到 plugins 根目录。AuraSkills 更新不得覆盖 userdata、备份或当前配置，更新后复查禁用世界、假人经验权限、中文版菜单与技能收益。
 
 0.9.13 新增 Scythe 右键收获插件，首次启动仅创建缺失的 Scythe 中文配置，并追加生电器材分类、收获开关和两种高价刷怪蛋；现有余额、商品价格、种子/物品和领地数据保留。补种消耗种子并在执行时重查权限与空地，已有方块不覆盖。全部变更通过永久更新入口下载，无需再次上传更新脚本。
+
+0.9.14 独立修复指南针的钱包图标，覆盖钱包按钮的显示材质和数量，清除残留模型与动态数量，不依赖整页重排标记。保留点击动作、文案、可见权限条件和实际金币余额；自定义功能按钮占位时寻找空格，备份位于 MiaoServer/config-backups/v0914。

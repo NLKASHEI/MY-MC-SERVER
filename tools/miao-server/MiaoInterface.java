@@ -367,7 +367,7 @@ final class MiaoInterface implements Listener {
             say(p,"欢迎来到 §6南可熙的神奇妙妙服§f！右键指南针选择世界。");
             String version=plugin.getDescription().getVersion();
             if(!version.equals(prefs.getString(path(p)+".update-notice-version"))) {
-                say(p,"服务器已更新到 §a"+version+"§f：修复商店分类与指南针图标；新增生电器材、高价刷怪蛋和右键收获，生电工具箱可开关。");
+                say(p,"服务器已更新到 §a"+version+"§f：修复指南针钱包空图标：改为原版金粒，固定显示数量，保留余额与按钮功能。");
                 prefs.set(path(p)+".update-notice-version",version);dirty=true;
             }
             sync.login(p);

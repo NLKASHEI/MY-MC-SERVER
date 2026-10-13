@@ -199,8 +199,11 @@ public class MiaoSmoke extends JavaPlugin {
    for(int slot:new int[]{4,10,11,12,13,14,15,20,21,22,23,24,29,30,31,32,33,39,40,41}) {
      ok(guideMenu.getMenuItems().containsKey(slot),"guide item loaded at slot "+slot);
      var icon=guideMenu.getMenuItems().get(slot).firstEntry().getValue().getItemStack(holder);
-     ok(icon!=null&&!icon.getType().isAir(),"guide visible icon at slot "+slot);
+     ok(icon!=null&&!icon.getType().isAir()&&icon.getAmount()>0,"guide visible icon at slot "+slot);
    }
+   var wallet=guideMenu.getMenuItems().get(23).firstEntry().getValue().getItemStack(holder);
+   ok(wallet.getType()==Material.GOLD_NUGGET&&wallet.getAmount()==1&&!wallet.getItemMeta().hasItemModel(),"wallet vanilla coin icon, fixed quantity, no hidden model");
+   getLogger().info("WALLET_SMOKE_PASS: actual wallet item is GOLD_NUGGET x1 without custom item model");
    getLogger().info("SHOP_GUIDE_SMOKE_PASS: all five direct API categories and twenty guide buttons loaded");
    ok(Math.abs(me.gypopo.economyshopgui.api.EconomyShopGUIHook.getItemSellPrice(new org.bukkit.inventory.ItemStack(Material.DIAMOND))-8)<.0001,"loaded diamond sale price");
    Player creative=(Player)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{Player.class},(obj,method,a)->switch(method.getName()) {
