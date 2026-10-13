@@ -129,6 +129,7 @@ survival.player:
     economyshopgui.sellgui: true
     essentials.back: true
     essentials.back.ondeath: true
+    economyshopgui.shop.nlk_technical: true
 survival.cleanup:
   description: 管理员手动执行保守掉落物清理
   default: op

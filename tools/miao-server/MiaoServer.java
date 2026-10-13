@@ -33,6 +33,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
     private MiaoInterface ui;
     private LobbyGuard lobbyGuard;
     private CuboidClaims cuboids;
+    private FarmingGuard farmingGuard;
     boolean authenticated(Player p) { return ui != null && ui.authenticated(p); }
     boolean land(Player p, String[] args) { return cuboids.command(p,args); }
     boolean inCuboid(Player p) { return cuboids != null && cuboids.at(p.getLocation()) != null; }
@@ -88,6 +89,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         new SpawnGuard(this);
         cuboids = new CuboidClaims(this);
         new MajoritySleep(this);
+        farmingGuard = new FarmingGuard(this);
         reconcile();
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             online = (int) Bukkit.getOnlinePlayers().stream().filter(p -> !dummy(p)).count();

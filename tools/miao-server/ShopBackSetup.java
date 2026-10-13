@@ -11,7 +11,7 @@ final class ShopBackSetup {
         File plugins=plugin.getDataFolder().getParentFile();
         try {
             for(String section:List.of("supplies","nlk_resources","nlk_farming","nlk_drops")) {
-                File file=new File(plugins,"EconomyShopGUI/sections/"+section+".yml");var y=load(file);y.set("display-item",true);save(file,y);
+                File file=new File(plugins,"EconomyShopGUI/sections/"+section+".yml");var y=load(file);y.set("display-item",false);save(file,y);
             }
             File file=new File(plugins,"EconomyShopGUI/config.yml");var y=load(file);
             y.set("disable-back.direct-shop-command",false);y.set("disable-back.direct-shop-command-console",false);y.set("disable-back.sub-sections",false);save(file,y);

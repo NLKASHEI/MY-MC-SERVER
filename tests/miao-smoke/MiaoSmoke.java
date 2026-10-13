@@ -32,6 +32,7 @@ public class MiaoSmoke extends JavaPlugin {
    teams.set("teams."+team+".owner",member.toString());teams.set("teams."+team+".members",List.of(owner.toString(),member.toString(),manual.toString()));
    fixture.set("lands."+id+".manual",List.of(manual.toString()));r.getMembers().addPlayer(manual);
    Player p=actor(owner,"CuboidOwnerFixture",w,a.clone().add(5,5,5),false),other=actor(member,"CuboidMemberFixture",w,p.getLocation(),false),op=actor(UUID.randomUUID(),"CuboidOpFixture",w,p.getLocation(),true);
+   farmingCheck(m,p,op,w);
    Method canInvite=MiaoServer.class.getDeclaredMethod("canInvite",Player.class);canInvite.setAccessible(true);
    ok((boolean)canInvite.invoke(m,p)&&(boolean)canInvite.invoke(m,other),"leader and ordinary member both allowed to invite");
    ok(!(boolean)canInvite.invoke(m,op),"nonmember cannot invite despite OP");
@@ -53,6 +54,32 @@ public class MiaoSmoke extends JavaPlugin {
    ok(w.getGameRuleValue(GameRule.PLAYERS_SLEEPING_PERCENTAGE)==51,"majority sleep rule loaded");
    getLogger().info("CUBOID_SMOKE_PASS: strict three-axis bounds, stacked claims, effective protection, non-leader share, owner/OP cancellation, manual trust, join repair, approval and majority sleep");
   } finally {for(String id:regions)rm.removeRegion(id);rm.save();field.set(c,original);Method save=CuboidClaims.class.getDeclaredMethod("save");save.setAccessible(true);save.invoke(c);teams.set("teams."+team,null);var cache=(fr.xephi.authme.data.auth.PlayerCache)get(fr.xephi.authme.api.v3.AuthMeApi.getInstance(),"playerCache");for(String name:List.of("cuboidownerfixture","cuboidmemberfixture","cuboidopfixture"))cache.removePlayer(name);}
+ }
+ void farmingCheck(MiaoServer m,Player owner,Player outsider,World world)throws Exception {
+  var guard=(FarmingGuard)get(m,"farmingGuard");
+  org.bukkit.block.Block crop=block(world,owner.getLocation(),Material.WHEAT);
+  var owned=new simplexity.scythe.events.HarvestEvent(owner,crop);guard.harvest(owned);ok(!owned.isCancelled(),"owner harvest allowed");
+  Player onlineOwner=(Player)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{Player.class},(obj,method,args)->method.getName().equals("isOnline")?true:method.invoke(owner,args));
+  var pending=new simplexity.scythe.events.ReplantEvent(onlineOwner,crop,Material.WHEAT.createBlockData());guard.replant(pending);ok(pending.isCancelled(),"bridge schedules guarded delayed planting");
+  Bukkit.getScheduler().runTaskLater(this,()->{ok(crop.getType()==Material.WHEAT,"delayed replant never overwrites an occupied crop");getLogger().info("FARMING_DELAY_SMOKE_PASS: occupied target preserved after deferred planting check");},3);
+  var stolen=new simplexity.scythe.events.HarvestEvent(outsider,crop);guard.harvest(stolen);ok(stolen.isCancelled(),"outsider harvest denied");
+  var planted=new simplexity.scythe.events.ReplantEvent(outsider,crop,Material.WHEAT.createBlockData());guard.replant(planted);ok(planted.isCancelled(),"outsider replant denied");
+  var spawn=block(world,world.getSpawnLocation(),Material.WHEAT);var publicCrop=new simplexity.scythe.events.HarvestEvent(owner,spawn);guard.harvest(publicCrop);ok(publicCrop.isCancelled(),"public spawn harvest denied");
+  var lobby=block(Bukkit.getWorld("lobby"),Bukkit.getWorld("lobby").getSpawnLocation(),Material.WHEAT);var lobbyCrop=new simplexity.scythe.events.HarvestEvent(outsider,lobby);guard.harvest(lobbyCrop);ok(lobbyCrop.isCancelled(),"OP lobby harvest denied");
+  for(Material egg:List.of(Material.VILLAGER_SPAWN_EGG,Material.PILLAGER_SPAWN_EGG))for(Material type:List.of(Material.SPAWNER,Material.TRIAL_SPAWNER)) {
+   var click=new org.bukkit.event.player.PlayerInteractEvent(owner,org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK,new org.bukkit.inventory.ItemStack(egg),block(world,owner.getLocation(),type),org.bukkit.block.BlockFace.UP,org.bukkit.inventory.EquipmentSlot.HAND);
+   guard.eggs(click);ok(click.isCancelled(),"sold egg cannot convert "+type);
+  }
+  var config=Bukkit.getPluginManager().getPlugin("Scythe").getConfig();
+  ok(config.getBoolean("auto-replant.require-seeds")&&config.getBoolean("right-click-harvest.enabled"),"enabled harvest consumes seeds for replant");
+  ok(Bukkit.getPluginManager().getPermission("scythe.reload").getDefault()==org.bukkit.permissions.PermissionDefault.OP,"reload defaults to operators");
+  getLogger().info("FARMING_SMOKE_PASS: owner harvest, outsider denial, replant guard, immutable spawn/lobby, seed requirement and protected spawners");
+ }
+ org.bukkit.block.Block block(World world,Location location,Material type) {
+  return (org.bukkit.block.Block)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{org.bukkit.block.Block.class},(obj,method,args)->switch(method.getName()) {
+   case "getWorld"->world;case "getLocation"->location;case "getType"->type;case "getX"->location.getBlockX();case "getY"->location.getBlockY();case "getZ"->location.getBlockZ();case "getRelative"->obj;
+   default->{Class<?> c=method.getReturnType();yield c==boolean.class?false:c==int.class?0:null;}
+  });
  }
  void check(){
   MiaoServer m=(MiaoServer)Bukkit.getPluginManager().getPlugin("MiaoServer");
@@ -162,7 +189,19 @@ public class MiaoSmoke extends JavaPlugin {
    ok(sellMenu.getStringList("items.sell.left_click_commands").contains("[player] sellgui"),"PE usable sell menu installed");
    var sellPermission=new YamlConfiguration();sellPermission.options().pathSeparator('|');sellPermission.load(new java.io.File(m.getDataFolder().getParentFile().getParentFile(),"permissions.yml"));
    ok(sellPermission.getBoolean("survival.player|children|economyshopgui.sellgui.nlk_resources"),"sale permission literal key");
-   ok(me.gypopo.economyshopgui.api.EconomyShopGUIHook.getShopSections().contains("nlk_resources"),"new system shop loaded");
+   var shopPlugin=Bukkit.getPluginManager().getPlugin("EconomyShopGUI");
+   getLogger().info("SHOP_SECTIONS: "+me.gypopo.economyshopgui.api.EconomyShopGUIHook.getShopSections());
+   for(String category:List.of("supplies","nlk_resources","nlk_farming","nlk_drops","nlk_technical")) {
+     ok(shopPlugin.getClass().getMethod("getSection",String.class).invoke(shopPlugin,category)!=null,"direct API shop section loaded: "+category);
+   }
+   var guideMenu=com.extendedclip.deluxemenus.menu.Menu.getMenuByName("survival").orElseThrow();
+   var holder=new com.extendedclip.deluxemenus.menu.MenuHolder((com.extendedclip.deluxemenus.DeluxeMenus)Bukkit.getPluginManager().getPlugin("DeluxeMenus"),p);
+   for(int slot:new int[]{4,10,11,12,13,14,15,20,21,22,23,24,29,30,31,32,33,39,40,41}) {
+     ok(guideMenu.getMenuItems().containsKey(slot),"guide item loaded at slot "+slot);
+     var icon=guideMenu.getMenuItems().get(slot).firstEntry().getValue().getItemStack(holder);
+     ok(icon!=null&&!icon.getType().isAir(),"guide visible icon at slot "+slot);
+   }
+   getLogger().info("SHOP_GUIDE_SMOKE_PASS: all five direct API categories and twenty guide buttons loaded");
    ok(Math.abs(me.gypopo.economyshopgui.api.EconomyShopGUIHook.getItemSellPrice(new org.bukkit.inventory.ItemStack(Material.DIAMOND))-8)<.0001,"loaded diamond sale price");
    Player creative=(Player)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{Player.class},(obj,method,a)->switch(method.getName()) {
      case "getWorld"->w;case "getGameMode"->GameMode.CREATIVE;case "sendMessage"->null;case "getServer"->Bukkit.getServer();

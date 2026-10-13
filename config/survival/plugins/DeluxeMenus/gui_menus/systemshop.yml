@@ -10,7 +10,7 @@ items:
     - '&7金币余额：&e%vault_eco_balance_fixed%'
   supplies:
     material: CHEST
-    slot: 10
+    slot: 11
     display_name: '&a基础补给'
     lore:
     - '&7方块、火把、食物与圈地工具'
@@ -36,7 +36,7 @@ items:
     - '[player] miao shop nlk_resources'
   farming:
     material: WHEAT
-    slot: 14
+    slot: 13
     display_name: '&e农渔收购'
     lore:
     - '&7作物、竹子、海带与鱼获'
@@ -49,7 +49,7 @@ items:
     - '[player] miao shop nlk_farming'
   drops:
     material: BONE
-    slot: 16
+    slot: 14
     display_name: '&d掉落物收购'
     lore:
     - '&7骨头、火药、末影珍珠等掉落物'
@@ -131,18 +131,6 @@ items:
     material: BROWN_STAINED_GLASS_PANE
     slot: 9
     display_name: ' '
-  frame_11:
-    material: BROWN_STAINED_GLASS_PANE
-    slot: 11
-    display_name: ' '
-  frame_13:
-    material: BROWN_STAINED_GLASS_PANE
-    slot: 13
-    display_name: ' '
-  frame_15:
-    material: BROWN_STAINED_GLASS_PANE
-    slot: 15
-    display_name: ' '
   frame_17:
     material: BROWN_STAINED_GLASS_PANE
     slot: 17
@@ -171,3 +159,16 @@ items:
     material: BROWN_STAINED_GLASS_PANE
     slot: 26
     display_name: ' '
+  technical:
+    material: OBSERVER
+    slot: 15
+    display_name: '&c生电器材'
+    lore:
+    - '&7活塞、侦测器、漏斗与运输零件'
+    - '&7溢价补货，仅购买，不提供器材回收'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao shop nlk_technical'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao shop nlk_technical'

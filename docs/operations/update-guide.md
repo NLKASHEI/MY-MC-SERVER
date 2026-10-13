@@ -2,6 +2,8 @@
 
 ## 一键获取我们发布的更新
 
+0.9.13 修复系统商店分类：交易分类的 `display-item` 必须为 `false`，`true` 表示展示物品并排除正常分类。首次启动合并四个分类的启用与模式，保留现有商品页与价格；之后只补缺失的配置。历史迁移备份从商店扫描目录移至 `plugins/MiaoServer/config-backups/v0913/EconomyShopGUI`，保留文件内容，避免被误加载。指南针重新合并默认图标与格位、清除旧装饰格，备份为 `survival.yml.before-layout-v0913`；自定义按钮冲突仍保留并提示人工合并。
+
 首次部署选最新完整 ZIP，以后在控制台输入 `stop`，待退出后双击根目录 **一键更新.bat** 或 **update-fast.bat**。两个入口均默认加速，自动查找最新正式版本，不锁定版本。无需 Git、Python 或 GitHub 账号。它使用公开 GitHub Release API 获取最新正式版（[官方接口说明](https://docs.github.com/en/rest/releases/releases#get-the-latest-release)）。需要云服务器能访问 GitHub 和发生变化的插件下载源，网络失败不会开始替换。
 
 ### 永久入口（0.9.3 起）
@@ -49,3 +51,5 @@
 更新 JAR 不解压 `assets/worlds/bootstrap-26.2.zip`，也不重建背包分组。更改 Multiverse-Inventories 分组需停服备份，并按官方迁移命令处理已有背包；直接把有玩家的世界加入新分组可能丢失当前背包。更新后核查 Applicable Worlds、模式隔离和两个客户端的创造往返、末影箱、重启保留测试。
 
 FakePlayer-CE 与 CommandAPI 成对检查版本和权限，CommandAPI 必须取 Paper JAR。Floodgate SQLite 扩展由 `manifests/extensions.lock.json` 管理，目前更新检查会提示人工审核；停服备份后只替换该清单指向的 `plugins/floodgate/floodgate-sqlite-database.jar`，保留绑定数据库和密钥。切勿把扩展移到 plugins 根目录。AuraSkills 更新不得覆盖 userdata、备份或当前配置，更新后复查禁用世界、假人经验权限、中文版菜单与技能收益。
+
+0.9.13 新增 Scythe 右键收获插件，首次启动仅创建缺失的 Scythe 中文配置，并追加生电器材分类、收获开关和两种高价刷怪蛋；现有余额、商品价格、种子/物品和领地数据保留。补种消耗种子并在执行时重查权限与空地，已有方块不覆盖。全部变更通过永久更新入口下载，无需再次上传更新脚本。

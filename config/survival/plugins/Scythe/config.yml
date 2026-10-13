@@ -1,0 +1,57 @@
+auto-replant:
+  enabled: true
+  require-seeds: true
+  require-tool: false
+  delay-ticks: 1
+right-click-harvest:
+  enabled: true
+  require-tool: false
+tools:
+  enabled-tools:
+  - minecraft:wooden_hoe
+  - minecraft:stone_hoe
+  - minecraft:iron_hoe
+  - minecraft:golden_hoe
+  - minecraft:diamond_hoe
+  - minecraft:netherite_hoe
+  required-item-models: []
+  custom-item:
+    enabled: false
+    custom-name: <yellow>收获镰刀</yellow>
+    lore:
+    - <white>右键收获成熟作物</white>
+    - <green>补种消耗背包中的种子</green>
+    item-type: WOODEN_HOE
+    item-model: ''
+    enchantment-glint: true
+    max-durability: 2031
+    command-cooldown-seconds: 600
+  durability:
+    harvest-uses-durability: false
+    replant-uses-durability: false
+    prevent-tool-break: true
+    minimum-durability: 10
+sounds:
+  enabled: true
+  break-sound: BLOCK_CROP_BREAK
+  plant-sound: ITEM_CROP_PLANT
+  volume: 1.0
+  pitch: 1.0
+particles:
+  harvest:
+    enabled: true
+    particle: BLOCK
+    count: 6
+    spread: 0.5
+  replant:
+    enabled: true
+    particle: HAPPY_VILLAGER
+    count: 2
+    spread: 0.5
+allowed-crops:
+- BEETROOTS
+- CARROTS
+- COCOA
+- NETHER_WART
+- POTATOES
+- WHEAT

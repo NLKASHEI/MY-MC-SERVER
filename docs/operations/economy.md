@@ -24,3 +24,5 @@
 配置依据：[AuraSkills 收入与放置检查](https://wiki.aurelium.dev/auraskills/main-config/)、[来源收入](https://wiki.aurelium.dev/auraskills/sources)、[系统商店命令](https://wiki.gpplugins.com/economyshopgui/basics/commands)。
 
 0.9.9 修复分类页面的返回参数：商品分类可以返回原生四分类首页；指南针商店首页的返回按钮直接打开指南针主菜单。旧服自动迁移分类显示和相关返回动作，商品价格与余额保持原值。
+
+0.9.13 增加「生电器材」第五个分类，18 种普通器材定价高于对应系统材料成本，只购买不回收；村民刷怪蛋单价 5,000、掠夺者刷怪蛋单价 10,000，同样不回收。刷怪蛋不能改造刷怪笼，不能在主城、出生点或无建造权限的领地使用。首次升级补齐分类和菜单，不重置余额或现有价格。

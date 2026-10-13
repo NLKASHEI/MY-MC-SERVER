@@ -3,7 +3,7 @@ slot: 22
 title: '&8系统商店 · 掉落物收购'
 bedrock-title: 系统商店 · 掉落物收购
 hidden: false
-display-item: true
+display-item: false
 economy: VAULT
 item:
   material: BONE

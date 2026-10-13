@@ -13,10 +13,14 @@ final class RuntimeMigration {
         veinAndDistance(plugin);
         simulationDistance(plugin);
         respawnRules(plugin);
+        ShopCatalogRepair.prepare(plugin);
         EconomySetup.apply(plugin);
         ClaimsSetup.apply(plugin);
         TeamInviteSetup.apply(plugin);
         ShopBackSetup.apply(plugin);
+        ShopCatalogRepair.apply(plugin);
+        TechnicalShopSetup.apply(plugin);
+        FarmingSetup.apply(plugin);
         BlueMapSetup.apply(plugin);
         PlayerNamesSetup.apply(plugin);
         CrossplaySyncSetup.apply(plugin);
@@ -100,7 +104,7 @@ final class RuntimeMigration {
         }catch(Exception e){throw new IllegalStateException("Cannot migrate NLK branding",e);}
     }
     private static void menuLayout(MiaoServer plugin) {
-        File marker=new File(plugin.getDataFolder(),"menu-layout-v094.done");
+        File marker=new File(plugin.getDataFolder(),"menu-layout-v0913.done");
         File file=new File(plugin.getDataFolder().getParentFile(),"DeluxeMenus/gui_menus/survival.yml");
         if(marker.exists()||!file.isFile())return;
         try(InputStream in=plugin.getResource("menu-layout.yml")) {
@@ -129,7 +133,7 @@ final class RuntimeMigration {
             for(String key:expected.getKeys(false)) {
                 String path="items."+key;
                 if(key.startsWith("layout_")||!y.contains(path))y.set(path,expected.getConfigurationSection(key).getValues(true));
-                else y.set(path+".slot",expected.getInt(key+".slot"));
+                else { y.set(path+".slot",expected.getInt(key+".slot")); y.set(path+".material",expected.getString(key+".material")); }
             }
             // Replace only the old default heading/duplicate clock icon, retaining custom labels and actions.
             if("&b&l生存指南 · 玩家中心".equals(y.getString("items.heading.display_name"))) {
@@ -137,7 +141,7 @@ final class RuntimeMigration {
                 y.set("items.heading.lore",expected.getStringList("heading.lore"));
             }
             if("CLOCK".equals(y.getString("items.sidebar.material")))y.set("items.sidebar.material","SPYGLASS");
-            File prior=new File(file.getParentFile(),file.getName()+".before-layout-v094");
+            File prior=new File(file.getParentFile(),file.getName()+".before-layout-v0913");
             if(!prior.exists())Files.copy(file.toPath(),prior.toPath());
             File temp=new File(file.getParentFile(),file.getName()+".layout-tmp");y.save(temp);
             Files.move(temp.toPath(),file.toPath(),StandardCopyOption.REPLACE_EXISTING);

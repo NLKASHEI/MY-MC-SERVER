@@ -1,0 +1,28 @@
+prefix: <gold>南可熙提醒您： </gold>
+feedback:
+  toggle-enabled: <prefix><green>已开启右键收获与自动补种。</green>
+  toggle-disabled: <prefix><gray>已关闭右键收获与自动补种。</gray>
+  config-reloaded: <green>收获配置已重载。</green>
+  item:
+    obtained: <green>已获得收获工具。</green>
+    given: <green>已将收获工具交给 <name>。</green>
+    received: <green><name> 给了您收获工具。</green>
+errors:
+  custom-item-not-enabled: <red>服务器未启用特殊收获工具。</red>
+  unknown-command: <red>未知命令，请用 /scythe toggle 开关收获功能。</red>
+  tool-nearly-broken: <red>工具即将损坏，请先修复。</red>
+  must-hold-tool: <red>请手持允许的工具。</red>
+  no-permission: <red>您没有执行此操作的权限。</red>
+  not-a-player: 请在游戏内执行此命令。
+  cooldown: <red>请等待 <time> 后再使用。</red>
+insert:
+  time-format:
+    group: <hour><min><sec>
+    hour: ' <yellow><count></yellow> 小时'
+    hours: ' <yellow><count></yellow> 小时'
+    minute: ' <yellow><count></yellow> 分钟'
+    second: ' <yellow><count></yellow> 秒'
+help:
+  main: <gray>右键成熟作物即可收获；背包有对应种子时自动补种。</gray>
+  toggle: <yellow>/scythe toggle <gray>开关右键收获与自动补种</gray></yellow>
+  reload: <yellow>/scythe reload <gray>管理员重载配置</gray></yellow>

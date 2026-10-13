@@ -261,3 +261,32 @@ items:
     - '[openguimenu] vein'
     right_click_commands:
     - '[openguimenu] vein'
+  shop:
+    material: OBSERVER
+    slot: 22
+    display_name: '&c生电器材'
+    lore:
+    - '&7活塞、侦测器、漏斗与运输零件'
+    - '&7溢价补货，仅购买，不提供器材回收'
+    - '&7村民蛋 5,000 · 掠夺者蛋 10,000'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao shop nlk_technical'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao shop nlk_technical'
+  harvest:
+    material: WHEAT
+    slot: 20
+    display_name: '&a右键收获 · 开关'
+    lore:
+    - '&7成熟小麦、胡萝卜、土豆、甜菜'
+    - '&7可可与地狱疣也支持右键收获'
+    - '&7补种消耗背包中的对应种子'
+    - '&7只允许在您有建造权限的地方操作'
+    left_click_commands:
+    - '[close]'
+    - '[player] scythe toggle'
+    right_click_commands:
+    - '[close]'
+    - '[player] scythe toggle'

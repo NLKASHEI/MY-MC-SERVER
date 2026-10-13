@@ -1,0 +1,13 @@
+enable: true
+slot: 24
+title: '&8系统商店 · 生电器材'
+bedrock-title: 系统商店 · 生电器材
+hidden: false
+display-item: false
+economy: VAULT
+item:
+  material: OBSERVER
+  name: '&c生电器材'
+  lore:
+  - '&7常用零件溢价补货，按件计价'
+  - '&7仅出售给玩家，不回收器材'

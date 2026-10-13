@@ -1,4 +1,4 @@
-param([switch]$Smoke)
+﻿param([switch]$Smoke)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 Push-Location $root
@@ -31,6 +31,7 @@ try {
     Copy-Item config/survival/plugins/MiaoServer/economy.yml "$folder/economy-policy.yml"
     Copy-Item config/survival/plugins/DeluxeMenus/gui_menus/market.yml "$folder/economy-market.yml"
     Copy-Item config/survival/plugins/DeluxeMenus/gui_menus/systemshop.yml "$folder/systemshop-menu.yml"
+    Copy-Item config/survival/plugins/DeluxeMenus/gui_menus/technical.yml "$folder/technical-shop-menu.yml"
     Copy-Item config/survival/plugins/DeluxeMenus/gui_menus/travel.yml "$folder/economy-travel.yml"
     foreach ($menu in @('claims','claim_confirm')) {
       Copy-Item "config/survival/plugins/DeluxeMenus/gui_menus/$menu.yml" "$folder/claims-3d-$menu.yml"
@@ -41,11 +42,13 @@ try {
     foreach ($skill in @('mining','fighting','archery')) {
       Copy-Item "config/survival/plugins/AuraSkills/sources/$skill.yml" "$folder/income-$skill.yml"
     }
-    foreach ($category in @('nlk_resources','nlk_farming','nlk_drops')) {
+    foreach ($category in @('supplies','nlk_resources','nlk_farming','nlk_drops','nlk_technical')) {
       foreach ($shopFolder in @('shops','sections')) {
         Copy-Item "config/survival/plugins/EconomyShopGUI/$shopFolder/$category.yml" "$folder/economy-$shopFolder-$category.yml"
       }
     }
+    Copy-Item config/survival/plugins/Scythe/config.yml "$folder/scythe-config.yml"
+    Copy-Item config/survival/plugins/Scythe/locale.yml "$folder/scythe-locale.yml"
     Copy-Item assets/branding/server-icon.png "$folder/server-icon.png"
   }
   & (Join-Path $jdk 'jar.exe') --create --file $output -C $folder .

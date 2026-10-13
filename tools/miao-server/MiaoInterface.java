@@ -211,7 +211,7 @@ final class MiaoInterface implements Listener {
     private void openShop(Player p,String section) {
         if(p.getWorld().getName().equals("flat")||p.getGameMode()==GameMode.CREATIVE||p.getGameMode()==GameMode.SPECTATOR){say(p,"请回到生存世界并使用生存模式交易。");return;}
         if(section==null){openServiceMenu(p,"systemshop");return;}
-        if(!Set.of("supplies","nlk_resources","nlk_farming","nlk_drops").contains(section)||!p.hasPermission("economyshopgui.shop."+section)){say(p,"暂时无法打开该分类。");return;}
+        if(!Set.of("supplies","nlk_resources","nlk_farming","nlk_drops","nlk_technical").contains(section)||!p.hasPermission("economyshopgui.shop."+section)){say(p,"暂时无法打开该分类。");return;}
         main(p,()->{
             try {
                 var shop=Bukkit.getPluginManager().getPlugin("EconomyShopGUI");
@@ -367,7 +367,7 @@ final class MiaoInterface implements Listener {
             say(p,"欢迎来到 §6南可熙的神奇妙妙服§f！右键指南针选择世界。");
             String version=plugin.getDescription().getVersion();
             if(!version.equals(prefs.getString(path(p)+".update-notice-version"))) {
-                say(p,"服务器已更新到 §a"+version+"§f：修复商店返回，新增在线地图、昵称备注和双端进度来源选择。");
+                say(p,"服务器已更新到 §a"+version+"§f：修复商店分类与指南针图标；新增生电器材、高价刷怪蛋和右键收获，生电工具箱可开关。");
                 prefs.set(path(p)+".update-notice-version",version);dirty=true;
             }
             sync.login(p);

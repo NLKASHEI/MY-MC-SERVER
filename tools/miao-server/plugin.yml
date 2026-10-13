@@ -1,9 +1,9 @@
 name: MiaoServer
 prefix: NLK
-version: 0.9.9
+version: 0.9.13
 main: cn.nankexi.MiaoServer
 api-version: '26.2'
-depend: [GriefPrevention, AuthMe, floodgate, WorldEdit, WorldGuard, Vault]
+depend: [GriefPrevention, AuthMe, floodgate, WorldEdit, WorldGuard, Vault, Scythe]
 loadbefore: [Backuper, DeluxeMenus, VeinMiner, AuraSkills, EconomyShopGUI, BlueMap]
 commands:
   land:
