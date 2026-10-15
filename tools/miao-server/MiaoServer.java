@@ -27,6 +27,8 @@ public final class MiaoServer extends JavaPlugin implements Listener {
     private final Set<UUID> hidden = new HashSet<>();
     private final Map<UUID, World> deathWorlds = new HashMap<>();
     private final Map<UUID, Location> endPortalSpawns = new HashMap<>();
+    private final Map<UUID, OriginalRespawn> originalRespawns = new HashMap<>();
+    private record OriginalRespawn(Location location,boolean personal) {}
     private CachedServerIcon icon;
     private String motd;
     private volatile int online;
@@ -113,13 +115,29 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         if(event.getRespawnReason()!=PlayerRespawnEvent.RespawnReason.DEATH)return;
         World world=deathWorlds.remove(event.getPlayer().getUniqueId());
         if(world==null)world=event.getPlayer().getWorld();
-        // Valid beds/anchors or a custom spawn in this world remain intact.
-        if(!world.equals(event.getRespawnLocation().getWorld()))event.setRespawnLocation(world.getSpawnLocation());
+        OriginalRespawn original=originalRespawns.remove(event.getPlayer().getUniqueId());
+        if(original==null)original=new OriginalRespawn(event.getRespawnLocation().clone(),event.isBedSpawn()||event.isAnchorSpawn());
+        boolean survival=!LobbyGuard.lobby(world)&&!world.getName().equals("flat");
+        if(original.personal()&&(survival||world.equals(original.location().getWorld()))) {
+            event.setRespawnLocation(original.location());return;
+        }
+        if(world.getEnvironment()==World.Environment.NETHER||world.getEnvironment()==World.Environment.THE_END) {
+            World overworld=RespawnSafety.overworld(world);
+            // Minecraft has already checked its original destination for valid beds,
+            // anchors and default spawn. Do not replace it with a dimension's raw spawn.
+            if(overworld.equals(original.location().getWorld()))event.setRespawnLocation(original.location());
+            else event.setRespawnLocation(RespawnSafety.spawn(overworld));
+            return;
+        }
+        if(world.equals(original.location().getWorld()))event.setRespawnLocation(original.location());
+        else if(!world.equals(event.getRespawnLocation().getWorld()))event.setRespawnLocation(world.getSpawnLocation());
     }
     @EventHandler(priority=EventPriority.LOWEST)
     public void rememberEndPortalSpawn(PlayerRespawnEvent event) {
         if(event.getRespawnReason()==PlayerRespawnEvent.RespawnReason.END_PORTAL)
             endPortalSpawns.put(event.getPlayer().getUniqueId(),event.getRespawnLocation().clone());
+        else if(event.getRespawnReason()==PlayerRespawnEvent.RespawnReason.DEATH)
+            originalRespawns.put(event.getPlayer().getUniqueId(),new OriginalRespawn(event.getRespawnLocation().clone(),event.isBedSpawn()||event.isAnchorSpawn()));
     }
     private static String color(String s) { return ChatColor.translateAlternateColorCodes('&', s); }
     private void say(CommandSender p, String s) { p.sendMessage(color("&6南可熙提醒您： &f" + s)); }
@@ -320,7 +338,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         Scoreboard b = boards.remove(p.getUniqueId());
         if (b != null && p.getScoreboard() == b) p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
     }
-    @EventHandler public void quit(PlayerQuitEvent e) { boards.remove(e.getPlayer().getUniqueId()); hidden.remove(e.getPlayer().getUniqueId()); invites.remove(e.getPlayer().getUniqueId()); deathWorlds.remove(e.getPlayer().getUniqueId()); endPortalSpawns.remove(e.getPlayer().getUniqueId()); }
+    @EventHandler public void quit(PlayerQuitEvent e) { boards.remove(e.getPlayer().getUniqueId()); hidden.remove(e.getPlayer().getUniqueId()); invites.remove(e.getPlayer().getUniqueId()); deathWorlds.remove(e.getPlayer().getUniqueId()); endPortalSpawns.remove(e.getPlayer().getUniqueId()); originalRespawns.remove(e.getPlayer().getUniqueId()); }
     @EventHandler public void ping(ServerListPingEvent e) {
         e.setMotd(motd);
         if (e instanceof com.destroystokyo.paper.event.server.PaperServerListPingEvent paper) paper.setNumPlayers(online);

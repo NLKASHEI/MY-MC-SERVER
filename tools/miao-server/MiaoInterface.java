@@ -367,7 +367,7 @@ final class MiaoInterface implements Listener {
             say(p,"欢迎来到 §6南可熙的神奇妙妙服§f！右键指南针选择世界。");
             String version=plugin.getDescription().getVersion();
             if(!version.equals(prefs.getString(path(p)+".update-notice-version"))) {
-                say(p,"服务器已更新到 §a"+version+"§f：修复指南针钱包空图标：改为原版金粒，固定显示数量，保留余额与按钮功能。");
+                say(p,"服务器已更新到 §a"+version+"§f：修复死亡重生：下界和末地默认返回主世界，有效床和重生锚优先，不再使用维度默认出生坐标。");
                 prefs.set(path(p)+".update-notice-version",version);dirty=true;
             }
             sync.login(p);

@@ -230,7 +230,7 @@ public class MiaoSmoke extends JavaPlugin {
    for(String name:List.of("world","flat","world_nether","world_the_end","lobby")) {
      World deathWorld=Bukkit.getWorld(name);ok(deathWorld!=null,"respawn fixture world loaded");deaths.put(owner,deathWorld);
      var respawn=new org.bukkit.event.player.PlayerRespawnEvent(p,lobbyWorld.getSpawnLocation(),false,false,false,reason);
-     m.respawnInDeathWorld(respawn);ok(respawn.getRespawnLocation().getWorld().equals(deathWorld),"death remains in "+name);
+     m.respawnInDeathWorld(respawn);ok(respawn.getRespawnLocation().getWorld().equals(name.equals("world_nether")||name.equals("world_the_end")?w:deathWorld),"correct fallback after death in "+name);
    }
    Location bed=w.getSpawnLocation().clone().add(3,0,3);deaths.put(owner,w);
    var bedEvent=new org.bukkit.event.player.PlayerRespawnEvent(p,bed,true,false,false,reason);m.respawnInDeathWorld(bedEvent);
@@ -239,7 +239,13 @@ public class MiaoSmoke extends JavaPlugin {
    var anchorEvent=new org.bukkit.event.player.PlayerRespawnEvent(p,anchor,false,true,false,reason);m.respawnInDeathWorld(anchorEvent);
    ok(anchorEvent.getRespawnLocation().equals(anchor),"same-world anchor retained");
    deaths.put(owner,nether);var crossBed=new org.bukkit.event.player.PlayerRespawnEvent(p,bed,true,false,false,reason);m.respawnInDeathWorld(crossBed);
-   ok(crossBed.getRespawnLocation().getWorld().equals(nether),"bed in another world does not override death world");
+   ok(crossBed.getRespawnLocation().equals(bed),"Nether death returns to valid overworld bed");
+   deaths.put(owner,Bukkit.getWorld("world_the_end"));
+   var preservedBed=new org.bukkit.event.player.PlayerRespawnEvent(p,bed,true,false,false,reason);m.rememberEndPortalSpawn(preservedBed);preservedBed.setRespawnLocation(lobbyWorld.getSpawnLocation());m.respawnInDeathWorld(preservedBed);
+   ok(preservedBed.getRespawnLocation().equals(bed),"original valid bed survives later plugin override");
+   deaths.put(owner,nether);var badFallback=new org.bukkit.event.player.PlayerRespawnEvent(p,new Location(nether,0,nether.getMinHeight(),0),false,false,false,reason);m.rememberEndPortalSpawn(badFallback);m.respawnInDeathWorld(badFallback);
+   ok(badFallback.getRespawnLocation().getWorld().equals(w)&&cn.nankexi.RespawnSafety.safe(badFallback.getRespawnLocation()),"raw Nether bedrock spawn replaced with safe overworld position");
+   getLogger().info("RESPAWN_SMOKE_PASS: Nether/End fallback to overworld, safe landing, cross-world bed and anchor retained, original destination protected");
    var exit=new org.bukkit.event.player.PlayerRespawnEvent(p,bed,false,false,false,org.bukkit.event.player.PlayerRespawnEvent.RespawnReason.END_PORTAL);
    m.rememberEndPortalSpawn(exit);exit.setRespawnLocation(Bukkit.getWorld("world_the_end").getSpawnLocation());m.respawnInDeathWorld(exit);
    ok(exit.getRespawnLocation().equals(bed),"end portal exit destination restored");

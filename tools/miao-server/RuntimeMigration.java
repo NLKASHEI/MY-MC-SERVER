@@ -223,20 +223,20 @@ final class RuntimeMigration {
         }catch(Exception e){throw new IllegalStateException("Cannot apply requested simulation distance",e);}
     }
     private static void respawnRules(MiaoServer plugin) {
-        File marker=new File(plugin.getDataFolder(),"respawn-world-v097.done");
+        File marker=new File(plugin.getDataFolder(),"respawn-world-v0915.done");
         if(marker.exists())return;
         try {
             File plugins=plugin.getDataFolder().getParentFile();
             File essentials=new File(plugins,"Essentials/config.yml");
             var y=YamlConfiguration.loadConfiguration(essentials);
-            y.set("respawn-listener-priority","none");writeVersion(essentials,y,"v097");
+            y.set("respawn-listener-priority","none");writeVersion(essentials,y,"v0915");
             File core=new File(plugins,"Multiverse-Core/config.yml");
             y=YamlConfiguration.loadConfiguration(core);
-            y.set("spawn.default-respawn-in-overworld",false);
+            y.set("spawn.default-respawn-in-overworld",true);
             y.set("spawn.default-respawn-within-same-world",true);
-            y.set("spawn.enforce-respawn-at-world-spawn",false);writeVersion(core,y,"v097");
-            plugin.getDataFolder().mkdirs();Files.writeString(marker.toPath(),"Death respawns stay in their world; same-world bed and anchor retained\n");
-            plugin.getLogger().info("死亡重生已按所在世界处理，保留同世界床和重生锚；首次入服仍进主城。");
+            y.set("spawn.enforce-respawn-at-world-spawn",false);writeVersion(core,y,"v0915");
+            plugin.getDataFolder().mkdirs();Files.writeString(marker.toPath(),"Nether and End fallback to overworld; valid personal respawns retained\n");
+            plugin.getLogger().info("下界和末地默认返回主世界重生，优先保留有效床和重生锚；主城和创造区仍独立。");
         }catch(Exception e){throw new IllegalStateException("Cannot migrate death respawn settings",e);}
     }
     private static boolean ySlot(File file,String key,int expected) {
