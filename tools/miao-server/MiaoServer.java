@@ -36,6 +36,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
     private LobbyGuard lobbyGuard;
     private CuboidClaims cuboids;
     private FarmingGuard farmingGuard;
+    private PacketExemptions packetExemptions;
     boolean authenticated(Player p) { return ui != null && ui.authenticated(p); }
     boolean land(Player p, String[] args) { return cuboids.command(p,args); }
     boolean inCuboid(Player p) { return cuboids != null && cuboids.at(p.getLocation()) != null; }
@@ -92,6 +93,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         cuboids = new CuboidClaims(this);
         new MajoritySleep(this);
         farmingGuard = new FarmingGuard(this);
+        if(Bukkit.getPluginManager().isPluginEnabled("ViaVersion"))packetExemptions=new PacketExemptions(this);
         reconcile();
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             online = (int) Bukkit.getOnlinePlayers().stream().filter(p -> !dummy(p)).count();
@@ -212,6 +214,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         if (changed) save();
     }
     @Override public boolean onCommand(CommandSender sender, Command command, String label, String[] a) {
+        if(command.getName().equals("packetallow")){if(packetExemptions==null){say(sender,"ViaVersion 未加载，发包豁免不可用。");return true;}return packetExemptions.command(sender,a);}
         if (!(sender instanceof Player p)) { say(sender, "MiaoServer 0.8.0：中文组队、侧边栏和服务器图标已加载。玩家使用 /team。"); return true; }
         if (dummy(p)) { say(p, "假人不能使用组队系统。"); return true; }
         if (command.getName().equals("sidebar")) return ui.sidebar(p, a);
@@ -307,6 +310,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         return true;
     }
     @Override public List<String> onTabComplete(CommandSender s, Command c, String label, String[] a) {
+        if(c.getName().equals("packetallow"))return packetExemptions==null?List.of():packetExemptions.complete(s,a);
         if (a.length == 1) return List.of("info", "create", "invite", "join", "leave", "kick", "share", "unshare", "chat", "disband").stream().filter(v -> v.startsWith(a[0])).toList();
         if (a.length == 2 && Set.of("invite", "kick").contains(a[0])) return Bukkit.getOnlinePlayers().stream().filter(p -> !dummy(p)).map(Player::getName).filter(n -> n.toLowerCase().startsWith(a[1].toLowerCase())).toList();
         return List.of();
@@ -344,5 +348,5 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         if (e instanceof com.destroystokyo.paper.event.server.PaperServerListPingEvent paper) paper.setNumPlayers(online);
         if (icon != null) e.setServerIcon(icon);
     }
-    @Override public void onDisable() { if (ui != null) ui.stop(); if (lobbyGuard != null) lobbyGuard.stop(); for (Player p : Bukkit.getOnlinePlayers()) detach(p); }
+    @Override public void onDisable() { if(packetExemptions!=null)packetExemptions.stop(); if (ui != null) ui.stop(); if (lobbyGuard != null) lobbyGuard.stop(); for (Player p : Bukkit.getOnlinePlayers()) detach(p); }
 }

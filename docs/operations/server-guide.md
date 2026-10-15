@@ -85,3 +85,13 @@ Backuper 每 2 小时备份、保留最近 3 份；`/market` 打开玩家箱子�
 已锁定 [Scythe 6.1.0](https://modrinth.com/plugin/scythe)，上游声明支持 Paper 26.2，MIT 许可。右键成熟的小麦、胡萝卜、土豆、甜菜、可可与地狱疣即可收获；补种需要背包中有对应种子或作物，并消耗一份，没有种子则仅收获。默认不用专用工具，未成熟作物不会收获。可从指南针 → 生电工具箱切换，也可输入 `/scythe toggle`。收获实际执行玩家破坏事件；另对收获和延迟补种检查 AuthMe、WorldGuard 立体领地、旧 GriefPrevention 领地、主城与公共出生点保护。普通玩家不能重载此插件。
 
 村民蛋 5,000、掠夺者蛋 10,000 金币，生电器材分类购买，禁止回收与改造刷怪笼/试炼刷怪笼；掠夺者蛋不保证生成队长。玩家仍须通过正常玩法繁殖村民、获取其他稀有物品。
+
+## 单人发包豁免
+
+0.9.16 起支持 ViaVersion 的单人豁免，解决投影批量放置等操作可能触发 `You are sending too many packets!` 的情况。仅作用于被加入玩家的 ViaVersion 连接，不改变普通玩家或 Paper 自身的限制；若以后启用 ViaVersion 包大小限制，该连接开关也会豁免这一层大小限制。
+
+已预置真实登录名 NLKASHEI：首次成功登录时绑定当前实际 UUID（包括此前双端绑定选用的身份），并持久保存。预置只执行一次，手动移除后不自动加回。未来更换共享 UUID 时可重新添加。账号未登录不能获得豁免；OP 身份本身也不自动豁免。
+
+OP 在游戏内可用 `/packetallow add` 给自己加入、`/packetallow remove` 移除自己、`/packetallow list` 查看名单、`/packetallow status` 查看自己。加上在线玩家实际登录名或完整 UUID 可管理指定对象；控制台必须填写目标。未知离线名字不会创建虚构账号；已入名单的离线玩家可按保存的名字移除。授权其他管理员仅授予 `miao.packetallow.admin`。
+
+名单在 `servers/survival/plugins/MiaoServer/packet-exemptions.yml`，首次写入时生成，属于运行数据，不进入 Git，也不被更新模板覆盖。不涉及密码、金币或存档；关闭插件会恢复由本功能更改的连接限流状态。

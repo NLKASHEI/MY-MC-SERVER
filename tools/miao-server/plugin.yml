@@ -1,11 +1,15 @@
 name: MiaoServer
 prefix: NLK
-version: 0.9.15
+version: 0.9.16
 main: cn.nankexi.MiaoServer
 api-version: '26.2'
 depend: [GriefPrevention, AuthMe, floodgate, WorldEdit, WorldGuard, Vault, Scythe]
+softdepend: [ViaVersion]
 loadbefore: [Backuper, DeluxeMenus, VeinMiner, AuraSkills, EconomyShopGUI, BlueMap]
 commands:
+  packetallow:
+    description: 管理 ViaVersion 单人发包豁免
+    permission: miao.packetallow.admin
   land:
     description: 立体领地与扩大申请
     permission: survival.claims
@@ -28,4 +32,7 @@ permissions:
   survival.team:
     default: true
   miao.compass.teleport:
+    default: op
+  miao.packetallow.admin:
+    description: 管理单人发包豁免名单
     default: op

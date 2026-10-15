@@ -89,6 +89,7 @@ public class MiaoSmoke extends JavaPlugin {
    YamlConfiguration test=new YamlConfiguration();f.set(m,test);
    UUID owner=UUID.randomUUID(), member=UUID.randomUUID(), manual=UUID.randomUUID();
    World w=Bukkit.getWorld("world");
+   packetAllowCheck(m,w);
    cuboidCheck(m,test,w);
    namesCheck(m,w);
    syncCheck(m,w);
@@ -266,6 +267,44 @@ public class MiaoSmoke extends JavaPlugin {
    getLogger().info("MIAO_SMOKE_PASS: sidebar disable/enable, OP lobby guard, WorldEdit readonly;  share, leave, original trust, disband, claim preservation, sidebar Chinese/ping/time");
   }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"MIAO_SMOKE_FAIL",e);}
   finally{try{var cache=(fr.xephi.authme.data.auth.PlayerCache)get(fr.xephi.authme.api.v3.AuthMeApi.getInstance(),"playerCache");for(String name:List.of("MiaoSmokeOwner","MiaoMemberFixture","MiaoAdminFixture","MiaoLandownerFixture"))cache.removePlayer(name);if(claim!=null)GriefPrevention.instance.dataStore.deleteClaim(claim);if(original!=null){f.set(m,original);Method save=MiaoServer.class.getDeclaredMethod("save");save.setAccessible(true);save.invoke(m);}}catch(Exception e){throw new RuntimeException(e);}}
+ }
+ void packetAllowCheck(MiaoServer m,World world)throws Exception {
+  Class<?> type=Class.forName("cn.nankexi.PacketExemptions",true,m.getClass().getClassLoader());
+  var constructor=type.getDeclaredConstructor(MiaoServer.class,java.io.File.class,java.util.function.Function.class,boolean.class);constructor.setAccessible(true);
+  var refresh=type.getDeclaredMethod("refresh",Player.class);refresh.setAccessible(true);var listed=type.getDeclaredMethod("listed",UUID.class);listed.setAccessible(true);var stop=type.getDeclaredMethod("stop");stop.setAccessible(true);
+  Field field=MiaoServer.class.getDeclaredField("packetExemptions");field.setAccessible(true);Object original=field.get(m);
+  UUID owner=UUID.randomUUID(),other=UUID.randomUUID();String name="PacketAllowFixture";
+  var cache=(fr.xephi.authme.data.auth.PlayerCache)get(fr.xephi.authme.api.v3.AuthMeApi.getInstance(),"playerCache");
+  Player admin=actor(owner,name,world,world.getSpawnLocation(),true),normal=actor(other,"PacketNormalFixture",world,world.getSpawnLocation(),false);
+  var channel=new io.netty.channel.embedded.EmbeddedChannel();var normalChannel=new io.netty.channel.embedded.EmbeddedChannel();
+  var connection=new com.viaversion.viaversion.connection.UserConnectionImpl(channel,false);var normalConnection=new com.viaversion.viaversion.connection.UserConnectionImpl(normalChannel,false);
+  var file=java.nio.file.Files.createTempDirectory(java.nio.file.Path.of("../../downloads"),"packet-allow-smoke-").resolve("packet-exemptions.yml").toFile();
+  java.util.function.Function<UUID,com.viaversion.viaversion.api.connection.UserConnection> supplier=id->id.equals(owner)?connection:id.equals(other)?normalConnection:null;
+  Object manager=constructor.newInstance(m,file,supplier,false);field.set(m,manager);
+  try {
+   Player denied=(Player)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{Player.class},(obj,method,args)->method.getName().equals("hasPermission")?false:method.invoke(admin,args));
+   m.onCommand(denied,m.getCommand("packetallow"),"packetallow",new String[]{"add"});ok(!(boolean)listed.invoke(manager,owner),"ordinary player cannot edit exemption list");
+   cache.removePlayer(name);m.onCommand(admin,m.getCommand("packetallow"),"packetallow",new String[]{"add"});ok(!(boolean)listed.invoke(manager,owner),"unauthenticated operator cannot edit list");
+   actor(owner,name,world,world.getSpawnLocation(),true);
+   m.onCommand(admin,m.getCommand("packetallow"),"packetallow",new String[]{"add"});channel.runPendingTasks();
+   ok((boolean)listed.invoke(manager,owner)&&!connection.getPacketTracker().isPacketLimiterEnabled(),"self-add disables native ViaVersion connection limiter");
+   refresh.invoke(manager,normal);normalChannel.runPendingTasks();ok(normalConnection.getPacketTracker().isPacketLimiterEnabled(),"ordinary connection remains limited");
+   cache.removePlayer(name);refresh.invoke(manager,admin);channel.runPendingTasks();ok(connection.getPacketTracker().isPacketLimiterEnabled(),"logout restores limit despite UUID membership");
+   actor(owner,name,world,world.getSpawnLocation(),true);stop.invoke(manager);channel.runPendingTasks();
+   manager=constructor.newInstance(m,file,supplier,false);field.set(m,manager);refresh.invoke(manager,admin);channel.runPendingTasks();
+   ok(!connection.getPacketTracker().isPacketLimiterEnabled(),"persistent UUID membership reapplies on authenticated reconnect");
+   for(int i=0;i<900;i++)connection.getPacketTracker().incrementReceived(1);
+   ok(connection.checkServerboundPacket(),"native connection accepts packet above default limit while exempt");
+   m.onCommand(admin,m.getCommand("packetallow"),"packetallow",new String[]{"remove"});channel.runPendingTasks();
+   ok(!(boolean)listed.invoke(manager,owner)&&connection.getPacketTracker().isPacketLimiterEnabled(),"remove immediately restores connection limiter");
+   Player named=(Player)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{Player.class},(obj,method,args)->method.getName().equals("getName")?"NLKASHEI":method.invoke(admin,args));
+   cache.removePlayer("nlkashei");refresh.invoke(manager,named);ok(!(boolean)listed.invoke(manager,owner),"bootstrap refuses unauthenticated matching name");
+   cache.updatePlayer(fr.xephi.authme.data.auth.PlayerAuth.builder().name("nlkashei").build());refresh.invoke(manager,named);channel.runPendingTasks();
+   ok((boolean)listed.invoke(manager,owner)&&!connection.getPacketTracker().isPacketLimiterEnabled(),"requested owner enrolls only after login using actual UUID");
+   m.onCommand(named,m.getCommand("packetallow"),"packetallow",new String[]{"remove"});channel.runPendingTasks();refresh.invoke(manager,named);
+   ok(!(boolean)listed.invoke(manager,owner)&&connection.getPacketTracker().isPacketLimiterEnabled(),"manual removal is not undone by bootstrap");
+   getLogger().info("PACKET_ALLOW_SMOKE_PASS: native ViaVersion bypass, authentication/permission guards, unchanged ordinary clients, persistence, removal and one-time NLKASHEI enrollment");
+  }finally{stop.invoke(manager);channel.runPendingTasks();channel.finishAndReleaseAll();normalChannel.finishAndReleaseAll();field.set(m,original);cache.removePlayer(name);cache.removePlayer("packetnormalfixture");cache.removePlayer("nlkashei");}
  }
  Player actor(UUID id,String name,World world,Location location,boolean op)throws Exception {
   var cache=(fr.xephi.authme.data.auth.PlayerCache)get(fr.xephi.authme.api.v3.AuthMeApi.getInstance(),"playerCache");cache.updatePlayer(fr.xephi.authme.data.auth.PlayerAuth.builder().name(name.toLowerCase()).build());
