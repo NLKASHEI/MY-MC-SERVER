@@ -373,10 +373,24 @@ public class MiaoSmoke extends JavaPlugin {
    ok(!(boolean)valid.invoke(null,"§c管理员")&&!(boolean)valid.invoke(null,"a\nb")&&!(boolean)valid.invoke(null,"x".repeat(17)),"formatting and overlength rejected");
    var disk=YamlConfiguration.loadConfiguration(file);ok(disk.getString("players."+viewerId+".notes."+author).equals("矿工搭子"),"private note persisted by both UUIDs");
    var message=net.kyori.adventure.text.Component.text("你好");Set<net.kyori.adventure.audience.Audience> viewers=new HashSet<>(List.of(viewer,other));
+   display[0]=net.kyori.adventure.text.Component.text("NamesAuthorFixture"); // Another plugin reset the Bukkit display name.
    var event=new io.papermc.paper.event.player.AsyncChatEvent(false,p,viewers,io.papermc.paper.chat.ChatRenderer.defaultRenderer(),message,message,net.kyori.adventure.chat.SignedMessage.system("你好",null));chat.invoke(names,event);
    var plain=net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText();
    ok(plain.serialize(event.renderer().render(p,p.displayName(),message,viewer)).contains("矿工搭子"),"private chat renderer");
    String publicChat=plain.serialize(event.renderer().render(p,p.displayName(),message,other));ok(publicChat.contains("南可熙好友")&&!publicChat.contains("矿工搭子"),"private note never leaks to another viewer");
+   var provider=new net.ess3.provider.providers.PaperChatListenerProvider(){};
+   Method wrap=net.ess3.provider.providers.PaperChatListenerProvider.class.getDeclaredMethod("wrap",io.papermc.paper.event.player.AsyncChatEvent.class);wrap.setAccessible(true);
+   ((net.ess3.provider.AbstractChatEvent)wrap.invoke(provider,event)).setFormat("<%1$s> %2$s");provider.onHighest(event);chat.invoke(names,event);
+   ok(plain.serialize(event.renderer().render(p,p.displayName(),message,viewer)).contains("矿工搭子"),"actual Essentials renderer receives private alias");
+   String essentialsPublic=plain.serialize(event.renderer().render(p,p.displayName(),message,other));
+   ok(essentialsPublic.contains("南可熙好友")&&!essentialsPublic.contains("矿工搭子")&&!essentialsPublic.contains("NLK_NAME_"),"actual Essentials cached renderer retains canonical name without leaking notes");provider.onMonitor(event);
+   Method rewrite=Class.forName("cn.nankexi.BedrockCommandNames",true,m.getClass().getClassLoader()).getDeclaredMethod("rewrite",String.class,Map.class);rewrite.setAccessible(true);
+   var peAliases=Map.of("[PE]BedrockFixture",".BedrockFixture");
+   ok(rewrite.invoke(null,"/pay [PE]BedrockFixture 100",peAliases).equals("/pay .BedrockFixture 100"),"PE account alias resolves for payment");
+   ok(rewrite.invoke(null,"/essentials:msg [pe]bedrockfixture 你好 [PE]BedrockFixture",peAliases).equals("/essentials:msg .BedrockFixture 你好 [PE]BedrockFixture"),"private message body untouched");
+   ok(rewrite.invoke(null,"/login [PE]BedrockFixture",peAliases).equals("/login [PE]BedrockFixture"),"passwords never rewritten");
+   ok(rewrite.invoke(null,"/mteam invite [PE]BedrockFixture",peAliases).equals("/mteam invite .BedrockFixture"),"team invitation resolves PE account");
+   ok(rewrite.invoke(null,"/other:pay [PE]BedrockFixture 100",peAliases).equals("/other:pay [PE]BedrockFixture 100"),"unknown command namespace untouched");
    var handlers=io.papermc.paper.event.player.AsyncChatEvent.getHandlerList().getRegisteredListeners();int own=-1,ess=-1;for(int i=0;i<handlers.length;i++)if(handlers[i].getPriority()==org.bukkit.event.EventPriority.HIGHEST){if(handlers[i].getPlugin()==m)own=i;if(handlers[i].getPlugin().getName().equals("EssentialsChat"))ess=i;}ok(own>ess&&ess>=0,"names wraps EssentialsChat after formatting");
    set.invoke(names,viewer,author,"");ok(label.invoke(names,viewerId,author,"原名").equals("南可熙好友"),"delete note restores public nickname");set.invoke(names,p,null,"");ok(label.invoke(names,otherId,author,"原名").equals("原名"),"clear nickname restores original fallback");
    getLogger().info("NAMES_SMOKE_PASS: unchanged account/UUID, private per-viewer chat, persistence, input validation, clearing and EssentialsChat ordering");

@@ -150,7 +150,9 @@ final class PlayerNames implements Listener {
         main(e.getPlayer(),()->{if(System.currentTimeMillis()>input.expires()){say(e.getPlayer(),"输入已超时，这条消息没有发送，请重新打开昵称菜单。");return;}if(value.equals("取消")){say(e.getPlayer(),"已取消。");return;}set(e.getPlayer(),input.target(),value.equals("清除")?"":value);});
     }
     public void chat(AsyncChatEvent e) {
-        var renderer=e.renderer();UUID target=e.getPlayer().getUniqueId();String account=e.getPlayer().getName();String publicName=PlainTextComponentSerializer.plainText().serialize(e.getPlayer().displayName());
+        // Essentials can reset Bukkit's mutable displayName while processing chat.
+        // Resolve the canonical public nickname and Floodgate marker instead.
+        var renderer=e.renderer();UUID target=e.getPlayer().getUniqueId();String account=e.getPlayer().getName();String publicName=ui.display(e.getPlayer());
         // Viewer-unaware renderers cache their first result. Cache a neutral token, never a private note.
         String token="NLK_NAME_"+UUID.randomUUID();Component placeholder=Component.text(token);
         e.renderer((source,display,message,viewer)->{

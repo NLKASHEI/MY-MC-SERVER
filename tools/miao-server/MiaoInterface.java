@@ -48,6 +48,7 @@ final class MiaoInterface implements Listener {
         try { if (file.exists()) prefs.load(file); } catch(Exception e) { throw new IllegalStateException("Cannot read sidebar preferences",e); }
         sync=new CrossplaySync(p,this);
         names=new PlayerNames(p,this);
+        new BedrockCommandNames(p,this);
         scanMenus(); Bukkit.getPluginManager().registerEvents(this,p);
         Bukkit.getScheduler().runTaskTimer(p,()->{ for(Player player:Bukkit.getOnlinePlayers()) { flushTime(player); if(authenticated(player)) decorate(player); } save(); },1200,1200);
     }
