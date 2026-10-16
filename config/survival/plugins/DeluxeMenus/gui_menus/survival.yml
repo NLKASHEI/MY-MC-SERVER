@@ -33,19 +33,17 @@ items:
     - '[close]'
     - '[player] mv tp w:world'
   flat:
-    material: BRICKS
+    material: COMPASS
     slot: 13
-    display_name: '&d创造工坊'
+    display_name: '&d世界探索'
     lore:
-    - '&7超平坦自由建造'
-    - '&c背包与生存隔离，不可交易'
-    - '&f点击前往创造世界'
+    - '&7主城 · 生存 · 创造 · 丰饶矿界'
+    - '&7矿界门票、资源费与重置规则'
+    - '&f点击选择世界'
     left_click_commands:
-    - '[close]'
-    - '[player] mv tp w:flat'
+    - '[openguimenu] worlds'
     right_click_commands:
-    - '[close]'
-    - '[player] mv tp w:flat'
+    - '[openguimenu] worlds'
   homes:
     material: RED_BED
     slot: 14
@@ -86,6 +84,18 @@ items:
     right_click_commands:
     - '[close]'
     - '[player] claims-menu'
+  teams:
+    material: CAMPFIRE
+    slot: 21
+    display_name: '&6伙伴小队'
+    lore:
+    - '&7组队建造 · 队内聊天 · 共享领地'
+    - '&7由地主主动开启，退队自动撤销共享'
+    - '&f点击进入伙伴中心'
+    left_click_commands:
+    - '[openguimenu] teams'
+    right_click_commands:
+    - '[openguimenu] teams'
   shop:
     material: EMERALD
     slot: 22
@@ -100,6 +110,33 @@ items:
     right_click_commands:
     - '[close]'
     - '[player] miao shop'
+  balance:
+    material: GOLD_NUGGET
+    amount: 1
+    slot: 23
+    display_name: '&e我的钱包'
+    lore:
+    - '&7查看余额与转账说明'
+    left_click_commands:
+    - '[close]'
+    - '[player] guide wallet'
+    right_click_commands:
+    - '[close]'
+    - '[player] guide wallet'
+  technical:
+    material: REDSTONE
+    slot: 24
+    display_name: '&c生电工具箱'
+    lore:
+    - '&7假人、背包、持续动作与停止'
+    - '&7每人一个，仅生存世界使用'
+    - '&f点击打开生电菜单'
+    left_click_commands:
+    - '[close]'
+    - '[player] technical-menu'
+    right_click_commands:
+    - '[close]'
+    - '[player] technical-menu'
   skills:
     material: EXPERIENCE_BOTTLE
     slot: 29
@@ -142,20 +179,6 @@ items:
     right_click_commands:
     - '[close]'
     - '[player] reward'
-  technical:
-    material: REDSTONE
-    slot: 24
-    display_name: '&c生电工具箱'
-    lore:
-    - '&7假人、背包、持续动作与停止'
-    - '&7每人一个，仅生存世界使用'
-    - '&f点击打开生电菜单'
-    left_click_commands:
-    - '[close]'
-    - '[player] technical-menu'
-    right_click_commands:
-    - '[close]'
-    - '[player] technical-menu'
   fun:
     material: OAK_STAIRS
     slot: 32
@@ -169,65 +192,6 @@ items:
     right_click_commands:
     - '[close]'
     - '[player] fun'
-  guide:
-    material: WRITABLE_BOOK
-    slot: 39
-    display_name: '&f新手手册'
-    lore:
-    - '&7查看常用命令与玩法说明'
-    left_click_commands:
-    - '[close]'
-    - '[player] guide'
-    right_click_commands:
-    - '[close]'
-    - '[player] guide'
-  account:
-    material: NAME_TAG
-    slot: 41
-    display_name: '&b账号与双端绑定'
-    lore:
-    - '&7PC / PE 共用身份、改密说明'
-    left_click_commands:
-    - '[close]'
-    - '[player] account-menu'
-    right_click_commands:
-    - '[close]'
-    - '[player] account-menu'
-  balance:
-    material: GOLD_NUGGET
-    amount: 1
-    slot: 23
-    display_name: '&e我的钱包'
-    lore:
-    - '&7查看余额与转账说明'
-    left_click_commands:
-    - '[close]'
-    - '[player] guide wallet'
-    right_click_commands:
-    - '[close]'
-    - '[player] guide wallet'
-  heading:
-    material: BOOK
-    slot: 4
-    display_name: '&6&l生存指南针'
-    lore:
-    - '&7南可熙的神奇妙妙服'
-    - '&7世界与传送 · 建设与经营 · 成长与休闲'
-    - '&e点击下方图标，开启你的旅程'
-    left_click_commands: []
-    right_click_commands: []
-  teams:
-    material: CAMPFIRE
-    slot: 21
-    display_name: '&6伙伴小队'
-    lore:
-    - '&7组队建造 · 队内聊天 · 共享领地'
-    - '&7由地主主动开启，退队自动撤销共享'
-    - '&f点击进入伙伴中心'
-    left_click_commands:
-    - '[openguimenu] teams'
-    right_click_commands:
-    - '[openguimenu] teams'
   sidebar:
     material: SPYGLASS
     slot: 33
@@ -241,9 +205,47 @@ items:
     right_click_commands:
     - '[close]'
     - '[player] sidebar settings'
+  guide:
+    material: WRITABLE_BOOK
+    slot: 37
+    display_name: '&f新手手册'
+    lore:
+    - '&7查看常用命令与玩法说明'
+    left_click_commands:
+    - '[close]'
+    - '[player] guide'
+    right_click_commands:
+    - '[close]'
+    - '[player] guide'
+  online_map:
+    material: FILLED_MAP
+    slot: 39
+    display_name: '&b在线地图 · 三维世界'
+    lore:
+    - '&7查看主城、生存和各维度建筑'
+    - '&7电脑与手机浏览器均可访问'
+    - '&f点击获取地图链接'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao map'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao map'
+  account:
+    material: NAME_TAG
+    slot: 41
+    display_name: '&b账号与双端绑定'
+    lore:
+    - '&7PC / PE 共用身份、改密说明'
+    left_click_commands:
+    - '[close]'
+    - '[player] account-menu'
+    right_click_commands:
+    - '[close]'
+    - '[player] account-menu'
   close:
     material: BARRIER
-    slot: 40
+    slot: 43
     display_name: '&c返回游戏'
     lore:
     - '&7收起指南针菜单'
@@ -251,6 +253,16 @@ items:
     - '[close]'
     right_click_commands:
     - '[close]'
+  heading:
+    material: BOOK
+    slot: 4
+    display_name: '&6&l生存指南针'
+    lore:
+    - '&7南可熙的神奇妙妙服'
+    - '&7世界与传送 · 建设与经营 · 成长与休闲'
+    - '&e点击下方图标，开启你的旅程'
+    left_click_commands: []
+    right_click_commands: []
   layout_0:
     material: GRAY_STAINED_GLASS_PANE
     slot: 0
@@ -315,20 +327,13 @@ items:
     - '&7选择世界 · 家园 · 好友传送'
     left_click_commands: []
     right_click_commands: []
-  online_map:
-    material: FILLED_MAP
+  layout_10:
+    material: GRAY_STAINED_GLASS_PANE
     slot: 10
-    display_name: '&b在线地图 · 三维世界'
-    lore:
-    - '&7查看主城、生存和各维度建筑'
-    - '&7电脑与手机浏览器均可访问'
-    - '&f点击获取地图链接'
-    left_click_commands:
-    - '[close]'
-    - '[player] miao map'
-    right_click_commands:
-    - '[close]'
-    - '[player] miao map'
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
   layout_16:
     material: GRAY_STAINED_GLASS_PANE
     slot: 16
@@ -411,13 +416,6 @@ items:
     lore: []
     left_click_commands: []
     right_click_commands: []
-  layout_37:
-    material: BROWN_STAINED_GLASS_PANE
-    slot: 37
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
   layout_38:
     material: BROWN_STAINED_GLASS_PANE
     slot: 38
@@ -425,16 +423,16 @@ items:
     lore: []
     left_click_commands: []
     right_click_commands: []
-  layout_42:
+  layout_40:
     material: BROWN_STAINED_GLASS_PANE
-    slot: 42
+    slot: 40
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  layout_43:
+  layout_42:
     material: BROWN_STAINED_GLASS_PANE
-    slot: 43
+    slot: 42
     display_name: ' '
     lore: []
     left_click_commands: []

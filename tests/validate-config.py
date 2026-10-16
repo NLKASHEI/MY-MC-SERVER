@@ -66,9 +66,19 @@ for node, enabled in perms.items():
 menus = read('plugins/DeluxeMenus/config.yml')['gui_menus']
 for entry in menus.values():
     menu = read('plugins/DeluxeMenus/gui_menus/' + entry['file'])
+    occupied = set()
     for item in menu['items'].values():
         assert 0 <= item['slot'] < menu['size']
+        assert item['slot'] not in occupied, 'Overlapping inventory menu slots'
+        occupied.add(item['slot'])
         assert item.get('left_click_commands', []) == item.get('right_click_commands', []), 'Mobile/right click behavior missing'
+        for action in item.get('left_click_commands', []):
+            if action.startswith('[openguimenu] '):
+                assert action.split(' ', 1)[1] in menus, 'Menu links must reach a registered panel'
+guide = read('plugins/DeluxeMenus/gui_menus/survival.yml')
+assert '[openguimenu] worlds' in guide['items']['flat']['left_click_commands']
+assert [guide['items'][key]['slot'] for key in ('guide', 'online_map', 'account', 'close')] == [37, 39, 41, 43]
+assert read('plugins/DeluxeMenus/gui_menus/worlds.yml')['items']['back']['slot'] == 22
 lobby = read('plugins/WorldGuard/worlds/lobby/regions.yml')['regions']['__global__']['flags']
 assert lobby['block-break'] == lobby['block-place'] == 'deny'
 blocked = read('plugins/WorldGuard/worlds/flat/regions.yml')['regions']['__global__']['flags']['blocked-cmds']

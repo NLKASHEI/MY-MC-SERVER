@@ -59,141 +59,167 @@ items:
     - '[openguimenu] resource'
     right_click_commands:
     - '[openguimenu] resource'
-  frame_0:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  back:
+    material: ARROW
+    display_name: '&f返回指南针'
+    lore:
+    - '&7返回玩家中心'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao menu survival'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao menu survival'
+    slot: 22
+  heading:
+    material: BOOK
+    display_name: '&6世界探索'
+    lore:
+    - '&7四种世界，各有玩法'
+    - '&7创造背包独立，矿界与生存共用'
+    slot: 4
+  layout_0:
+    material: GRAY_STAINED_GLASS_PANE
     slot: 0
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_1:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_1:
+    material: BROWN_STAINED_GLASS_PANE
     slot: 1
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_2:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_2:
+    material: BROWN_STAINED_GLASS_PANE
     slot: 2
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_3:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_3:
+    material: BROWN_STAINED_GLASS_PANE
     slot: 3
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_4:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 4
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_5:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_5:
+    material: BROWN_STAINED_GLASS_PANE
     slot: 5
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_6:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_6:
+    material: BROWN_STAINED_GLASS_PANE
     slot: 6
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_7:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_7:
+    material: BROWN_STAINED_GLASS_PANE
     slot: 7
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_8:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_8:
+    material: GRAY_STAINED_GLASS_PANE
     slot: 8
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_9:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_9:
+    material: GRAY_STAINED_GLASS_PANE
     slot: 9
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_17:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_11:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 11
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_13:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 13
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_15:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 15
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_17:
+    material: GRAY_STAINED_GLASS_PANE
     slot: 17
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_18:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_18:
+    material: GRAY_STAINED_GLASS_PANE
     slot: 18
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_19:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_19:
+    material: BROWN_STAINED_GLASS_PANE
     slot: 19
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_20:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_20:
+    material: BROWN_STAINED_GLASS_PANE
     slot: 20
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_21:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_21:
+    material: BROWN_STAINED_GLASS_PANE
     slot: 21
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_22:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 22
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_23:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_23:
+    material: BROWN_STAINED_GLASS_PANE
     slot: 23
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_24:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_24:
+    material: BROWN_STAINED_GLASS_PANE
     slot: 24
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_25:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_25:
+    material: BROWN_STAINED_GLASS_PANE
     slot: 25
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_26:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_26:
+    material: GRAY_STAINED_GLASS_PANE
     slot: 26
     display_name: ' '
     lore: []

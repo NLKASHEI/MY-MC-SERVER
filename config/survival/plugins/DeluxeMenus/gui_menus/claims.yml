@@ -1,7 +1,7 @@
 menu_title: '&8领地管家'
 open_command:
 - claims-menu
-size: 45
+size: 36
 items:
   tutorial:
     material: GOLDEN_SHOVEL
@@ -19,7 +19,7 @@ items:
     - '[player] miao land help'
   quick:
     material: OAK_FENCE
-    slot: 13
+    slot: 12
     display_name: '&a确认创建选区'
     lore:
     - '&7先用金铲选择两个对角点'
@@ -33,7 +33,7 @@ items:
     - '[player] miao land create'
   list:
     material: MAP
-    slot: 15
+    slot: 13
     display_name: '&b我的立体领地'
     lore:
     - '&7查看自己拥有的立体领地'
@@ -43,6 +43,30 @@ items:
     right_click_commands:
     - '[close]'
     - '[player] miao land list'
+  teams:
+    material: CAMPFIRE
+    slot: 14
+    display_name: '&6队伍共享领地'
+    lore:
+    - '&7邀请伙伴共同建造、使用箱子'
+    - '&7领地所有权仍归地主，成员不能再授权'
+    left_click_commands:
+    - '[openguimenu] teams'
+    right_click_commands:
+    - '[openguimenu] teams'
+  trapped:
+    material: ENDER_PEARL
+    slot: 15
+    display_name: '&b脱困帮助'
+    lore:
+    - '&7被困在他人的圈地内时使用'
+    - '&7按提示原地等待，不要移动'
+    left_click_commands:
+    - '[close]'
+    - '[player] trapped'
+    right_click_commands:
+    - '[close]'
+    - '[player] trapped'
   trust:
     material: PLAYER_HEAD
     slot: 20
@@ -58,7 +82,7 @@ items:
     - '[player] miao land trusthelp'
   access:
     material: OAK_DOOR
-    slot: 22
+    slot: 21
     display_name: '&f申请更大领地'
     lore:
     - '&7选中超过 25 格的立体范围'
@@ -71,7 +95,7 @@ items:
     - '[player] miao land request'
   trustlist:
     material: PAPER
-    slot: 24
+    slot: 22
     display_name: '&e查看授权名单'
     lore:
     - '&7先站在要查看的圈地内'
@@ -83,7 +107,7 @@ items:
     - '[player] miao land info'
   untrust:
     material: IRON_DOOR
-    slot: 29
+    slot: 23
     display_name: '&6撤销好友授权'
     lore:
     - '&7撤销指定玩家的圈地权限'
@@ -93,22 +117,9 @@ items:
     right_click_commands:
     - '[close]'
     - '[player] miao land untrusthelp'
-  trapped:
-    material: ENDER_PEARL
-    slot: 31
-    display_name: '&b脱困帮助'
-    lore:
-    - '&7被困在他人的圈地内时使用'
-    - '&7按提示原地等待，不要移动'
-    left_click_commands:
-    - '[close]'
-    - '[player] trapped'
-    right_click_commands:
-    - '[close]'
-    - '[player] trapped'
   abandon:
     material: BARRIER
-    slot: 33
+    slot: 24
     display_name: '&c放弃当前圈地'
     lore:
     - '&7解除当前位置的土地保护'
@@ -119,18 +130,9 @@ items:
     right_click_commands:
     - '[close]'
     - '[player] claim-confirm'
-  heading:
-    material: BOOK
-    slot: 4
-    display_name: '&b&l领地管家'
-    lore:
-    - '&7点击图标使用功能'
-    - '&8生存指南 · 简单而自在'
-    left_click_commands: []
-    right_click_commands: []
   back:
     material: ARROW
-    slot: 40
+    slot: 31
     display_name: '&f返回玩家中心'
     lore:
     - '&7回到指南针主菜单'
@@ -140,168 +142,180 @@ items:
     right_click_commands:
     - '[close]'
     - '[player] menu'
-  frame_0:
+  heading:
+    material: BOOK
+    slot: 4
+    display_name: '&b&l领地管家'
+    lore:
+    - '&7上排：选区、领地与伙伴'
+    - '&7下排：授权管理与放弃领地'
+    left_click_commands: []
+    right_click_commands: []
+  layout_0:
     material: GRAY_STAINED_GLASS_PANE
     slot: 0
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_1:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_1:
+    material: BROWN_STAINED_GLASS_PANE
     slot: 1
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_2:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_2:
+    material: BROWN_STAINED_GLASS_PANE
     slot: 2
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_3:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_3:
+    material: BROWN_STAINED_GLASS_PANE
     slot: 3
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_5:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_5:
+    material: BROWN_STAINED_GLASS_PANE
     slot: 5
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_6:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_6:
+    material: BROWN_STAINED_GLASS_PANE
     slot: 6
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_7:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  layout_7:
+    material: BROWN_STAINED_GLASS_PANE
     slot: 7
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_8:
+  layout_8:
     material: GRAY_STAINED_GLASS_PANE
     slot: 8
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_9:
+  layout_9:
     material: GRAY_STAINED_GLASS_PANE
     slot: 9
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_17:
+  layout_10:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 10
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_16:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 16
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_17:
     material: GRAY_STAINED_GLASS_PANE
     slot: 17
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_18:
+  layout_18:
     material: GRAY_STAINED_GLASS_PANE
     slot: 18
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_26:
+  layout_19:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 19
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_25:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 25
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_26:
     material: GRAY_STAINED_GLASS_PANE
     slot: 26
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_27:
+  layout_27:
     material: GRAY_STAINED_GLASS_PANE
     slot: 27
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_35:
+  layout_28:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 28
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_29:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 29
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_30:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 30
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_32:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 32
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_33:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 33
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_34:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 34
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_35:
     material: GRAY_STAINED_GLASS_PANE
     slot: 35
     display_name: ' '
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_36:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 36
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_37:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 37
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_38:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 38
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_39:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 39
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_41:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 41
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_42:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 42
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_43:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
-    slot: 43
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  frame_44:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 44
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  teams:
-    material: CAMPFIRE
-    slot: 30
-    display_name: '&6队伍共享领地'
-    lore:
-    - '&7邀请伙伴共同建造、使用箱子'
-    - '&7领地所有权仍归地主，成员不能再授权'
-    left_click_commands:
-    - '[openguimenu] teams'
-    right_click_commands:
-    - '[openguimenu] teams'

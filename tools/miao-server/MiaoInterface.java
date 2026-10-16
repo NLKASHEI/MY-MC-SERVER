@@ -246,11 +246,19 @@ final class MiaoInterface implements Listener {
         List<ConfigurationSection> buttons=section.getKeys(false).stream().map(section::getConfigurationSection).filter(Objects::nonNull)
             .filter(i->!i.getStringList("left_click_commands").isEmpty()).sorted(Comparator.comparingInt(i->i.getInt("slot",0))).toList();
         SimpleForm.Builder b=SimpleForm.builder().title(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&',y.getString("menu_title","NLK 服务中心"))))
-            .content("§6温馨家园 · 自由生存\n§7点击功能进入，关闭窗口可返回游戏。");
+            .content(formContent(y));
         for(var i:buttons){String label=ChatColor.translateAlternateColorCodes('&',i.getString("display_name","功能"));List<String> lore=i.getStringList("lore");
             String detail=lore.isEmpty()?"":ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&',lore.get(0)));b.button(label+(detail.isBlank()?"":"\n§7"+detail));}
         b.validResultHandler(r->{int id=r.clickedButtonId();if(id>=0&&id<buttons.size())main(p,()->runActions(p,buttons.get(id).getStringList("left_click_commands")));});
         if(!FloodgateApi.getInstance().sendForm(p.getUniqueId(),b.build()))say(p,"表单发送失败，请重新打开菜单。");
+    }
+    static String formContent(YamlConfiguration menu){
+        List<String> lines=new ArrayList<>();
+        for(String key:List.of("heading","rules")){
+            String path="items."+key;
+            if(menu.getStringList(path+".left_click_commands").isEmpty())for(String line:menu.getStringList(path+".lore"))lines.add(ChatColor.translateAlternateColorCodes('&',line));
+        }
+        return lines.isEmpty()?"§6温馨家园 · 自由生存\n§7点击功能进入，关闭窗口可返回游戏。":String.join("\n",lines);
     }
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void menuCommand(PlayerCommandPreprocessEvent e) {
         Player p=e.getPlayer();if(!authenticated(p))return;

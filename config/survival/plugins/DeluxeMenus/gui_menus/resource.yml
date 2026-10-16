@@ -3,22 +3,6 @@ open_command:
 - mineworld
 size: 27
 items:
-  rules:
-    material: BOOK
-    slot: 4
-    display_name: '&6丰饶矿界 · 采集须知'
-    lore:
-    - '&7矿藏约增加 50%，仅影响新区块'
-    - '&7生存背包共用，创造背包独立'
-    - '&7门票 100 金币；重连不用重复购票'
-    - '&7每种天然矿产累计 3 份预留 1 份'
-    - '&7例如掉落 8 个钻石，预留 2 个'
-    - '&7不足 3 份的余数保留到下次'
-    - '&7普通石头、泥土和带入物资不收费'
-    - '&7退出显示结算，不再扣一次背包'
-    - '&c每 3 天凌晨 4 点重置并换随机种子'
-    - '&c不要建家！建筑、箱子和地上物品会清空'
-    - '&7时间按北京时间，重置前会提醒并送回生存'
   enter:
     material: DIAMOND_PICKAXE
     slot: 11
@@ -61,3 +45,169 @@ items:
     - '[openguimenu] worlds'
     right_click_commands:
     - '[openguimenu] worlds'
+  rules:
+    material: BOOK
+    slot: 4
+    display_name: '&6丰饶矿界 · 采集须知'
+    lore:
+    - '&7矿藏约 +50% · 与生存共用背包'
+    - '&e门票 100 金币 · 重连不重复购票'
+    - '&7矿产每 3 份留 1 份，8 钻石留 2'
+    - '&7余数累计，退出不再扣背包'
+    - '&7带入物资和普通石土不收费'
+    - '&c每 3 天北京时间 04:00 换种重置'
+    - '&c不要建家：建筑、箱子和掉落物清空'
+  layout_0:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 0
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_1:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 1
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_2:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 2
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_3:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 3
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_5:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 5
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_6:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 6
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_7:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 7
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_8:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 8
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_9:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 9
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_10:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 10
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_12:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 12
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_14:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 14
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_16:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 16
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_17:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 17
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_18:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 18
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_19:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 19
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_20:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 20
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_21:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 21
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_23:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 23
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_24:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 24
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_25:
+    material: BROWN_STAINED_GLASS_PANE
+    slot: 25
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []
+  layout_26:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 26
+    display_name: ' '
+    lore: []
+    left_click_commands: []
+    right_click_commands: []

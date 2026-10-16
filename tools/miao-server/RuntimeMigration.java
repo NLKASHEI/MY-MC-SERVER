@@ -26,6 +26,7 @@ final class RuntimeMigration {
         PlayerNamesSetup.apply(plugin);
         CrossplaySyncSetup.apply(plugin);
         WorldExpansion.prepare(plugin);
+        MenuLayoutRepair.apply(plugin);
         File marker = new File(plugin.getDataFolder(), "ui-fixes-v080.done");
         if (marker.exists()) return;
         try {

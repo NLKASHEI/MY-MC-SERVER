@@ -8,7 +8,30 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scoreboard.*;
 import me.ryanhamshire.GriefPrevention.*;
 public class MiaoSmoke extends JavaPlugin {
- public void onEnable(){Bukkit.getScheduler().runTaskLater(this,this::check,40);}
+ public void onEnable(){Bukkit.getScheduler().runTaskLater(this,()->{if(getConfig().getBoolean("ui-only",false))uiCheck();else check();},40);}
+ void uiCheck(){
+  try{
+   var plugin=Bukkit.getPluginManager().getPlugin("MiaoServer");var folder=new java.io.File(plugin.getDataFolder().getParentFile(),"DeluxeMenus/gui_menus");int count=0;
+   Class<?> api=Class.forName("com.extendedclip.deluxemenus.menu.Menu",true,Bukkit.getPluginManager().getPlugin("DeluxeMenus").getClass().getClassLoader());
+   var configured=YamlConfiguration.loadConfiguration(new java.io.File(folder.getParentFile(),"config.yml")).getConfigurationSection("gui_menus");
+   for(String name:Objects.requireNonNull(configured).getKeys(false)){
+    var file=new java.io.File(folder,Objects.requireNonNull(configured.getString(name+".file")));
+    var menu=YamlConfiguration.loadConfiguration(file);var items=menu.getConfigurationSection("items");if(items==null)continue;Set<Integer> slots=new HashSet<>();
+    for(String key:items.getKeys(false)){
+     int slot=menu.getInt("items."+key+".slot",-1);ok(slot>=0&&slot<menu.getInt("size"),file.getName()+" slot bounds");ok(slots.add(slot),file.getName()+" overlapping items");
+     ok(menu.getStringList("items."+key+".left_click_commands").equals(menu.getStringList("items."+key+".right_click_commands")),file.getName()+" left/right parity");
+    }
+    ok(((Optional<?>)api.getMethod("getMenuByName",String.class).invoke(null,name)).isPresent(),"native menu loaded: "+name);count++;
+   }
+   var main=YamlConfiguration.loadConfiguration(new java.io.File(folder,"survival.yml"));ok(main.getStringList("items.flat.left_click_commands").contains("[openguimenu] worlds"),"main guide reaches world selector");
+   ok(main.getInt("items.online_map.slot")==39&&main.getInt("items.close.slot")==43,"footer aligned without crowding core rows");
+   var worlds=YamlConfiguration.loadConfiguration(new java.io.File(folder,"worlds.yml"));ok(worlds.getInt("items.back.slot")==22&&worlds.getStringList("items.back.left_click_commands").contains("[player] miao menu survival"),"world selector returns to guide");
+   var resource=YamlConfiguration.loadConfiguration(new java.io.File(folder,"resource.yml"));Class<?> ui=Class.forName("cn.nankexi.MiaoInterface",true,plugin.getClass().getClassLoader());Method content=ui.getDeclaredMethod("formContent",YamlConfiguration.class);content.setAccessible(true);String text=(String)content.invoke(null,resource);
+   ok(text.contains("100")&&text.contains("3 份")&&text.contains("04:00")&&text.contains("不要建家"),"PE form includes admission, withholding, reset and destruction warning");
+   for(String name:List.of("technical","claims")){var menu=YamlConfiguration.loadConfiguration(new java.io.File(folder,name+".yml"));ok(menu.getInt("size")==36&&menu.getInt("items.back.slot")==31,"compact two-row panel "+name);}
+   getLogger().info("UI_LAYOUT_SMOKE_PASS: "+count+" native menus, slot bounds, zero overlap, click parity, world navigation, aligned footer and PE resource rules; mining reset tests skipped");
+  }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"UI_LAYOUT_SMOKE_FAIL",e);}
+ }
  Object get(Object o,String field) throws Exception {Field f=o.getClass().getDeclaredField(field);f.setAccessible(true);return f.get(o);}
  void ok(boolean b,String s){if(!b)throw new AssertionError(s);}
  void cuboidCheck(MiaoServer m,YamlConfiguration teams,World w)throws Exception {
