@@ -40,7 +40,7 @@ spawn-protection:
 resource-world:
   entry-fee: 100.0
   tax-divisor: 3
-  ore-bonus-percent: 50
+  ore-coverage-percent: 30
   border-size: 6000
   reset-period-days: 3
   reset-hour: 4

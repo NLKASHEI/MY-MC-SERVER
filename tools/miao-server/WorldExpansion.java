@@ -19,7 +19,7 @@ final class WorldExpansion {
         try {
             File plugins=plugin.getDataFolder().getParentFile();
             File file=new File(plugin.getDataFolder(),"config.yml");var y=load(file);
-            Map<String,Object> defaults=Map.of("resource-world.entry-fee",100.0,"resource-world.tax-divisor",3,"resource-world.ore-bonus-percent",50,"resource-world.border-size",6000,"resource-world.reset-period-days",3,"resource-world.reset-hour",4);
+            Map<String,Object> defaults=Map.of("resource-world.entry-fee",100.0,"resource-world.tax-divisor",3,"resource-world.ore-coverage-percent",30,"resource-world.border-size",6000,"resource-world.reset-period-days",3,"resource-world.reset-hour",4);
             for(var entry:defaults.entrySet())if(!y.contains(entry.getKey()))y.set(entry.getKey(),entry.getValue());
             var worlds=new ArrayList<>(y.getStringList("spawn-protection.worlds"));if(!worlds.contains("mining"))worlds.add("mining");y.set("spawn-protection.worlds",worlds);save(file,y);
             file=new File(plugins,"GriefPreventionData/config.yml");y=load(file);y.set("GriefPrevention.Claims.Mode.mining","Disabled");save(file,y);
@@ -79,12 +79,13 @@ final class WorldExpansion {
                 manager.saveWorldsConfig();Files.writeString(marker.toPath(),"Authorized one-time flat reset: no structures; 128 layers; surface y=63; no separate world backup\n");
             }
             var mining=manager.getWorld("minecraft:mining").getOrNull();
-            if(mining==null)mining=manager.createWorld(CreateWorldOptions.worldKey(NamespacedKey.minecraft("mining")).environment(World.Environment.NORMAL).seed(seed==null?java.util.concurrent.ThreadLocalRandom.current().nextLong():seed).worldPropertyString("gamemode","survival").worldPropertyString("difficulty","normal").worldPropertyString("pvp","false").worldPropertyString("auto-load","false").worldPropertyString("portal-form","none"))
+            if(mining==null)mining=manager.createWorld(CreateWorldOptions.worldKey(NamespacedKey.minecraft("mining")).environment(World.Environment.NORMAL).seed(seed==null?java.util.concurrent.ThreadLocalRandom.current().nextLong():seed).worldPropertyString("gamemode","survival").worldPropertyString("difficulty","peaceful").worldPropertyString("pvp","false").worldPropertyString("auto-load","false").worldPropertyString("portal-form","none"))
                 .getOrThrow(f->new IllegalStateException("Mining world creation failed: "+f.getFailureReason()));
             else if(Bukkit.getWorld(NamespacedKey.minecraft("mining"))==null)manager.loadWorld(mining).getOrThrow(f->new IllegalStateException("Mining world load failed: "+f.getFailureReason()));
             World world=Objects.requireNonNull(Bukkit.getWorld(NamespacedKey.minecraft("mining")));
             mining.setAutoLoad(false).get();mining.setRespawnWorld("world").get();mining.setGameMode(GameMode.SURVIVAL).get();mining.setPortalForm(AllowedPortalType.NONE).get();mining.setPvp(false).get();mining.setAlias("丰饶矿界").get();
             if(!world.getPersistentDataContainer().has(new NamespacedKey(plugin,"mining-initialized"))){
+                world.setGameRule(GameRule.KEEP_INVENTORY,true);
                 world.getWorldBorder().setCenter(world.getSpawnLocation());world.getWorldBorder().setSize(plugin.getConfig().getDouble("resource-world.border-size",6000));
                 int x=world.getSpawnLocation().getBlockX(),z=world.getSpawnLocation().getBlockZ();
                 int feet=Math.min(world.getMaxHeight()-4,Math.max(world.getSeaLevel()+2,world.getHighestBlockYAt(x,z,HeightMap.MOTION_BLOCKING_NO_LEAVES)+1));

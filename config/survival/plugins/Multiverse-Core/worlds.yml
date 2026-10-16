@@ -173,7 +173,7 @@ minecraft:overworld:
   auto-load: true
   bed-respawn: true
   biome: ''
-  difficulty: normal
+  difficulty: hard
   entry-fee:
     enabled: false
     amount: 0.0
@@ -255,7 +255,7 @@ minecraft:the_end:
   auto-load: true
   bed-respawn: true
   biome: ''
-  difficulty: normal
+  difficulty: hard
   entry-fee:
     enabled: false
     amount: 0.0
@@ -337,7 +337,7 @@ minecraft:the_nether:
   auto-load: true
   bed-respawn: true
   biome: ''
-  difficulty: normal
+  difficulty: hard
   entry-fee:
     enabled: false
     amount: 0.0

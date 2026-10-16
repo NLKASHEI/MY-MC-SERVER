@@ -183,9 +183,9 @@
   },
   {
     "name": "MiaoServer",
-    "version": "0.9.19",
-    "url": "https://github.com/NLKASHEI/MY-MC-SERVER/releases/download/v0.9.19/MiaoServer-0.9.19.jar",
-    "sha256": "3cde8008928e7351b14fed24221c4e99ad1d7327ed2daae48bfc9e1ccd43efde"
+    "version": "0.9.20",
+    "url": "https://github.com/NLKASHEI/MY-MC-SERVER/releases/download/v0.9.20/MiaoServer-0.9.20.jar",
+    "sha256": "a8d4c7ca7f2391b7e718438cfdde36b38ff0d1503aace62501dcc0cf2dc41a76"
   },
   {
     "name": "PacketEvents",

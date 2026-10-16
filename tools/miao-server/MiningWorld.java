@@ -30,7 +30,7 @@ final class MiningWorld implements Listener {
     private boolean resetting;private long retryResetAfter;
     private final Set<Integer> warned=new HashSet<>();
     private static final ZoneId ZONE=ZoneId.of("Asia/Shanghai");
-    private record Admission(UUID transaction,double amount){}
+    private record Admission(UUID transaction,double amount,UUID world){}
     private static final UUID AUTOMATION=UUID.nameUUIDFromBytes("NLK-mining-automation".getBytes(java.nio.charset.StandardCharsets.UTF_8));
     static final Set<Material> ORES=Collections.unmodifiableSet(EnumSet.of(Material.COAL_ORE,Material.DEEPSLATE_COAL_ORE,Material.IRON_ORE,Material.DEEPSLATE_IRON_ORE,Material.COPPER_ORE,Material.DEEPSLATE_COPPER_ORE,Material.GOLD_ORE,Material.DEEPSLATE_GOLD_ORE,Material.REDSTONE_ORE,Material.DEEPSLATE_REDSTONE_ORE,Material.LAPIS_ORE,Material.DEEPSLATE_LAPIS_ORE,Material.DIAMOND_ORE,Material.DEEPSLATE_DIAMOND_ORE,Material.EMERALD_ORE,Material.DEEPSLATE_EMERALD_ORE));
     static final Set<Material> MINERALS;
@@ -39,12 +39,12 @@ final class MiningWorld implements Listener {
         this.plugin=plugin;this.ui=ui;file=new File(plugin.getDataFolder(),"mining-ledger.yml");
         placedKey=new NamespacedKey(plugin,"mining-placed-ores");naturalKey=new NamespacedKey(plugin,"mining-natural-drop");
         try{if(file.exists())ledger.load(file);}catch(Exception e){throw new IllegalStateException("Refusing to overwrite unreadable mining ledger",e);}
-        int bonus=plugin.getConfig().getInt("resource-world.ore-bonus-percent",50);
-        if(bonus<0||bonus>100||divisor()<2||fee()<0||!Double.isFinite(fee()))throw new IllegalArgumentException("Invalid mining economy settings");
-        populator=new OreBonus(bonus);Bukkit.getPluginManager().registerEvents(this,plugin);
+        int coverage=plugin.getConfig().getInt("resource-world.ore-coverage-percent",30);
+        if(coverage<0||coverage>100||divisor()<2||fee()<0||!Double.isFinite(fee()))throw new IllegalArgumentException("Invalid mining economy settings");
+        populator=new OreBonus(coverage);Bukkit.getPluginManager().registerEvents(this,plugin);
         if(!ledger.contains("next-reset")){ledger.set("next-reset",firstReset(ZonedDateTime.now(ZONE),resetDays(),resetHour()).toInstant().toEpochMilli());dirty=true;save();}
         for(World world:Bukkit.getWorlds())attach(world);
-        Bukkit.getScheduler().runTaskTimer(plugin,this::save,100,100);
+        Bukkit.getScheduler().runTaskTimer(plugin,()->{retryRefunds();save();},100,100);
         Bukkit.getScheduler().runTaskTimer(plugin,this::clock,1,20);
     }
     static boolean mine(World world){return world!=null&&world.getKey().equals(NamespacedKey.minecraft("mining"));}
@@ -91,32 +91,56 @@ final class MiningWorld implements Listener {
     private void say(Player p,String text){p.sendMessage("§6南可熙提醒您： §f"+text);}
     private String path(UUID id){return "players."+id;}
     private Economy economy(){var service=Bukkit.getServicesManager().getRegistration(Economy.class);if(service==null)throw new IllegalStateException("Vault economy unavailable");return service.getProvider();}
-    private void attach(World world){if(mine(world)&&!world.getPopulators().contains(populator))world.getPopulators().add(populator);}
+    private boolean charge(Player p){try{return economy().withdrawPlayer(p,fee()).transactionSuccess();}catch(Exception e){plugin.getLogger().warning("矿界扣款失败，已拒绝入场："+p.getUniqueId()+" / "+e.getClass().getSimpleName());return false;}}
+    private void attach(World world){
+        if(!mine(world))return;
+        if(!world.getPopulators().contains(populator))world.getPopulators().add(populator);
+        // Upgrade existing visits once; never bless a ticket after an interrupted/due reset.
+        if(!ledger.getBoolean("ticket-world-migrated")){
+            var players=ledger.getConfigurationSection("players");
+            if(players!=null)for(String id:players.getKeys(false)){
+                String key="players."+id;
+                if(ledger.getBoolean(key+".active")&&!ledger.contains(key+".world-id")&&!ledger.getBoolean("reset-in-progress")&&System.currentTimeMillis()<ledger.getLong("next-reset"))ledger.set(key+".world-id",world.getUID().toString());
+            }
+            ledger.set("ticket-world-migrated",true);dirty=true;save();
+        }
+    }
+    private boolean validTicket(Player p){return mine(p.getWorld())&&ledger.getBoolean(path(p.getUniqueId())+".active")&&p.getWorld().getUID().toString().equals(ledger.getString(path(p.getUniqueId())+".world-id"));}
+    private boolean allowed(Player p){return ui.authenticated(p)&&validTicket(p)&&!resetting&&!ledger.getBoolean("reset-in-progress")&&System.currentTimeMillis()<ledger.getLong("next-reset");}
     @EventHandler public void initialize(WorldInitEvent event){if(mine(event.getWorld())){DhWorldLifecycle.initialized(event.getWorld());attach(event.getWorld());}}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true)
     public void teleport(PlayerTeleportEvent event){
-        if(!mine(event.getTo().getWorld())||mine(event.getFrom().getWorld()))return;
+        if(event.getTo()==null||!mine(event.getTo().getWorld()))return;
         Player p=event.getPlayer();
-        if(resetting||System.currentTimeMillis()>=ledger.getLong("next-reset")){event.setCancelled(true);say(p,"矿界正在重置，请稍后再进入。");return;}
+        if(mine(event.getFrom().getWorld())){if(!allowed(p))event.setCancelled(true);return;}
+        if(resetting||ledger.getBoolean("reset-in-progress")||System.currentTimeMillis()>=ledger.getLong("next-reset")){event.setCancelled(true);say(p,"矿界正在重置，请稍后再进入。");return;}
         if(!ui.authenticated(p)||pending.containsKey(p.getUniqueId())){event.setCancelled(true);return;}
-        var result=economy().withdrawPlayer(p,fee());
-        if(!result.transactionSuccess()){event.setCancelled(true);say(p,"进入丰饶矿界需要 "+fee()+" 金币，余额不足或扣款失败。");return;}
-        Admission admission=new Admission(UUID.randomUUID(),fee());pending.put(p.getUniqueId(),admission);
+        if(!charge(p)){event.setCancelled(true);say(p,"进入丰饶矿界需要 "+fee()+" 金币，余额不足或扣款失败。");return;}
+        Admission admission=new Admission(UUID.randomUUID(),fee(),event.getTo().getWorld().getUID());pending.put(p.getUniqueId(),admission);
         Bukkit.getScheduler().runTaskLater(plugin,()->{if(pending.remove(p.getUniqueId(),admission))refund(p.getUniqueId(),admission);},2);
     }
     private void refund(UUID id,Admission admission){
-        var result=economy().depositPlayer(Bukkit.getOfflinePlayer(id),admission.amount());
-        if(!result.transactionSuccess())plugin.getLogger().severe("Mining admission refund failed for "+id+", amount="+admission.amount()+"; transaction="+admission.transaction());
+        String key="refunds."+admission.transaction();ledger.set(key+".player",id.toString());ledger.set(key+".amount",admission.amount());dirty=true;save();retryRefunds();
+    }
+    private void retryRefunds(){
+        var refunds=ledger.getConfigurationSection("refunds");if(refunds==null)return;
+        for(String transaction:new HashSet<>(refunds.getKeys(false)))try{
+            String key="refunds."+transaction;
+            var result=economy().depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(ledger.getString(key+".player"))),ledger.getDouble(key+".amount"));
+            if(result.transactionSuccess()){ledger.set(key,null);dirty=true;save();}
+        }catch(Exception e){plugin.getLogger().warning("矿界退款暂未完成，将重试；交易 "+transaction+": "+e.getClass().getSimpleName());}
     }
     @EventHandler(priority=EventPriority.MONITOR)
     public void changed(PlayerChangedWorldEvent event){
         Player p=event.getPlayer();
         if(mine(p.getWorld())){
-            if(resetting||System.currentTimeMillis()>=ledger.getLong("next-reset")){p.teleport(RespawnSafety.spawn(Objects.requireNonNull(Bukkit.getWorld("world"))));return;}
+            if(resetting||ledger.getBoolean("reset-in-progress")||System.currentTimeMillis()>=ledger.getLong("next-reset")){p.teleport(RespawnSafety.spawn(Objects.requireNonNull(Bukkit.getWorld("world"))));return;}
             // Also guards world transfers not represented by PlayerTeleportEvent.
             Admission admission=pending.remove(p.getUniqueId());
-            if(admission==null&&!ledger.getBoolean(path(p.getUniqueId())+".active")){
-                if(!ui.authenticated(p)||!economy().withdrawPlayer(p,fee()).transactionSuccess()){
+            if(admission!=null&&!admission.world().equals(p.getWorld().getUID())){refund(p.getUniqueId(),admission);admission=null;}
+            if(admission==null){
+                ledger.set(path(p.getUniqueId())+".active",false);dirty=true;save();
+                if(!ui.authenticated(p)||!charge(p)){
                     say(p,"没有有效矿界门票，已返回生存世界。");p.teleport(RespawnSafety.spawn(Objects.requireNonNull(Bukkit.getWorld("world"))));return;
                 }
             }
@@ -125,7 +149,7 @@ final class MiningWorld implements Listener {
     }
     private void begin(Player p){
         String key=path(p.getUniqueId());
-        if(!ledger.getBoolean(key+".active")){ledger.set(key+".visit",null);ledger.set(key+".active",true);dirty=true;save();say(p,"已进入丰饶矿界，门票 "+fee()+" 金币；天然矿产每累计 "+divisor()+" 份预留 1 份，离开显示结算。重连不重复购票。");say(p,"此处不能建家，建筑和箱子会被重置清空！下次重置："+resetTime());}
+        ledger.set(key+".visit",null);ledger.set(key+".active",true);ledger.set(key+".world-id",p.getWorld().getUID().toString());dirty=true;save();say(p,"已进入丰饶矿界，门票 "+fee()+" 金币；天然矿产每累计 "+divisor()+" 份预留 1 份，离开显示结算。重连不重复购票。");say(p,"此处不能建家，建筑和箱子会被重置清空！下次重置："+resetTime());
     }
     private void finish(Player p){
         String key=path(p.getUniqueId());if(!ledger.getBoolean(key+".active"))return;
@@ -136,11 +160,12 @@ final class MiningWorld implements Listener {
         Player p=event.getPlayer();String key=path(p.getUniqueId());
         if(ledger.getBoolean(key+".reset-notice")){say(p,"你上次停留的矿界已重置并更换种子，物品进度保留；再次入场需要购买新门票。");ledger.set(key+".reset-notice",false);dirty=true;}
         if(mine(p.getWorld())){
-            if(ledger.getBoolean(path(p.getUniqueId())+".active"))say(p,"欢迎回到矿界，本次门票继续有效；采集余数和结算记录已保留。");
+            if(allowed(p))say(p,"欢迎回到矿界，本次门票继续有效；采集余数和结算记录已保留。");
             else {say(p,"请从指南针购买矿界门票后进入。");p.teleport(RespawnSafety.spawn(Objects.requireNonNull(Bukkit.getWorld("world"))));}
         }else if(ledger.getBoolean(path(p.getUniqueId())+".active"))finish(p);
     }
     @EventHandler public void quit(PlayerQuitEvent event){Admission admission=pending.remove(event.getPlayer().getUniqueId());if(admission!=null)refund(event.getPlayer().getUniqueId(),admission);save();}
+    @EventHandler(priority=EventPriority.MONITOR) public void respawn(PlayerRespawnEvent e){if(mine(e.getPlayer().getWorld())&&!mine(e.getRespawnLocation().getWorld()))Bukkit.getScheduler().runTask(plugin,()->{if(!mine(e.getPlayer().getWorld()))finish(e.getPlayer());});}
     void command(Player p,String action){
         if(!ui.authenticated(p))return;
         if(action.equals("enter")){
@@ -152,7 +177,7 @@ final class MiningWorld implements Listener {
             if(!mine(p.getWorld())){say(p,"你目前不在矿界。");return;}
             p.teleport(RespawnSafety.spawn(Objects.requireNonNull(Bukkit.getWorld("world"))));
         }else {
-            String key=path(p.getUniqueId());say(p,"丰饶矿界门票 "+fee()+" 金币；天然矿产 +"+plugin.getConfig().getInt("resource-world.ore-bonus-percent",50)+"% 左右（新增区块），资源费 1/"+divisor()+"。本次总产出 "+ledger.getLong(key+".visit.gross")+"，已预留 "+ledger.getLong(key+".visit.tax")+"。自己带来的物资、石头和泥土不收费。");say(p,"每 "+resetDays()+" 天凌晨 "+resetHour()+" 点重置并换种子，不要在此建家。下次："+resetTime());
+            String key=path(p.getUniqueId());say(p,"丰饶矿界门票 "+fee()+" 金币；新区块地下石质层矿石覆盖约 "+plugin.getConfig().getInt("resource-world.ore-coverage-percent",30)+"%，以煤铁铜为主，资源费 1/"+divisor()+"。本次总产出 "+ledger.getLong(key+".visit.gross")+"，已预留 "+ledger.getLong(key+".visit.tax")+"。自己带来的物资、石头和泥土不收费。");say(p,"每 "+resetDays()+" 天凌晨 "+resetHour()+" 点重置并换种子，不要在此建家。下次："+resetTime());
         }
     }
     // Per material, retain the remainder across visits/restarts: 8 => 2, then 1 => 1.
@@ -173,7 +198,7 @@ final class MiningWorld implements Listener {
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void drops(BlockDropItemEvent event){
         Block block=event.getBlockState().getBlock();if(!mine(block.getWorld())||!ORES.contains(event.getBlockState().getType()))return;
         boolean placed=placed(block);mark(block,false);
-        if(!placed&&ui.authenticated(event.getPlayer())&&event.getPlayer().getGameMode()==GameMode.SURVIVAL)withhold(event.getPlayer().getUniqueId(),event.getItems());
+        if(!placed)withhold(event.getPlayer().getUniqueId(),event.getItems());
     }
     private long position(Block block){return ((long)(block.getY()-block.getWorld().getMinHeight())<<8)|((block.getX()&15)<<4)|(block.getZ()&15);}
     private boolean placed(Block block){long position=position(block);long[] values=block.getChunk().getPersistentDataContainer().get(placedKey,PersistentDataType.LONG_ARRAY);return values!=null&&Arrays.stream(values).anyMatch(v->v==position);}
@@ -186,14 +211,14 @@ final class MiningWorld implements Listener {
     @EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true) public void placed(BlockPlaceEvent event){if(mine(event.getBlock().getWorld())&&ORES.contains(event.getBlock().getType()))mark(event.getBlock(),true);}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void breaking(BlockBreakEvent event){
         if(!mine(event.getBlock().getWorld()))return;
-        if(!ui.authenticated(event.getPlayer())||event.getPlayer().getGameMode()!=GameMode.SURVIVAL){event.setCancelled(true);return;}
+        if(!allowed(event.getPlayer())||event.getPlayer().getGameMode()!=GameMode.SURVIVAL){event.setCancelled(true);return;}
         Block block=event.getBlock();if(placed(block))Bukkit.getScheduler().runTask(plugin,()->{if(block.getType().isAir())mark(block,false);});
     }
     private void moved(List<Block> blocks,org.bukkit.block.BlockFace direction){
         var from=blocks.stream().filter(b->mine(b.getWorld())&&placed(b)).toList();
         var to=from.stream().map(b->b.getRelative(direction)).toList();
-        // Move provenance after physics; snapshot first so adjacent ores do not overwrite each other.
-        Bukkit.getScheduler().runTask(plugin,()->{from.forEach(b->mark(b,false));to.forEach(b->mark(b,true));});
+        // Snapshot and move together in the successful event, before another action can break the destination.
+        blocks.forEach(b->{mark(b,false);mark(b.getRelative(direction),false);});to.forEach(b->mark(b,true));
     }
     @EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true) public void extend(BlockPistonExtendEvent e){if(mine(e.getBlock().getWorld()))moved(e.getBlocks(),e.getDirection());}
     @EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true) public void retract(BlockPistonRetractEvent e){if(mine(e.getBlock().getWorld()))moved(e.getBlocks(),e.getDirection().getOppositeFace());}
@@ -213,19 +238,25 @@ final class MiningWorld implements Listener {
         if(tax>=stack.getAmount())item.remove();else if(tax>0){stack.setAmount(stack.getAmount()-tax);item.setItemStack(stack);}
     }
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void pickup(EntityPickupItemEvent e){
-        if(!mine(e.getItem().getWorld())||!e.getItem().getPersistentDataContainer().has(naturalKey)||e.getRemaining()>=e.getItem().getItemStack().getAmount())return;
-        if(e.getEntity() instanceof Player p&&!ui.authenticated(p)){e.setCancelled(true);return;}
+        if(mine(e.getItem().getWorld())&&e.getEntity() instanceof Player p&&!allowed(p)){e.setCancelled(true);return;}
+        if(!e.getItem().getPersistentDataContainer().has(naturalKey)||e.getRemaining()>=e.getItem().getItemStack().getAmount())return;
         explosionPickup(e.getItem(),e.getEntity() instanceof Player p?p.getUniqueId():AUTOMATION);
         // Retry native pickup next tick with the reduced stack, avoiding stale remaining counts.
         e.setCancelled(true);
     }
-    @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void hopper(InventoryPickupItemEvent e){if(mine(e.getItem().getWorld())&&e.getItem().getPersistentDataContainer().has(naturalKey)){explosionPickup(e.getItem(),AUTOMATION);e.setCancelled(true);}}
+    @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void hopper(InventoryPickupItemEvent e){if(e.getItem().getPersistentDataContainer().has(naturalKey)){explosionPickup(e.getItem(),AUTOMATION);e.setCancelled(true);}}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void merging(ItemMergeEvent e){if(mine(e.getEntity().getWorld())&&e.getEntity().getPersistentDataContainer().has(naturalKey)!=e.getTarget().getPersistentDataContainer().has(naturalKey))e.setCancelled(true);}
     @EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true) public void dropped(PlayerDropItemEvent e){if(mine(e.getPlayer().getWorld()))e.getItemDrop().getPersistentDataContainer().remove(naturalKey);}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void portal(PlayerPortalEvent e){if(mine(e.getFrom().getWorld())){e.setCancelled(true);say(e.getPlayer(),"矿界不通往下界或末地，请用指南针返回生存。");}}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void portal(EntityPortalEvent e){if(mine(e.getFrom().getWorld()))e.setCancelled(true);}
+    @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void export(EntityTeleportEvent e){if(e.getEntity() instanceof Item item&&e.getTo()!=null&&!Objects.equals(e.getFrom().getWorld(),e.getTo().getWorld())&&item.getPersistentDataContainer().has(naturalKey)){explosionPickup(item,AUTOMATION);if(!item.isValid())e.setCancelled(true);}}
+    @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void interact(PlayerInteractEvent e){if(mine(e.getPlayer().getWorld())&&!allowed(e.getPlayer()))e.setCancelled(true);}
+    @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void oldHome(net.ess3.api.events.UserTeleportHomeEvent e){
+        if(e.getHomeLocation()!=null&&mine(e.getHomeLocation().getWorld())){e.setCancelled(true);say(e.getUser().getBase(),"矿界的旧家园和床坐标已停用，请从指南针购票进入；每次重置会清空建筑。");}
+    }
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void home(PlayerCommandPreprocessEvent e){
         if(!mine(e.getPlayer().getWorld()))return;String root=e.getMessage().split("\\s+",2)[0].toLowerCase(Locale.ROOT);root=root.substring(root.lastIndexOf(':')+1).replaceFirst("^/","");
+        var command=Bukkit.getPluginCommand(root);if(command!=null)root=command.getName().toLowerCase(Locale.ROOT);
         if(Set.of("sethome","esethome","createhome","ecreatehome","setwarp","esetwarp").contains(root)){e.setCancelled(true);say(e.getPlayer(),"矿界每 "+resetDays()+" 天重置，不能在这里设置家园或公共传送点，请回生存世界建设。");}
     }
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void bedSpawn(PlayerSpawnChangeEvent e){if(e.getNewSpawn()!=null&&mine(e.getNewSpawn().getWorld())){e.setCancelled(true);say(e.getPlayer(),"矿界不能设置重生点，请在生存世界安家。");}}
@@ -234,24 +265,22 @@ final class MiningWorld implements Listener {
         catch(IOException e){throw new IllegalStateException("Cannot persist mining ledger",e);}
     }
     void stop(){for(var entry:pending.entrySet())refund(entry.getKey(),entry.getValue());pending.clear();save();}
-    /** Expand existing vanilla ore deposits; never revisit a generated chunk or replace air/structures. */
+    /** Target total ore coverage among original ore/stone; preserve existing deposits and all other blocks. */
     private static final class OreBonus extends BlockPopulator {
         private final int percent;OreBonus(int percent){this.percent=percent;}
         @Override public void populate(WorldInfo info,Random random,int chunkX,int chunkZ,LimitedRegion region){
-            int baseX=chunkX<<4,baseZ=chunkZ<<4;List<int[]> candidates=new ArrayList<>();
+            int baseX=chunkX<<4,baseZ=chunkZ<<4,min=info.getMinHeight();int[] candidates=new int[256*(info.getMaxHeight()-min)];int count=0,existing=0;
             for(int x=baseX;x<baseX+16;x++)for(int z=baseZ;z<baseZ+16;z++)for(int y=info.getMinHeight()+1;y<info.getMaxHeight()-1;y++){
-                if(random.nextInt(100)>=percent)continue;Material material=region.getType(x,y,z);
-                if(ORES.contains(material))candidates.add(new int[]{x,y,z,material.ordinal()});
+                Material material=region.getType(x,y,z);if(ORES.contains(material))existing++;
+                else if(material==Material.STONE||material==Material.DEEPSLATE)candidates[count++]=((y-min)<<8)|((x&15)<<4)|(z&15);
             }
-            int[][] offsets={{1,0,0},{-1,0,0},{0,1,0},{0,-1,0},{0,0,1},{0,0,-1}};
-            for(int[] pos:candidates){int start=random.nextInt(6);for(int i=0;i<6;i++){
-                int[] d=offsets[(i+start)%6];int x=pos[0]+d[0],y=pos[1]+d[1],z=pos[2]+d[2];
-                // Stay in the owning chunk to avoid neighboring generation races.
-                if(x<baseX||x>=baseX+16||z<baseZ||z>=baseZ+16||y<=info.getMinHeight()||y>=info.getMaxHeight())continue;
-                Material ground=region.getType(x,y,z);if(ground!=Material.STONE&&ground!=Material.DEEPSLATE)continue;
-                String name=Material.values()[pos[3]].name().replace("DEEPSLATE_","");if(ground==Material.DEEPSLATE)name="DEEPSLATE_"+name;
-                region.setType(x,y,z,Material.valueOf(name));break;
-            }}
+            int needed=Math.max(0,(int)Math.round((count+existing)*percent/100.0)-existing);
+            for(int i=0;i<Math.min(needed,count);i++){
+                int pick=i+random.nextInt(count-i),pos=candidates[pick];candidates[pick]=candidates[i];
+                int x=baseX+((pos>>4)&15),y=min+(pos>>8),z=baseZ+(pos&15);Material ground=region.getType(x,y,z);
+                int roll=random.nextInt(10000);String name=roll<100?(y<0?"DIAMOND_ORE":"IRON_ORE"):roll<150?(y>=0?"EMERALD_ORE":"IRON_ORE"):roll<700?"GOLD_ORE":roll<1700?"REDSTONE_ORE":roll<2400?"LAPIS_ORE":roll<4600?"COPPER_ORE":roll<7400?"IRON_ORE":"COAL_ORE";
+                region.setType(x,y,z,Material.valueOf((ground==Material.DEEPSLATE?"DEEPSLATE_":"")+name));
+            }
         }
     }
 }

@@ -99,6 +99,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         farmingGuard = new FarmingGuard(this);
         mining=new MiningWorld(this,ui);
         WorldExpansion.start(this);
+        new SurvivalRules(this);
         if(Bukkit.getPluginManager().isPluginEnabled("ViaVersion"))packetExemptions=new PacketExemptions(this);
         reconcile();
         Bukkit.getScheduler().runTaskTimer(this, () -> {
@@ -125,8 +126,17 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         if(world==null)world=event.getPlayer().getWorld();
         OriginalRespawn original=originalRespawns.remove(event.getPlayer().getUniqueId());
         if(original==null)original=new OriginalRespawn(event.getRespawnLocation().clone(),event.isBedSpawn()||event.isAnchorSpawn());
-        boolean survival=!LobbyGuard.lobby(world)&&!world.getName().equals("flat");
-        if(original.personal()&&(survival||world.equals(original.location().getWorld()))) {
+        // These three dimensions share survival progress and always respawn in the overworld.
+        if(SurvivalRules.member(world)||MiningWorld.mine(world)){
+            World main=Objects.requireNonNull(Bukkit.getWorld("world"));
+            if(main.equals(original.location().getWorld()))event.setRespawnLocation(original.location());
+            else event.setRespawnLocation(RespawnSafety.spawn(main));
+            return;
+        }
+        if(LobbyGuard.lobby(world)||world.getName().equals("flat")){
+            event.setRespawnLocation(world.equals(original.location().getWorld())?original.location():RespawnSafety.spawn(world));return;
+        }
+        if(original.personal()) {
             event.setRespawnLocation(original.location());return;
         }
         if(MiningWorld.mine(world)||world.getEnvironment()==World.Environment.NETHER||world.getEnvironment()==World.Environment.THE_END) {
