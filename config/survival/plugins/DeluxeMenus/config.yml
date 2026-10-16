@@ -5,6 +5,8 @@ gui_menus:
     file: survival.yml
   worlds:
     file: worlds.yml
+  resource:
+    file: resource.yml
   fun:
     file: fun.yml
   claims:

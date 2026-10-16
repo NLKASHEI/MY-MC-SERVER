@@ -32,17 +32,21 @@ for file in files:
 worlds = read('plugins/Multiverse-Core/worlds.yml')
 legacy = {w['read-only']['legacy-world-name'] for w in worlds.values()}
 groups = read('plugins/Multiverse-Inventories/groups.yml')['groups']
-assert set(groups['survival']['worlds']) == {'lobby', 'world', 'world_nether', 'world_the_end'}
+assert set(groups['survival']['worlds']) == {'lobby', 'world', 'world_nether', 'world_the_end', 'mining'}
 assert set(groups['creative']['worlds']) == {'flat'}
 seen = set()
 for group in groups.values():
     members = set(group['worlds'])
-    assert members <= legacy, 'Inventory groups must use legacy Bukkit names, not dimension keys'
+    assert members <= legacy | {'mining'}, 'Inventory groups must use legacy Bukkit names, not dimension keys; mining is created by the managed-world initializer'
     assert not (seen & members), 'Conflicting inventory groups'
     assert group['shares'] == ['all']
     seen |= members
-assert seen == legacy
+assert seen == legacy | {'mining'}
 assert worlds['minecraft:flat']['gamemode'] == 'creative'
+flat_settings = json.loads(worlds['minecraft:flat']['read-only']['generator-settings'])
+assert sum(layer['height'] for layer in flat_settings['layers']) == 128
+assert flat_settings['structure_overrides'] == [] and not flat_settings['features']
+assert worlds['minecraft:flat']['spawn-location']['y'] == 64
 assert worlds['minecraft:lobby']['gamemode'] == 'adventure'
 assert worlds['minecraft:overworld']['gamemode'] == 'survival'
 core = read('plugins/Multiverse-Core/config.yml')

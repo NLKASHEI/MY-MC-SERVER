@@ -6,7 +6,7 @@ size: 27
 items:
   lobby:
     material: BEACON
-    slot: 11
+    slot: 10
     display_name: '&b主城'
     lore:
     - '&7安全休闲区 · 建筑受保护'
@@ -19,7 +19,7 @@ items:
     - '[player] mv tp w:lobby'
   survival:
     material: GRASS_BLOCK
-    slot: 13
+    slot: 12
     display_name: '&a原版生存'
     lore:
     - '&7自由探索 · 生存模式'
@@ -32,10 +32,11 @@ items:
     - '[player] mv tp w:world'
   flat:
     material: BRICKS
-    slot: 15
+    slot: 14
     display_name: '&d创造超平坦'
     lore:
     - '&7自由建造 · 创造模式'
+    - '&7无村庄等结构 · 128 格深地层'
     - '&c背包、末影箱、经验与生存隔离'
     - '&7创造世界不可交易或领取金币'
     left_click_commands:
@@ -44,6 +45,20 @@ items:
     right_click_commands:
     - '[close]'
     - '[player] mv tp w:flat'
+  mining:
+    material: DIAMOND_PICKAXE
+    slot: 16
+    display_name: '&6丰饶矿界'
+    lore:
+    - '&7原版地形 · 新区块矿藏约增加 50%'
+    - '&e入场 100 金币 · 矿产资源费 1/3'
+    - '&7与生存共用背包，可带回采集资源'
+    - '&c每 3 天凌晨 4 点换种重置，不能建家'
+    - '&7点击查看规则，再确认入场'
+    left_click_commands:
+    - '[openguimenu] resource'
+    right_click_commands:
+    - '[openguimenu] resource'
   frame_0:
     material: LIGHT_BLUE_STAINED_GLASS_PANE
     slot: 0

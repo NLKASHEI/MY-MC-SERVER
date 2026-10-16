@@ -36,3 +36,11 @@ spawn-protection:
   - world_the_end
   - flat
   - lobby
+  - mining
+resource-world:
+  entry-fee: 100.0
+  tax-divisor: 3
+  ore-bonus-percent: 50
+  border-size: 6000
+  reset-period-days: 3
+  reset-hour: 4

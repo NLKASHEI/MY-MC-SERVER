@@ -25,6 +25,7 @@ final class RuntimeMigration {
         BlueMapSetup.apply(plugin);
         PlayerNamesSetup.apply(plugin);
         CrossplaySyncSetup.apply(plugin);
+        WorldExpansion.prepare(plugin);
         File marker = new File(plugin.getDataFolder(), "ui-fixes-v080.done");
         if (marker.exists()) return;
         try {

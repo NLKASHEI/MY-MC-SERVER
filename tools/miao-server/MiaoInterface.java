@@ -87,7 +87,7 @@ final class MiaoInterface implements Listener {
         long total=prefs.getLong(path(p)+".total-seconds",Integer.toUnsignedLong(p.getStatistic(Statistic.PLAY_ONE_MINUTE))/20)+pending;
         long session=(now-started.getOrDefault(p.getUniqueId(),now))/1_000_000_000L;
         double tps=Math.min(20,Bukkit.getTPS()[0]);
-        String world=switch(p.getWorld().getName()){case "flat"->"创造超平坦";case "lobby"->"温馨主城";case "world_nether"->"下界";case "world_the_end"->"末地";default->"自由生存";};
+        String world=switch(p.getWorld().getName()){case "flat"->"创造超平坦";case "mining"->"丰饶矿界";case "lobby"->"温馨主城";case "world_nether"->"下界";case "world_the_end"->"末地";default->"自由生存";};
         Set<String> chosen=new LinkedHashSet<>(selected(p));
         List<String> order=List.of("player","world","team","total","session","balance","placed","mined","block","kills","fishing","deaths","distance","online","ping","tps");
         String lastGroup=""; int shown=0;
@@ -166,6 +166,7 @@ final class MiaoInterface implements Listener {
         if(a[0].equals("teaminvite")){inviteMenu(p,0);return true;}
         if(a[0].equals("map")){mapLink(p);return true;}
         if(a[0].equals("names")){names.command(p,Arrays.copyOfRange(a,1,a.length));return true;}
+        if(a[0].equals("mining")){plugin.mining.command(p,a.length>1?a[1]:"status");return true;}
         return true;
     }
     private void mapLink(Player p) {

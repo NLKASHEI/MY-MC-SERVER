@@ -37,6 +37,8 @@ public final class MiaoServer extends JavaPlugin implements Listener {
     private CuboidClaims cuboids;
     private FarmingGuard farmingGuard;
     private PacketExemptions packetExemptions;
+    MiningWorld mining;
+    private boolean loaded;
     boolean authenticated(Player p) { return ui != null && ui.authenticated(p); }
     boolean land(Player p, String[] args) { return cuboids.command(p,args); }
     boolean inCuboid(Player p) { return cuboids != null && cuboids.at(p.getLocation()) != null; }
@@ -62,8 +64,10 @@ public final class MiaoServer extends JavaPlugin implements Listener {
                 getLogger().info("自动备份已调整：每两小时一次，保留最近三份。");
             } catch (Exception e) { throw new IllegalStateException("Cannot migrate backup schedule", e); }
         }
+        loaded=true;
     }
     @Override public void onEnable() {
+        if(!loaded)throw new IllegalStateException("Configuration migration did not finish; refusing world initialization");
         saveDefaultConfig(); store = new File(getDataFolder(), "teams.yml");
         File simulationMarker=new File(getDataFolder(),"simulation-distance-runtime-v096.done");
         if(!simulationMarker.exists()) {
@@ -93,6 +97,8 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         cuboids = new CuboidClaims(this);
         new MajoritySleep(this);
         farmingGuard = new FarmingGuard(this);
+        mining=new MiningWorld(this,ui);
+        WorldExpansion.start(this);
         if(Bukkit.getPluginManager().isPluginEnabled("ViaVersion"))packetExemptions=new PacketExemptions(this);
         reconcile();
         Bukkit.getScheduler().runTaskTimer(this, () -> {
@@ -123,7 +129,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         if(original.personal()&&(survival||world.equals(original.location().getWorld()))) {
             event.setRespawnLocation(original.location());return;
         }
-        if(world.getEnvironment()==World.Environment.NETHER||world.getEnvironment()==World.Environment.THE_END) {
+        if(MiningWorld.mine(world)||world.getEnvironment()==World.Environment.NETHER||world.getEnvironment()==World.Environment.THE_END) {
             World overworld=RespawnSafety.overworld(world);
             // Minecraft has already checked its original destination for valid beds,
             // anchors and default spawn. Do not replace it with a dimension's raw spawn.
@@ -348,5 +354,5 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         if (e instanceof com.destroystokyo.paper.event.server.PaperServerListPingEvent paper) paper.setNumPlayers(online);
         if (icon != null) e.setServerIcon(icon);
     }
-    @Override public void onDisable() { if(packetExemptions!=null)packetExemptions.stop(); if (ui != null) ui.stop(); if (lobbyGuard != null) lobbyGuard.stop(); for (Player p : Bukkit.getOnlinePlayers()) detach(p); }
+    @Override public void onDisable() { if(mining!=null)mining.stop(); if(packetExemptions!=null)packetExemptions.stop(); if (ui != null) ui.stop(); if (lobbyGuard != null) lobbyGuard.stop(); for (Player p : Bukkit.getOnlinePlayers()) detach(p); }
 }

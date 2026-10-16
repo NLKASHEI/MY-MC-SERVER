@@ -1,0 +1,63 @@
+menu_title: '&8丰饶矿界 · 出发与结算'
+open_command:
+- mineworld
+size: 27
+items:
+  rules:
+    material: BOOK
+    slot: 4
+    display_name: '&6丰饶矿界 · 采集须知'
+    lore:
+    - '&7矿藏约增加 50%，仅影响新区块'
+    - '&7生存背包共用，创造背包独立'
+    - '&7门票 100 金币；重连不用重复购票'
+    - '&7每种天然矿产累计 3 份预留 1 份'
+    - '&7例如掉落 8 个钻石，预留 2 个'
+    - '&7不足 3 份的余数保留到下次'
+    - '&7普通石头、泥土和带入物资不收费'
+    - '&7退出显示结算，不再扣一次背包'
+    - '&c每 3 天凌晨 4 点重置并换随机种子'
+    - '&c不要建家！建筑、箱子和地上物品会清空'
+    - '&7时间按北京时间，重置前会提醒并送回生存'
+  enter:
+    material: DIAMOND_PICKAXE
+    slot: 11
+    display_name: '&a确认入场 · 100 金币'
+    lore:
+    - '&7支付门票后传送到安全出生点'
+    - '&7已在矿界时不会再次收费'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao mining enter'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao mining enter'
+  statement:
+    material: PAPER
+    slot: 13
+    display_name: '&e查看本次采集与资源费'
+    left_click_commands:
+    - '[player] miao mining status'
+    right_click_commands:
+    - '[player] miao mining status'
+  leave:
+    material: OAK_DOOR
+    slot: 15
+    display_name: '&b返回生存 · 查看结算'
+    lore:
+    - '&7资源费已经在天然矿产掉落中预留'
+    - '&7返回时不再收费、不扣随身原有物资'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao mining leave'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao mining leave'
+  back:
+    material: COMPASS
+    slot: 22
+    display_name: '&f返回世界探索'
+    left_click_commands:
+    - '[openguimenu] worlds'
+    right_click_commands:
+    - '[openguimenu] worlds'

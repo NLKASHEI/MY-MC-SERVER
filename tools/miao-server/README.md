@@ -1,5 +1,7 @@
 # MiaoServer
 
+`WorldExpansion` 与 `MiningWorld` 管理无结构深层超平坦和资源世界。只有 `minecraft:flat` 的一次性授权清空和 `minecraft:mining` 的定期换种可删除维度；检查真实路径、空玩家列表，再调用 Multiverse 原生删除/创建 API。天然矿石预扣来自实际掉落，不扫描或扣除带入背包；放置来源保存在区块 PDC，分矿物余数跨访问保留。跨世界传送事件逐人收费，取消后退费，TPA 同样检查。北京时间三日凌晨四点重置，离线票据关闭但保留背包和资源余数。详见运维文档和本地临时启动测试。
+
 项目自研的轻量中文辅助插件，包含伙伴队伍、GriefPrevention 共享信任、侧边栏和服务器列表样式。无外部数据库或网络服务，玩家数据单独保存在插件目录。
 
 源码使用 Java 25 和本项目锁定的 Paper 26.2/GriefPrevention 16.18.7 API。构建执行 `scripts/build-miao-plugin.ps1`；输出在 `downloads`，确认后更新插件锁定 SHA256，将对应 JAR 上传同版本 GitHub Release。不要将编译后的 JAR 提交 Git。

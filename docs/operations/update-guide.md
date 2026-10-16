@@ -2,6 +2,8 @@
 
 ## 一键获取我们发布的更新
 
+0.9.18 是服主明确授权的世界变更：首次启动只清空旧 `minecraft:flat`，不额外备份该维度，重新生成无结构、128 层的创造超平坦；完成标记 `plugins/MiaoServer/flat-reset-v0918.done` 以后不得删除，否则会再次触发清空。生存、主城和玩家数据不重置。新增矿界每三天北京时间凌晨四点换种重置；背包分组通过原生 API 仅添加 `mining`，不要求手动覆盖 `groups.yml` 或 `worlds.yml`。标准更新程序仍保留既有停服备份流程。相关配置和四个世界按钮由有范围的迁移合并，资源菜单注册到 DeluxeMenus；首次安装也执行相同初始化。
+
 0.9.13 修复系统商店分类：交易分类的 `display-item` 必须为 `false`，`true` 表示展示物品并排除正常分类。首次启动合并四个分类的启用与模式，保留现有商品页与价格；之后只补缺失的配置。历史迁移备份从商店扫描目录移至 `plugins/MiaoServer/config-backups/v0913/EconomyShopGUI`，保留文件内容，避免被误加载。指南针重新合并默认图标与格位、清除旧装饰格，备份为 `survival.yml.before-layout-v0913`；自定义按钮冲突仍保留并提示人工合并。
 
 首次部署选最新完整 ZIP，以后在控制台输入 `stop`，待退出后双击根目录 **一键更新.bat** 或 **update-fast.bat**。两个入口均默认加速，自动查找最新正式版本，不锁定版本。无需 Git、Python 或 GitHub 账号。它使用公开 GitHub Release API 获取最新正式版（[官方接口说明](https://docs.github.com/en/rest/releases/releases#get-the-latest-release)）。需要云服务器能访问 GitHub 和发生变化的插件下载源，网络失败不会开始替换。

@@ -37,6 +37,10 @@ survival.player:
     gsit.crawl: true
     gsit.spin: true
     multiverse.access.minecraft:flat: true
+    multiverse.access.minecraft:mining: true
+    multiverse.access.mining: true
+    multiverse.teleport.self.w.minecraft:mining: true
+    multiverse.teleport.self.w.mining: true
     multiverse.access.minecraft:lobby: true
     multiverse.access.minecraft:overworld: true
     multiverse.access.minecraft:the_end: true

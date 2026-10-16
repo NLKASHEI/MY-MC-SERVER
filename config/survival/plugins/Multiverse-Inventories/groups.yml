@@ -5,6 +5,7 @@ groups:
     - world_nether
     - world_the_end
     - lobby
+    - mining
     shares:
     - all
   creative:

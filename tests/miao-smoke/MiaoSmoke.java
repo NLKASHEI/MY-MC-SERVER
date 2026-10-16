@@ -89,6 +89,7 @@ public class MiaoSmoke extends JavaPlugin {
    YamlConfiguration test=new YamlConfiguration();f.set(m,test);
    UUID owner=UUID.randomUUID(), member=UUID.randomUUID(), manual=UUID.randomUUID();
    World w=Bukkit.getWorld("world");
+   miningCheck(m,w);
    packetAllowCheck(m,w);
    cuboidCheck(m,test,w);
    namesCheck(m,w);
@@ -312,6 +313,86 @@ public class MiaoSmoke extends JavaPlugin {
    case "getUniqueId"->id;case "getName"->name;case "getWorld"->world;case "getLocation"->location;case "isOp"->op;case "hasPermission"->true;case "hasMetadata"->false;case "sendMessage"->null;case "getServer"->Bukkit.getServer();
    default->{Class<?> c=method.getReturnType();yield c==boolean.class?false:c==int.class?0:null;}
   });
+ }
+ void miningCheck(MiaoServer m,World main)throws Exception {
+  Object mining=get(m,"mining");Class<?> type=mining.getClass();World world=Bukkit.getWorld(NamespacedKey.minecraft("mining")),flat=Bukkit.getWorld("flat");
+  ok(world!=null&&flat!=null,"managed worlds loaded");ok(flat.getHighestBlockYAt(0,0)==63&&flat.getBlockAt(0,-64,0).getType()==Material.BEDROCK&&flat.getBlockAt(0,60,0).getType()==Material.STONE&&flat.getBlockAt(0,63,0).getType()==Material.GRASS_BLOCK,"actual deep flat layers generated");
+  var manager=org.mvplugins.multiverse.core.MultiverseCoreApi.get().getWorldManager();
+  var flatWorld=(org.mvplugins.multiverse.core.world.LoadedMultiverseWorld)manager.getWorld(flat).get();ok(!flatWorld.canGenerateStructures().get(),"flat structures disabled");
+  var groups=org.mvplugins.multiverse.inventories.MultiverseInventoriesApi.get().getWorldGroupManager();var survival=groups.getGroup("survival");
+  ok(groups.getGroupsForWorld("mining").contains(survival)&&!groups.getGroupsForWorld("flat").contains(survival),"mining shares survival inventory; creative remains separate");
+  Class<?> menuApi=Class.forName("com.extendedclip.deluxemenus.menu.Menu",true,Bukkit.getPluginManager().getPlugin("DeluxeMenus").getClass().getClassLoader());
+  ok(((Optional<?>)menuApi.getMethod("getMenuByName",String.class).invoke(null,"resource")).isPresent(),"Java resource menu registered");
+  var source=YamlConfiguration.loadConfiguration(new java.io.File(m.getDataFolder().getParentFile(),"DeluxeMenus/gui_menus/worlds.yml"));ok(source.getStringList("items.mining.left_click_commands").contains("[openguimenu] resource"),"world selector reaches resource menu");
+  UUID id=UUID.randomUUID(),paidId=UUID.randomUUID(),cancelId=UUID.randomUUID(),poorId=UUID.randomUUID();List<UUID> ids=List.of(id,paidId,cancelId,poorId);
+  var ledger=(YamlConfiguration)get(mining,"ledger");var pending=(Map<?,?>)get(mining,"pending");
+  Method reserve=type.getDeclaredMethod("reserve",UUID.class,Material.class,int.class);reserve.setAccessible(true);
+  Method drops=type.getDeclaredMethod("drops",org.bukkit.event.block.BlockDropItemEvent.class);drops.setAccessible(true);
+  Method mark=type.getDeclaredMethod("mark",org.bukkit.block.Block.class,boolean.class);mark.setAccessible(true);
+  Method teleport=type.getDeclaredMethod("teleport",org.bukkit.event.player.PlayerTeleportEvent.class);teleport.setAccessible(true);
+  Method changed=type.getDeclaredMethod("changed",org.bukkit.event.player.PlayerChangedWorldEvent.class);changed.setAccessible(true);
+  Method save=type.getDeclaredMethod("save");save.setAccessible(true);
+  var cache=(fr.xephi.authme.data.auth.PlayerCache)get(fr.xephi.authme.api.v3.AuthMeApi.getInstance(),"playerCache");
+  Map<UUID,Double> balances=new HashMap<>();balances.put(paidId,1000.0);balances.put(cancelId,1000.0);
+  var economy=(net.milkbowl.vault.economy.Economy)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{net.milkbowl.vault.economy.Economy.class},(obj,method,args)->{
+   if(method.getName().equals("equals"))return obj==args[0];if(method.getName().equals("hashCode"))return System.identityHashCode(obj);
+   if(Set.of("withdrawPlayer","depositPlayer").contains(method.getName())){UUID player=((OfflinePlayer)args[0]).getUniqueId();double amount=(double)args[1],balance=balances.getOrDefault(player,0.0);boolean success=method.getName().equals("depositPlayer")||balance>=amount;if(success)balances.put(player,balance+(method.getName().equals("depositPlayer")?amount:-amount));return new net.milkbowl.vault.economy.EconomyResponse(amount,balances.getOrDefault(player,0.0),success?net.milkbowl.vault.economy.EconomyResponse.ResponseType.SUCCESS:net.milkbowl.vault.economy.EconomyResponse.ResponseType.FAILURE,success?null:"Insufficient funds");}
+   Class<?> result=method.getReturnType();return result==boolean.class?true:result==double.class?0.0:result==String.class?"fixture":null;
+  });
+  Player actor=actor(id,"MineDropFixture",world,world.getSpawnLocation(),false);
+  Player miner=(Player)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{Player.class},(obj,method,args)->method.getName().equals("getGameMode")?GameMode.SURVIVAL:method.invoke(actor,args));
+  org.bukkit.block.Block block=world.getBlockAt(world.getSpawnLocation().getBlockX()+32,-30,world.getSpawnLocation().getBlockZ()+32);var original=block.getState();List<org.bukkit.entity.Item> spawned=new ArrayList<>();boolean registered=false;
+  try {
+   ok((int)reserve.invoke(mining,id,Material.DIAMOND,8)==2&&(int)reserve.invoke(mining,id,Material.DIAMOND,1)==1,"one-third remainder persists across harvest batches");
+   ok((int)reserve.invoke(mining,id,Material.DIRT,64)==0,"ordinary blocks untaxed");ledger.set("players."+id,null);
+   block.setType(Material.DIAMOND_ORE,false);var state=block.getState();block.setType(Material.AIR,false);
+   var item=world.dropItem(block.getLocation(),new org.bukkit.inventory.ItemStack(Material.DIAMOND,8));spawned.add(item);var items=new ArrayList<>(List.of(item));
+   drops.invoke(mining,new org.bukkit.event.block.BlockDropItemEvent(block,state,miner,items));ok(item.getItemStack().getAmount()==6,"actual natural ore drops reserve two of eight diamonds");
+   block.setType(Material.DIAMOND_ORE,false);mark.invoke(mining,block,true);state=block.getState();block.setType(Material.AIR,false);
+   var carried=world.dropItem(block.getLocation(),new org.bukkit.inventory.ItemStack(Material.DIAMOND,8));spawned.add(carried);
+   drops.invoke(mining,new org.bukkit.event.block.BlockDropItemEvent(block,state,miner,new ArrayList<>(List.of(carried))));ok(carried.getItemStack().getAmount()==8,"player-placed ore not taxed");
+   Object populator=get(mining,"populator");Map<String,Material> terrain=new HashMap<>();
+   for(int n=0;n<100;n++)terrain.put((2+(n%4)*3)+":"+(-50+(n/16)*3)+":"+(2+((n/4)%4)*3),Material.DIAMOND_ORE);
+   var region=(org.bukkit.generator.LimitedRegion)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{org.bukkit.generator.LimitedRegion.class},(obj,method,args)->{
+    String key=args!=null&&args.length>=3?args[0]+":"+args[1]+":"+args[2]:"";
+    if(method.getName().equals("getType"))return terrain.getOrDefault(key,Material.STONE);
+    if(method.getName().equals("setType")){terrain.put(key,(Material)args[3]);return null;}Class<?> result=method.getReturnType();return result==boolean.class?true:result==int.class?0:null;
+   });
+   Method populate=populator.getClass().getDeclaredMethod("populate",org.bukkit.generator.WorldInfo.class,Random.class,int.class,int.class,org.bukkit.generator.LimitedRegion.class);populate.setAccessible(true);populate.invoke(populator,world,new Random(42),0,0,region);
+   long bonus=terrain.values().stream().filter(t->t==Material.DIAMOND_ORE||t==Material.DEEPSLATE_DIAMOND_ORE).count()-100;ok(bonus>=30&&bonus<=70,"ore generation adds approximately fifty percent to existing veins");
+   Bukkit.getServicesManager().register(net.milkbowl.vault.economy.Economy.class,economy,this,org.bukkit.plugin.ServicePriority.Highest);registered=true;
+   Player paid=actor(paidId,"MinePaidFixture",world,world.getSpawnLocation(),false),cancelled=actor(cancelId,"MineCancelFixture",main,main.getSpawnLocation(),false),poor=actor(poorId,"MinePoorFixture",main,main.getSpawnLocation(),false);
+   var paidEvent=new org.bukkit.event.player.PlayerTeleportEvent(paid,main.getSpawnLocation(),world.getSpawnLocation(),org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.PLUGIN);teleport.invoke(mining,paidEvent);ok(!paidEvent.isCancelled()&&balances.get(paidId)==900.0,"plugin/TPA entry charges exactly 100");changed.invoke(mining,new org.bukkit.event.player.PlayerChangedWorldEvent(paid,main));
+   teleport.invoke(mining,new org.bukkit.event.player.PlayerTeleportEvent(paid,world.getSpawnLocation(),world.getSpawnLocation()));ok(balances.get(paidId)==900.0,"within-world teleport has no additional admission");
+   var poorEvent=new org.bukkit.event.player.PlayerTeleportEvent(poor,main.getSpawnLocation(),world.getSpawnLocation());teleport.invoke(mining,poorEvent);ok(poorEvent.isCancelled(),"insufficient funds cannot enter");
+   var cancelledEvent=new org.bukkit.event.player.PlayerTeleportEvent(cancelled,main.getSpawnLocation(),world.getSpawnLocation());teleport.invoke(mining,cancelledEvent);cancelledEvent.setCancelled(true);
+   var sethome=new org.bukkit.event.player.PlayerCommandPreprocessEvent(paid,"/essentials:sethome mine");Method home=type.getDeclaredMethod("home",org.bukkit.event.player.PlayerCommandPreprocessEvent.class);home.setAccessible(true);home.invoke(mining,sethome);ok(sethome.isCancelled(),"namespaced sethome forbidden in mining world");
+   var bedSpawn=new org.bukkit.event.player.PlayerSpawnChangeEvent(paid,world.getSpawnLocation(),false,org.bukkit.event.player.PlayerSpawnChangeEvent.Cause.BED);Method bed=type.getDeclaredMethod("bedSpawn",org.bukkit.event.player.PlayerSpawnChangeEvent.class);bed.setAccessible(true);bed.invoke(mining,bedSpawn);ok(bedSpawn.isCancelled(),"bed respawn cannot be set in mining world");
+   Method firstReset=type.getDeclaredMethod("firstReset",java.time.ZonedDateTime.class,int.class,int.class);firstReset.setAccessible(true);var start=java.time.ZonedDateTime.of(2026,10,16,15,0,0,0,java.time.ZoneId.of("Asia/Shanghai"));var next=(java.time.ZonedDateTime)firstReset.invoke(null,start,3,4);ok(next.getDayOfMonth()==19&&next.getHour()==4,"three-day schedule uses Beijing four AM");
+   Field dirty=type.getDeclaredField("dirty");dirty.setAccessible(true);
+   Bukkit.getScheduler().runTaskLater(this,()->{
+    try{ok(balances.get(cancelId)==1000.0&&balances.get(paidId)==900.0,"cancelled teleport refunds; completed entry stays charged");getLogger().info("MINING_ADMISSION_SMOKE_PASS: 100 coin entry, unchanged same-world teleports, insufficient funds rejected and cancelled-entry refund");}
+    catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"MINING_ADMISSION_SMOKE_FAIL",e);}
+    finally{for(UUID uuid:ids){pending.remove(uuid);ledger.set("players."+uuid,null);}try{dirty.setBoolean(mining,true);save.invoke(mining);}catch(Exception ignored){}Bukkit.getServicesManager().unregister(economy);for(String name:List.of("minedropfixture","minepaidfixture","minecancelfixture","minepoorfixture"))cache.removePlayer(name);}
+   },4);
+   Bukkit.getScheduler().runTaskLater(this,()->{
+    UUID offline=UUID.randomUUID();long seed=world.getSeed();UUID mainId=main.getUID(),flatId=flat.getUID();long scheduled=ledger.getLong("next-reset");
+    try{
+     ledger.set("players."+offline+".active",true);ledger.set("players."+offline+".carry.DIAMOND",2);Method reset=type.getDeclaredMethod("reset");reset.setAccessible(true);reset.invoke(mining);
+     World fresh=Bukkit.getWorld(NamespacedKey.minecraft("mining"));ok(fresh!=null&&fresh.getSeed()!=seed,"actual scheduled reset changes seed");ok(main.getUID().equals(mainId)&&flat.getUID().equals(flatId),"resource reset does not replace survival or creative worlds");
+     ok(!ledger.getBoolean("players."+offline+".active")&&ledger.getInt("players."+offline+".carry.DIAMOND")==2,"offline visit closes while tax remainder survives reset");
+     ok(groups.getGroupsForWorld("mining").contains(groups.getGroup("survival")),"inventory sharing survives actual world reset");
+     ok(RespawnSafety.safe(fresh.getSpawnLocation()),"fresh resource spawn has safe landing");getLogger().info("MINING_RESET_SMOKE_PASS: actual replacement, fresh seed, survival/creative unchanged, offline ticket closure, tax carry, safe spawn and inventory group retained");
+     manager.deleteWorld(org.mvplugins.multiverse.core.world.options.DeleteWorldOptions.world(manager.getWorld(fresh).get())).get();
+     ledger.set("reset-in-progress",true);reset.invoke(mining);ok(Bukkit.getWorld(NamespacedKey.minecraft("mining"))!=null&&!ledger.getBoolean("reset-in-progress"),"interrupted reset resumes when dimension is absent");getLogger().info("MINING_RECOVERY_SMOKE_PASS: missing resource dimension recreated without touching other worlds");
+    }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"MINING_RESET_SMOKE_FAIL",e);}
+    finally{ledger.set("players."+offline,null);ledger.set("next-reset",scheduled);try{dirty.setBoolean(mining,true);save.invoke(mining);}catch(Exception ignored){}}
+   },10);
+   registered=false;getLogger().info("MINING_WORLD_SMOKE_PASS: actual 128-layer flat/no structures, shared survival group, creative isolation, registered guide menu, ore bonus, natural-drop tax and placed-ore exemption");
+  }finally {
+   spawned.forEach(org.bukkit.entity.Item::remove);mark.invoke(mining,block,false);original.update(true,false);
+   if(registered){for(UUID uuid:ids){pending.remove(uuid);ledger.set("players."+uuid,null);}save.invoke(mining);Bukkit.getServicesManager().unregister(economy);for(String name:List.of("minedropfixture","minepaidfixture","minecancelfixture","minepoorfixture"))cache.removePlayer(name);}
+  }
  }
  void syncCheck(MiaoServer m,World world)throws Exception {
   Object ui=get(m,"ui"),sync=get(ui,"sync");Class<?> type=sync.getClass();

@@ -28,7 +28,7 @@ minecraft:flat:
   spawn-location:
     ==: MVSpawnLocation
     x: 0.0
-    y: -60.0
+    y: 64.0
     z: 0.0
     pitch: 0.0
     yaw: 0.0
@@ -76,7 +76,7 @@ minecraft:flat:
   world-blacklist: []
   read-only:
     environment: normal
-    generator-settings: ''
+    generator-settings: '{"structure_overrides":[],"layers":[{"block":"minecraft:bedrock","height":1},{"block":"minecraft:stone","height":124},{"block":"minecraft:dirt","height":2},{"block":"minecraft:grass_block","height":1}],"biome":"minecraft:plains","lakes":false,"features":false}'
     legacy-world-name: flat
     seed: 5470417843953421330
   version: 1.3
