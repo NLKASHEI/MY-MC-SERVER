@@ -1,4 +1,4 @@
-menu_title: '&8账号与双端绑定'
+menu_title: '&8账号与可选进度同步'
 open_command:
 - account-menu
 size: 27
@@ -19,9 +19,10 @@ items:
   link:
     material: IRON_BARS
     slot: 10
-    display_name: '&a开始 PC / PE 绑定'
+    display_name: '&a可选同步 · 选择进度'
     lore:
-    - '&7选择保留 PE 或 PC 的进度'
+    - '&7支持 PC/PE 互通及同 IP 同平台账号'
+    - '&7选择一份进度共享，或保持各自进度'
     - '&7验证另一个账号的服内密码后绑定'
     - '&c旧数据保留，物品金币不会叠加'
     left_click_commands:
@@ -36,7 +37,9 @@ items:
     display_name: '&b绑定与进度说明'
     lore:
     - '&c不会自动合并两份旧存档'
-    - '&7同一账号不能双端同时在线'
+    - '&7一份共享进度只能一个账号在线'
+    - '&7同平台使用所选进度账号的服内密码'
+    - '&7跨平台使用 Java 账号的服内密码'
     left_click_commands:
     - '[close]'
     - '[player] guide linking'
@@ -71,7 +74,7 @@ items:
   heading:
     material: BOOK
     slot: 4
-    display_name: '&b&l账号与双端绑定'
+    display_name: '&b&l账号与可选进度同步'
     lore:
     - '&7点击图标使用功能'
     - '&8生存指南 · 简单而自在'
@@ -187,13 +190,19 @@ items:
     lore: []
     left_click_commands: []
     right_click_commands: []
-  frame_24:
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+  sync_prompts:
+    material: BELL
     slot: 24
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
+    display_name: '&e开关同 IP 同步提示'
+    lore:
+    - '&7不想同步可以关闭自动提醒'
+    - '&7不改变已有绑定和账号进度'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao sync prompts'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao sync prompts'
   frame_25:
     material: LIGHT_BLUE_STAINED_GLASS_PANE
     slot: 25

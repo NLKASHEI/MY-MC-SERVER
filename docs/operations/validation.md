@@ -1,5 +1,13 @@
 # 组装验收，2026-10-11
 
+## 0.9.21 可选同平台账号同步，2026-10-17
+
+- Paper 26.2 / Java 25 本地启动通过，`SYNC_SMOKE_PASS`、`SAME_PLATFORM_SYNC_SMOKE_PASS`、`UI_LAYOUT_SMOKE_PASS` 均通过；测试插件随后移除。
+- 同 IP 的同平台账号进入候选，异 IP 同平台账号在手动入口也被拒绝；关闭提醒持久保存且不产生绑定。两个 Java 账号按选择映射到同一个服内名字和 UUID，日志经过 PREPARED→ACTIVE，解绑经过 UNLINKING→移除，恢复各自身份。
+- 实际 AuthMe 临时账号验证正确/错误密码；过期的私密密码输入仍不广播。实际 Floodgate SQLite 验证 PE/Java 两种来源以及 PE→PE（含点前缀名字）读回/解绑，所选 PE 原账号本身不增加关联。测试账号随后删除。
+- PE 点前缀身份日志写入和重新载入无 YAML 路径分割错误，旧六字段跨平台绑定仍兼容。AuthMe 运行配置 maxRegPerIp=0，ForceSingleSession 保持开启；16 个原生菜单注册、格位与点击动作检查通过。
+- 105 份 YAML、34 个插件哈希和 PowerShell 语法通过。未重复重置世界；真实两台 Java/PE 客户端登录、共享身份下背包/经济/创造隔离及同时登录拒绝仍需云端验收。
+
 ## 0.9.20 矿界覆盖率、费用与世界规则，2026-10-16
 
 - 本地 Paper 26.2 / Java 25 实际启动并停服，针对性夹具通过 `MINING_SECURITY_SMOKE_PASS`、`MINING_WORLD_SMOKE_PASS`、`MINING_ADMISSION_SMOKE_PASS` 和 `WORLD_POLICY_SMOKE_PASS`；未重复整套重建或账号绑定测试。检查后移除测试插件。

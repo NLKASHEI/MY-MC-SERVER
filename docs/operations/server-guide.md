@@ -18,6 +18,8 @@ Java 玩家填写 `s9-4.yxjsmc.cn:20005`；基岩填写地址 `s9-4.yxjsmc.cn`�
 
 0.9.11 开启 TNT／地毯／铁轨复制、无头活塞、破基岩、末地传送门刷沙和绊线钩复制。已有云服停服后运行原有一键更新，再启动，由 `scripts/update-technical-settings.ps1` 只合并 `servers/survival/config/paper-global.yml` 的五个对应开关，保留其他配置；原文件备份为 `.before-technical-v0911`，完成标记为 `.technical-v0911-applied`，以后自行调整不会反复覆盖。新部署提供对应模板。保持原版红石实现和漏斗保护事件，保护区仍按原有领地规则处理活塞与爆炸。设置依据：[Paper 原版行为说明](https://docs.papermc.io/paper/vanilla/)。
 
+0.9.21 起同 IP 注册数量不限，多个账号默认各自保留进度。可从指南针账号中心自愿选择同步，支持 PC↔PE、同 IP 的 Java↔Java 和 PE↔PE；验证对方密码后才生效，铃铛可关闭提示。
+
 当前 Java 与基岩玩家均需首次 `/register 密码 重复密码`，以后 `/login 密码`。Floodgate 验证基岩身份，AuthMe 处理服内密码。基岩底层账号名保留 `.` 前缀和空格替换规则，聊天、列表与侧边栏显示 `[PE]`，不改变已有登录账户。
 
 已启用 Floodgate 本地 SQLite 绑定，关闭全局绑定，没有按前缀自动登录。新版账号菜单支持选择保留 PE 或 PC 进度，验证另一账号的密码后共用所选 UUID；同 IP 仅提示候选，两份旧数据不叠加。两端重连后均使用 Java 账号的服内密码。详见 [双端进度同步](crossplay-sync.md)。离线 Java 名字由注册密码保护。首次开服先注册管理员账号，再从控制台 `op 账号名`；上线稳定后用 LuckPerms 单独分配管理员权限。

@@ -25,7 +25,13 @@ import org.geysermc.cumulus.form.*;
 /** Select a shared existing UUID; never copy or merge player/plugin databases. */
 final class CrossplaySync implements Listener {
     record Account(UUID id,String name,boolean pe,String ip,long first) {}
-    record Binding(String javaName,UUID javaId,UUID peId,UUID shared,String source,String state) {}
+    // Legacy field names remain readable: for same-platform pairs java* is the chosen source,
+    // peId/aliasName is the other account. Only PE pairs use Floodgate's linking database.
+    record Binding(String javaName,UUID javaId,UUID peId,UUID shared,String source,String state,String kind,String aliasName) {
+        Binding(String name,UUID javaId,UUID peId,UUID shared,String source,String state){this(name,javaId,peId,shared,source,state,"CROSSPLAY","");}
+        boolean local(){return kind.equals("JAVA_PAIR");}
+        Binding state(String value){return new Binding(javaName,javaId,peId,shared,source,value,kind,aliasName);}
+    }
     private record Input(Account peer,boolean own,long until) {}
     private final MiaoServer plugin;private final MiaoInterface ui;
     private final File file;private final YamlConfiguration data=new YamlConfiguration();
@@ -46,7 +52,7 @@ final class CrossplaySync implements Listener {
         var section=data.getConfigurationSection("accounts");if(section!=null)for(String key:section.getKeys(false)) {
             String root="accounts."+key;UUID id=UUID.fromString(key);accounts.put(id,new Account(id,data.getString(root+".name"),data.getBoolean(root+".pe"),data.getString(root+".ip",""),data.getLong(root+".first")));
         }
-        refresh();Map<String,Binding> checking=new HashMap<>();bindings.forEach((key,b)->checking.put(key,new Binding(b.javaName(),b.javaId(),b.peId(),b.shared(),b.source(),b.state().equals("ACTIVE")?"CHECKING":b.state())));bindings=Map.copyOf(checking);
+        refresh();Map<String,Binding> checking=new HashMap<>();bindings.forEach((key,b)->checking.put(key,b.state(!b.local()&&b.state().equals("ACTIVE")?"CHECKING":b.state())));bindings=Map.copyOf(checking);
         Bukkit.getPluginManager().registerEvents(this,p);
         Bukkit.getScheduler().runTask(p,()->{recover();seed();});
         Bukkit.getScheduler().runTaskTimer(p,this::recover,1200L,1200L);
@@ -62,12 +68,14 @@ final class CrossplaySync implements Listener {
     private void refresh() {
         Map<String,Binding> snapshot=new HashMap<>();var section=data.getConfigurationSection("bindings");
         if(section!=null)for(String key:section.getKeys(false)) {
-            String root="bindings."+key;snapshot.put(key,new Binding(data.getString(root+".java-name"),UUID.fromString(data.getString(root+".java-id")),UUID.fromString(data.getString(root+".pe-id")),UUID.fromString(data.getString(root+".shared")),data.getString(root+".source"),data.getString(root+".state")));
+            String root="bindings."+key;Binding b=new Binding(data.getString(root+".java-name"),UUID.fromString(data.getString(root+".java-id")),UUID.fromString(data.getString(root+".pe-id")),UUID.fromString(data.getString(root+".shared")),data.getString(root+".source"),data.getString(root+".state"),data.getString(root+".kind","CROSSPLAY"),data.getString(root+".alias-name",""));
+            if(!Set.of("CROSSPLAY","JAVA_PAIR","PE_PAIR").contains(b.kind()))throw new IllegalStateException("Unknown account binding type");snapshot.put(b.javaName().toLowerCase(Locale.ROOT),b);
         }bindings=Map.copyOf(snapshot);
     }
     private void write(Binding b) {
-        String root="bindings."+b.javaName().toLowerCase(Locale.ROOT);data.set(root+".java-name",b.javaName());data.set(root+".java-id",b.javaId().toString());data.set(root+".pe-id",b.peId().toString());data.set(root+".shared",b.shared().toString());data.set(root+".source",b.source());data.set(root+".state",b.state());save();refresh();
+        String root=storage(b);data.set(root+".java-name",b.javaName());data.set(root+".java-id",b.javaId().toString());data.set(root+".pe-id",b.peId().toString());data.set(root+".shared",b.shared().toString());data.set(root+".source",b.source());data.set(root+".state",b.state());data.set(root+".kind",b.kind());data.set(root+".alias-name",b.aliasName());save();refresh();
     }
+    private String storage(Binding b){return "bindings."+(b.kind().equals("PE_PAIR")?"pe-"+b.javaId():b.javaName().toLowerCase(Locale.ROOT));}
     private Binding binding(UUID id){return bindings.values().stream().filter(b->id.equals(b.javaId())||id.equals(b.peId())||id.equals(b.shared())).findFirst().orElse(null);}
     private String hashIp(String address) {
         if(address==null||address.isBlank())return "";
@@ -91,16 +99,18 @@ final class CrossplaySync implements Listener {
         });
     }
     static boolean candidate(Account own,Account peer,boolean sameIp) {
-        return !own.id().equals(peer.id())&&own.pe()!=peer.pe()&&(!sameIp||(!own.ip().isEmpty()&&own.ip().equals(peer.ip())));
+        boolean matched=!own.ip().isEmpty()&&own.ip().equals(peer.ip());
+        return !own.id().equals(peer.id())&&(own.pe()!=peer.pe()?(!sameIp||matched):matched);
     }
     static UUID source(Account own,Account peer,boolean keepOwn){return keepOwn?own.id():peer.id();}
     void login(Player p) {
-        Account own=current(p);record(own);save();Binding b=binding(own.id());
-        if(b!=null){say(p,"双端进度来源：「"+b.source()+"」。当前使用同一份数据，另一端登录也会继承。");return;}
+        Account own=current(p);Binding b=binding(own.id());
+        if(b!=null){say(p,"共享进度来源：「"+b.source()+"」。当前使用同一份数据；账号菜单可解除同步。");return;}
+        record(own);save();if(!data.getBoolean("preferences."+own.id()+".suggest",true))return;
         if(!p.hasPermission("floodgate.command.linkaccount"))return;
         List<Account> peers=accounts.values().stream().filter(q->candidate(own,q,true)&&binding(q.id())==null).sorted(Comparator.comparingLong(Account::first)).limit(4).toList();
         if(peers.isEmpty())return;
-        say(p,"检测到同 IP 的另一个平台账号。你可以验证其服内密码并继承它的进度，也可以忽略，稍后在账号菜单手动绑定。");
+        say(p,"检测到同 IP 的其他账号。可选择保留哪份进度并验证密码后同步；也可保持各自进度，完全自愿。关闭自动提示：/miao sync quiet。");
         if(ui.bedrock(p))picker(p,peers,0,"发现可同步的进度");
         else for(Account q:peers)p.sendMessage(Component.text("[同步 "+label(q)+" 的进度]  点击选择，不会直接绑定").clickEvent(ClickEvent.runCommand("miao sync select "+q.id())));
     }
@@ -108,13 +118,14 @@ final class CrossplaySync implements Listener {
     void command(Player p,String[] a) {
         if(!ui.authenticated(p)){say(p,"请先完成自己的登录。");return;}
         if(!p.hasPermission("floodgate.command.linkaccount")){say(p,"你没有账号绑定权限。");return;}
+        if(a.length==1&&Set.of("quiet","remind","prompts").contains(a[0])){boolean enabled=a[0].equals("prompts")?!data.getBoolean("preferences."+p.getUniqueId()+".suggest",true):a[0].equals("remind");data.set("preferences."+p.getUniqueId()+".suggest",enabled);save();say(p,enabled?"已开启同 IP 同步提示。":"已关闭自动同步提示，现有进度和绑定保持原样；仍可从账号菜单主动选择同步。");return;}
         if(a.length>0&&a[0].equals("unlink")){if(a.length==2&&a[1].equals("confirm"))unlink(p);else say(p,"解除后两端恢复各自原来的身份。确认：/miao sync unlink confirm");return;}
         if(binding(p.getUniqueId())!=null){say(p,"已绑定，进度来源："+binding(p.getUniqueId()).source()+"。解除：/miao sync unlink");return;}
         Account own=current(p);record(own);save();
         if(a.length==2&&a[0].equals("select")) {
             Account peer=null;try{peer=accounts.get(UUID.fromString(a[1]));}catch(IllegalArgumentException ignored){}
             if(peer==null)peer=accounts.values().stream().filter(q->q.name().equalsIgnoreCase(a[1])).findFirst().orElse(null);
-            if(peer==null||!candidate(own,peer,false)){say(p,"找不到另一个平台的已登录账号。");return;}choose(p,peer);return;
+            if(peer==null||!candidate(own,peer,false)){say(p,"找不到可绑定账号；同平台账号需有相同 IP 的登录记录。");return;}choose(p,peer);return;
         }
         List<Account> peers=accounts.values().stream().filter(q->candidate(own,q,false)&&binding(q.id())==null).sorted(Comparator.comparing((Account q)->!q.ip().equals(own.ip())).thenComparingLong(Account::first)).toList();
         picker(p,peers,0,"选择要绑定的账号");
@@ -124,16 +135,16 @@ final class CrossplaySync implements Listener {
     private void picker(Player p,List<Account> peers,int requested,String title) {
         int page=Math.max(0,Math.min(requested,Math.max(0,(peers.size()-1)/28))),start=page*28,end=Math.min(start+28,peers.size());
         if(ui.bedrock(p)) {
-            var b=SimpleForm.builder().title(title).content("请选择你自己拥有的另一个平台账号。\n验证对方的服内密码后才会绑定；下一步选择进度来源。");List<Runnable> actions=new ArrayList<>();
+            var b=SimpleForm.builder().title(title).content("可选同步：请选择你自己拥有的另一个账号。\n支持 PC/PE 互通及同 IP 的同平台账号。\n验证对方密码后才会绑定；也可保持各自进度。");List<Runnable> actions=new ArrayList<>();
             for(Account q:peers.subList(start,end)){b.button(label(q));actions.add(()->choose(p,q));}if(page>0){b.button("上一页");actions.add(()->picker(p,peers,page-1,title));}if(end<peers.size()){b.button("下一页");actions.add(()->picker(p,peers,page+1,title));}b.button("暂不同步 / 返回指南针");actions.add(()->ui.command(p,new String[]{"menu"}));b.validResultHandler(r->playerMain(p,actions.get(r.clickedButtonId())));FloodgateApi.getInstance().sendForm(p.getUniqueId(),b.build());return;
         }
-        Holder h=panel(p,54,"§8双端绑定 · 选择账号 · "+(page+1));for(int i=start;i<end;i++){Account q=peers.get(i);int offset=i-start,slot=10+offset/7*9+offset%7;put(h,slot,Material.PLAYER_HEAD,"§b"+label(q),()->choose(p,q),"§7必须验证这个账号的服内密码","§7点击后选择保留 PC 或 PE 的进度");ItemStack item=h.inventory.getItem(slot);var meta=(org.bukkit.inventory.meta.SkullMeta)item.getItemMeta();meta.setOwningPlayer(Bukkit.getOfflinePlayer(q.id()));item.setItemMeta(meta);}
+        Holder h=panel(p,54,"§8可选同步 · 选择账号 · "+(page+1));for(int i=start;i<end;i++){Account q=peers.get(i);int offset=i-start,slot=10+offset/7*9+offset%7;put(h,slot,Material.PLAYER_HEAD,"§b"+label(q),()->choose(p,q),"§7必须验证这个账号的服内密码","§7下一步选择保留哪份进度","§7不想同步可返回，各自进度保留");ItemStack item=h.inventory.getItem(slot);var meta=(org.bukkit.inventory.meta.SkullMeta)item.getItemMeta();meta.setOwningPlayer(Bukkit.getOfflinePlayer(q.id()));item.setItemMeta(meta);}
         if(page>0)put(h,45,Material.ARROW,"§f上一页",()->picker(p,peers,page-1,title));if(end<peers.size())put(h,53,Material.ARROW,"§f下一页",()->picker(p,peers,page+1,title));put(h,49,Material.COMPASS,"§f暂不同步 / 返回指南针",()->ui.command(p,new String[]{"menu"}));p.openInventory(h.inventory);
-        if(peers.isEmpty())say(p,"另一个平台需要至少完成一次注册登录；不必同时在线。也可使用原 Floodgate 验证码绑定。");
+        if(peers.isEmpty())say(p,"另一个账号需要至少完成一次注册登录；同平台需有相同 IP 的记录，不必同时在线。不同步也可正常游玩。");
     }
     private void choose(Player p,Account peer) {
         Account own=current(p);if(!candidate(own,peer,false)||binding(own.id())!=null||binding(peer.id())!=null){say(p,"账号绑定状态已变化，请重新打开菜单。");return;}
-        String description="绑定 "+label(own)+" ↔ "+label(peer)+"\n\n选择保留哪一份进度。另一份旧数据保留，物品和金币不叠加。\n验证账号："+peer.name()+"\n完成后两端重连，均使用 Java 账号的服内密码。";
+        String description="绑定 "+label(own)+" ↔ "+label(peer)+"\n\n自愿选择一份共享进度，另一份旧数据保留，不叠加。\n验证账号："+peer.name()+"\n"+(own.pe()==peer.pe()?"同平台绑定后，两账号使用所选进度账号的服内名字与密码。":"跨平台绑定后，两端使用 Java 账号的服内密码。")+"\n同一份进度不能同时在线。取消则各自进度不变。";
         boolean ownFirst=own.first()<peer.first();
         if(ui.bedrock(p)){var form=SimpleForm.builder().title("选择进度来源").content(description).button("保留 "+label(peer)+(ownFirst?"":"（先玩的账号，推荐）")).button("保留 "+label(own)+(ownFirst?"（先玩的账号，推荐）":"")).button("取消").validResultHandler(r->playerMain(p,()->{if(r.clickedButtonId()<2)password(p,peer,r.clickedButtonId()==1);})).build();FloodgateApi.getInstance().sendForm(p.getUniqueId(),form);return;}
         Holder h=panel(p,27,"§8双端绑定 · 选择进度来源");put(h,11,Material.CHEST,"§a保留 "+label(peer),()->password(p,peer,false),ownFirst?"§7对方账号的进度":"§e先玩的账号，推荐","§7另一份旧数据保留；不叠加物品金币");put(h,15,Material.ENDER_CHEST,"§b保留 "+label(own),()->password(p,peer,true),ownFirst?"§e先玩的账号，推荐":"§7当前账号的进度","§7另一份旧数据保留；不叠加物品金币");put(h,22,Material.ARROW,"§f取消",()->command(p,new String[0]));p.openInventory(h.inventory);
@@ -142,6 +153,7 @@ final class CrossplaySync implements Listener {
     private void password(Player p,Account peer,boolean own) {
         ui.names.cancelInput(p);inputs.remove(p.getUniqueId());Account from=own?current(p):peer;
         say(p,"将同步「"+label(from)+"」的进度。现在验证「"+peer.name()+"」的服内密码，完成前不会切换数据。");
+        say(p,"绑定后共用服内身份；重连使用「"+(current(p).pe()==peer.pe()?from.name():(current(p).pe()?peer.name():p.getName()))+"」的服内密码，一次仅一个账号在线。取消则各自保留进度。");
         if(ui.bedrock(p)){var form=CustomForm.builder().title("验证绑定账号").label("进度来源："+label(from)+"\n请输入 "+peer.name()+" 的服内密码（不是 Xbox 密码）。不保存密码，取消或留空不会绑定。输入框会显示输入内容。")
             .input("对方账号的服内密码","请输入服内密码").validResultHandler(r->{String secret=r.asInput(1);playerMain(p,()->verify(p,peer,own,secret));}).build();FloodgateApi.getInstance().sendForm(p.getUniqueId(),form);return;}
         p.closeInventory();inputs.put(p.getUniqueId(),new Input(peer,own,System.currentTimeMillis()+120000));say(p,"下一条聊天只用于密码验证，不会广播。输入「取消」退出；两分钟内有效。不要把密码写成命令。");
@@ -155,26 +167,28 @@ final class CrossplaySync implements Listener {
         working.add(caller.id());working.add(peer.id());
         Bukkit.getScheduler().runTaskAsynchronously(plugin,()->{
             boolean valid=false,alreadyLinked=false;try{alreadyLinked=links().isLinkedPlayer(caller.id()).get(15,TimeUnit.SECONDS)||links().isLinkedPlayer(peer.id()).get(15,TimeUnit.SECONDS);if(!alreadyLinked)valid=AuthMeApi.getInstance().checkPassword(peer.name(),secret);}catch(Exception ignored){}
-            boolean passed=valid,occupied=alreadyLinked;playerMain(p,()->{working.remove(caller.id());working.remove(peer.id());if(occupied){say(p,"其中一个账号已通过 Floodgate 绑定，请先解除原绑定；这次没有更改进度。");return;}if(!passed){say(p,"账号密码不正确或验证暂不可用，此次没有绑定或更改进度。");return;}bind(p,caller,peer,own);});
+            boolean passed=valid,occupied=alreadyLinked;playerMain(p,()->{working.remove(caller.id());working.remove(peer.id());if(occupied){say(p,"其中一个账号已通过 Floodgate 绑定，请先解除原绑定；这次没有更改进度。");return;}if(!passed){say(p,"账号密码不正确或验证暂不可用，此次没有绑定或更改进度。");return;}Account latest=accounts.get(peer.id());if(!p.getUniqueId().equals(caller.id())||latest==null||!latest.name().equals(peer.name())||!candidate(current(p),latest,false)){say(p,"账号或 IP 已变化，请重新选择；本次没有同步。");return;}bind(p,current(p),latest,own);});
             main(()->{if(!p.isOnline()||!ui.authenticated(p)){working.remove(caller.id());working.remove(peer.id());}});
         });
     }
     private void bind(Player p,Account own,Account peer,boolean keepOwn) {
         if(!candidate(own,peer,false)||binding(own.id())!=null||binding(peer.id())!=null||working.contains(own.id())||working.contains(peer.id())){say(p,"账号状态已变化，此次未绑定。");return;}
-        Account java=own.pe()?peer:own,pe=own.pe()?own:peer;Account from=keepOwn?own:peer;
-        if(!java.name().matches("[A-Za-z0-9_]{1,16}")){say(p,"Java 账号格式不支持绑定。");return;}
-        Binding b=new Binding(java.name(),java.id(),pe.id(),source(own,peer,keepOwn),label(from),"PREPARED");
+        Account from=keepOwn?own:peer;boolean same=own.pe()==peer.pe();
+        Account java=same?from:(own.pe()?peer:own),pe=same?(keepOwn?peer:own):(own.pe()?own:peer);
+        if(!java.pe()&&!java.name().matches("[A-Za-z0-9_]{1,16}")){say(p,"Java 账号格式不支持绑定。");return;}
+        Binding b=new Binding(java.name(),java.id(),pe.id(),source(own,peer,keepOwn),label(from),"PREPARED",same?(own.pe()?"PE_PAIR":"JAVA_PAIR"):"CROSSPLAY",same?pe.name():"");
         try{if(file.exists())Files.copy(file.toPath(),new File(file.getParentFile(),"crossplay-sync.before-"+System.currentTimeMillis()+".yml").toPath());write(b);}catch(IOException e){say(p,"绑定备份失败，请联系管理员；身份没有改变。");return;}
         working.add(own.id());working.add(peer.id());
-        kick(b,"双端绑定正在完成。进度来源："+b.source()+"。请稍候重连，两端使用 Java 账号 "+b.javaName()+" 的服内密码。");
+        kick(b,"账号同步正在完成。进度来源："+b.source()+"。请稍候重连，使用账号 "+b.javaName()+" 的服内密码。");
         Bukkit.getScheduler().runTaskLater(plugin,()->Bukkit.getScheduler().runTaskAsynchronously(plugin,()->{
             try {
+                if(b.local()){main(()->{write(b.state("ACTIVE"));working.remove(own.id());working.remove(peer.id());});return;}
                 PlayerLink api=links();if(!api.isEnabledAndAllowed())throw new IllegalStateException("Local linking disabled");
                 if(api.isLinkedPlayer(b.javaId()).get(15,TimeUnit.SECONDS)||api.isLinkedPlayer(b.peId()).get(15,TimeUnit.SECONDS))throw new IllegalStateException("Account already linked");
                 api.linkPlayer(b.peId(),b.shared(),b.javaName()).get(20,TimeUnit.SECONDS);
                 var result=api.getLinkedPlayer(b.peId()).get(15,TimeUnit.SECONDS);
                 if(result==null||!b.shared().equals(result.getJavaUniqueId())||!b.javaName().equals(result.getJavaUsername()))throw new IllegalStateException("Link verification failed");
-                main(()->{write(new Binding(b.javaName(),b.javaId(),b.peId(),b.shared(),b.source(),"ACTIVE"));working.remove(own.id());working.remove(peer.id());plugin.getLogger().info("双端绑定完成："+b.javaName()+"，进度来源："+b.source()+"；旧数据未复制或删除。");});
+                main(()->{write(b.state("ACTIVE"));working.remove(own.id());working.remove(peer.id());plugin.getLogger().info("账号同步完成："+b.javaName()+"，进度来源："+b.source()+"；旧数据未复制或删除。");});
             }catch(Exception e){main(()->{working.remove(own.id());working.remove(peer.id());plugin.getLogger().warning("双端绑定未完成，已阻止账号进服，正在核对绑定日志："+e.getClass().getSimpleName());recover();});}
         }),40L);
     }
@@ -182,28 +196,32 @@ final class CrossplaySync implements Listener {
     private void recover() {
         for(Binding b:bindings.values())if(!b.state().equals("ACTIVE")&&!working.contains(b.javaId())&&!working.contains(b.peId()))Bukkit.getScheduler().runTaskAsynchronously(plugin,()->{
             try {
+                if(b.local()){main(()->{if(!b.equals(bindings.get(b.javaName().toLowerCase(Locale.ROOT))))return;if(b.state().equals("UNLINKING"))remove(b);else write(b.state("ACTIVE"));});return;}
                 var linked=links().getLinkedPlayer(b.peId()).get(15,TimeUnit.SECONDS);
                 boolean matching=linked!=null&&linked.getJavaUniqueId().equals(b.shared())&&linked.getJavaUsername().equals(b.javaName());
                 main(()->{
                     Binding latest=bindings.get(b.javaName().toLowerCase(Locale.ROOT));if(!b.equals(latest))return;
-                    if(matching&&!b.state().equals("UNLINKING")){write(new Binding(b.javaName(),b.javaId(),b.peId(),b.shared(),b.source(),"ACTIVE"));}
-                    else if(linked==null){data.set("bindings."+b.javaName().toLowerCase(Locale.ROOT),null);save();refresh();}
-                    else {write(new Binding(b.javaName(),b.javaId(),b.peId(),b.shared(),b.source(),"REVIEW"));plugin.getLogger().severe("双端绑定日志与 Floodgate 不一致，请核对："+b.javaName());}
+                    if(matching&&!b.state().equals("UNLINKING")){write(b.state("ACTIVE"));}
+                    else if(linked==null)remove(b);
+                    else {write(b.state("REVIEW"));plugin.getLogger().severe("账号同步日志与 Floodgate 不一致，请核对："+b.javaName());}
                 });
             }catch(Exception e){plugin.getLogger().warning("暂时无法核对双端绑定，保留身份日志，稍后重试。");}
         });
     }
     private void unlink(Player p) {
         Binding b=binding(p.getUniqueId());if(b==null){p.performCommand("floodgate:unlinkaccount");return;}if(!b.state().equals("ACTIVE")){say(p,"绑定正在核对，请联系管理员。");return;}
-        write(new Binding(b.javaName(),b.javaId(),b.peId(),b.shared(),b.source(),"UNLINKING"));kick(b,"正在解除绑定；两端重连后恢复各自原有进度。");
+        write(b.state("UNLINKING"));kick(b,"正在解除绑定；两端重连后恢复各自原有进度。");
+        if(b.local()){Bukkit.getScheduler().runTaskLater(plugin,()->remove(b),40L);return;}
         Bukkit.getScheduler().runTaskAsynchronously(plugin,()->{try{links().unlinkPlayer(b.peId()).get(20,TimeUnit.SECONDS);}catch(Exception e){plugin.getLogger().warning("解除绑定需要核对，请勿删除身份日志。");}main(this::recover);});
     }
+    private void remove(Binding b){data.set(storage(b),null);save();refresh();}
     @EventHandler(priority=EventPriority.HIGHEST) public void profile(AsyncPlayerPreLoginEvent e) {
-        Binding b=bindings.get(e.getName().toLowerCase(Locale.ROOT));if(b==null)b=bindings.values().stream().filter(q->q.peId().equals(e.getUniqueId())).findFirst().orElse(null);if(b==null)return;
+        Binding b=bindings.get(e.getName().toLowerCase(Locale.ROOT));if(b==null)b=bindings.values().stream().filter(q->q.peId().equals(e.getUniqueId())||(q.local()&&q.aliasName().equalsIgnoreCase(e.getName()))).findFirst().orElse(null);if(b==null)return;
         if(!b.state().equals("ACTIVE")){e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,"南可熙提醒您：绑定正在完成或核对，请稍后重连。");return;}
-        if(!e.getName().equalsIgnoreCase(b.javaName())){e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,"南可熙提醒您：Floodgate 身份尚未刷新，请稍后重连以同步正确进度。");return;}
-        if(e.getName().equalsIgnoreCase(b.javaName())){var profile=e.getPlayerProfile().clone();profile.setId(b.shared());profile.setName(b.javaName());e.setPlayerProfile(profile);}
+        if(!e.getName().equalsIgnoreCase(b.javaName())&&!(b.local()&&e.getName().equalsIgnoreCase(b.aliasName()))){e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,"南可熙提醒您：Floodgate 身份尚未刷新，请稍后重连以同步正确进度。");return;}
+        var profile=e.getPlayerProfile().clone();profile.setId(b.shared());profile.setName(b.javaName());e.setPlayerProfile(profile);
     }
+    @EventHandler(priority=EventPriority.HIGHEST) public void singleSession(PlayerLoginEvent e){if(binding(e.getPlayer().getUniqueId())!=null&&Bukkit.getPlayer(e.getPlayer().getUniqueId())!=null)e.disallow(PlayerLoginEvent.Result.KICK_OTHER,"南可熙提醒您：这份共享进度正在使用，请先退出另一个账号。");}
     @EventHandler(priority=EventPriority.LOWEST) public void input(AsyncChatEvent e) {
         Input request=inputs.remove(e.getPlayer().getUniqueId());if(request==null)return;e.setCancelled(true);
         String secret=PlainTextComponentSerializer.plainText().serialize(e.message());playerMain(e.getPlayer(),()->{if(request.until()<System.currentTimeMillis()){say(e.getPlayer(),"验证输入已超时，这条消息没有发送，请重新打开绑定菜单。");return;}verify(e.getPlayer(),request.peer(),request.own(),secret);});

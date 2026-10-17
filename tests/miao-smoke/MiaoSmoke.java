@@ -8,7 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scoreboard.*;
 import me.ryanhamshire.GriefPrevention.*;
 public class MiaoSmoke extends JavaPlugin {
- public void onEnable(){Bukkit.getScheduler().runTaskLater(this,()->{if(getConfig().getBoolean("mining-only",false)){try{var m=(MiaoServer)Bukkit.getPluginManager().getPlugin("MiaoServer");miningCheck(m,Bukkit.getWorld("world"));worldPolicyCheck(m);}catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"MINING_FOCUSED_SMOKE_FAIL",e);}}else if(getConfig().getBoolean("ui-only",false))uiCheck();else check();},40);}
+ public void onEnable(){Bukkit.getScheduler().runTaskLater(this,()->{if(getConfig().getBoolean("sync-only",false)){try{var m=(MiaoServer)Bukkit.getPluginManager().getPlugin("MiaoServer");syncCheck(m,Bukkit.getWorld("world"));samePlatformCheck(m,Bukkit.getWorld("world"));uiCheck();}catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_FOCUSED_SMOKE_FAIL",e);}}else if(getConfig().getBoolean("mining-only",false)){try{var m=(MiaoServer)Bukkit.getPluginManager().getPlugin("MiaoServer");miningCheck(m,Bukkit.getWorld("world"));worldPolicyCheck(m);}catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"MINING_FOCUSED_SMOKE_FAIL",e);}}else if(getConfig().getBoolean("ui-only",false))uiCheck();else check();},40);}
  void uiCheck(){
   try{
    var plugin=Bukkit.getPluginManager().getPlugin("MiaoServer");var folder=new java.io.File(plugin.getDataFolder().getParentFile(),"DeluxeMenus/gui_menus");int count=0;
@@ -474,11 +474,11 @@ public class MiaoSmoke extends JavaPlugin {
   UUID javaId=UUID.randomUUID(),peId=new UUID(0,Math.abs(UUID.randomUUID().getLeastSignificantBits()));
   Object javaAccount=constructor.newInstance(javaId,"SyncJavaFixture",false,"same-ip",200L),pe=constructor.newInstance(peId,"SyncPeFixture",true,"same-ip",100L),otherIp=constructor.newInstance(UUID.randomUUID(),"OtherPe",true,"different-ip",90L),samePlatform=constructor.newInstance(UUID.randomUUID(),"OtherJava",false,"same-ip",90L);
   Method candidate=type.getDeclaredMethod("candidate",account,account,boolean.class);candidate.setAccessible(true);Method source=type.getDeclaredMethod("source",account,account,boolean.class);source.setAccessible(true);
-  ok((boolean)candidate.invoke(null,javaAccount,pe,true)&&!(boolean)candidate.invoke(null,javaAccount,otherIp,true)&&!(boolean)candidate.invoke(null,javaAccount,samePlatform,true),"IP suggestions require opposite platform and same IP");
+  ok((boolean)candidate.invoke(null,javaAccount,pe,true)&&!(boolean)candidate.invoke(null,javaAccount,otherIp,true)&&(boolean)candidate.invoke(null,javaAccount,samePlatform,true),"IP suggestions include same-platform accounts");
   ok((boolean)candidate.invoke(null,javaAccount,otherIp,false),"manual binding does not require shared IP");
   ok(source.invoke(null,javaAccount,pe,false).equals(peId)&&source.invoke(null,javaAccount,pe,true).equals(javaId),"PC may inherit PE or retain Java data");
   ok(source.invoke(null,pe,javaAccount,false).equals(javaId)&&source.invoke(null,pe,javaAccount,true).equals(peId),"PE may inherit Java or retain PE data");
-  var binding=Class.forName("cn.nankexi.CrossplaySync$Binding",true,m.getClass().getClassLoader());var bc=binding.getDeclaredConstructors()[0];bc.setAccessible(true);Field field=type.getDeclaredField("bindings");field.setAccessible(true);Object original=field.get(sync);
+  var binding=Class.forName("cn.nankexi.CrossplaySync$Binding",true,m.getClass().getClassLoader());var bc=binding.getDeclaredConstructor(String.class,UUID.class,UUID.class,UUID.class,String.class,String.class);bc.setAccessible(true);Field field=type.getDeclaredField("bindings");field.setAccessible(true);Object original=field.get(sync);
   Method profile=type.getDeclaredMethod("profile",org.bukkit.event.player.AsyncPlayerPreLoginEvent.class);profile.setAccessible(true);
   try {
    field.set(sync,Map.of("syncjavafixture",bc.newInstance("SyncJavaFixture",javaId,peId,peId,"PE source","ACTIVE")));
@@ -500,11 +500,50 @@ public class MiaoSmoke extends JavaPlugin {
      api.linkPlayer(peId,shared,"SyncJavaFixture").get(10,java.util.concurrent.TimeUnit.SECONDS);var linked=api.getLinkedPlayer(peId).get(10,java.util.concurrent.TimeUnit.SECONDS);
      ok(linked!=null&&linked.getJavaUniqueId().equals(shared)&&linked.getJavaUsername().equals("SyncJavaFixture"),"Floodgate persists selected PE/Java source UUID");api.unlinkPlayer(peId).get(10,java.util.concurrent.TimeUnit.SECONDS);ok(api.getLinkedPlayer(peId).get(10,java.util.concurrent.TimeUnit.SECONDS)==null,"unlink removes shared UUID association");
     }
+    UUID peSource=new UUID(0,Math.abs(UUID.randomUUID().getLeastSignificantBits()));
+    api.linkPlayer(peId,peSource,".SyncPeFixture").get(10,java.util.concurrent.TimeUnit.SECONDS);var linkedPe=api.getLinkedPlayer(peId).get(10,java.util.concurrent.TimeUnit.SECONDS);
+    ok(linkedPe.getJavaUniqueId().equals(peSource)&&linkedPe.getJavaUsername().equals(".SyncPeFixture")&&api.getLinkedPlayer(peSource).get(10,java.util.concurrent.TimeUnit.SECONDS)==null,"PE pair preserves source identity and leaves source unlinked");api.unlinkPlayer(peId).get(10,java.util.concurrent.TimeUnit.SECONDS);
     getLogger().info("SYNC_SMOKE_PASS: same-IP suggestion rules, both source directions, Paper UUID profile, partial-journal lock, private input capture, AuthMe password proof and actual Floodgate SQLite roundtrip/unlink");
    }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_SMOKE_FAIL",e);}
    finally {try{api.unlinkPlayer(peId).get(10,java.util.concurrent.TimeUnit.SECONDS);}catch(Exception ignored){}if(registered)auth.forceUnregister(name);}
   });
  }
+ void samePlatformCheck(MiaoServer m,World world)throws Exception {
+  Object sync=get(get(m,"ui"),"sync");Class<?> type=sync.getClass();var data=(YamlConfiguration)get(sync,"data");
+  Class<?> account=Class.forName("cn.nankexi.CrossplaySync$Account",true,m.getClass().getClassLoader()),binding=Class.forName("cn.nankexi.CrossplaySync$Binding",true,m.getClass().getClassLoader());
+  var ac=account.getDeclaredConstructors()[0];ac.setAccessible(true);var bc=binding.getDeclaredConstructor(String.class,UUID.class,UUID.class,UUID.class,String.class,String.class,String.class,String.class);bc.setAccessible(true);
+  UUID first=UUID.randomUUID(),second=UUID.randomUUID();String sourceName="PairSourceTest",aliasName="PairAliasTest";
+  Object own=ac.newInstance(first,sourceName,false,"same",1L),peer=ac.newInstance(second,aliasName,false,"same",2L),different=ac.newInstance(second,aliasName,false,"other",2L);
+  Method candidate=type.getDeclaredMethod("candidate",account,account,boolean.class);candidate.setAccessible(true);ok((boolean)candidate.invoke(null,own,peer,false)&&!(boolean)candidate.invoke(null,own,different,false),"same-platform manual selection requires same nonempty IP");
+  Method profile=type.getDeclaredMethod("profile",org.bukkit.event.player.AsyncPlayerPreLoginEvent.class);profile.setAccessible(true);Method write=type.getDeclaredMethod("write",binding);write.setAccessible(true);Method remove=type.getDeclaredMethod("remove",binding);remove.setAccessible(true);
+  Object pair=bc.newInstance(sourceName,first,second,first,"PC source","ACTIVE","JAVA_PAIR",aliasName),pePair=bc.newInstance(".PairSourceTest",first,second,first,"PE source","ACTIVE","PE_PAIR",".PairAliasTest");
+  Player p=actor(first,sourceName,world,world.getSpawnLocation(),false);Method command=type.getDeclaredMethod("command",Player.class,String[].class);command.setAccessible(true);
+  try{
+   command.invoke(sync,p,(Object)new String[]{"quiet"});ok(!data.getBoolean("preferences."+first+".suggest",true),"opt out persists without creating a binding");
+   ok(!data.contains("bindings."+sourceName.toLowerCase()),"choosing independent progress creates no mapping");command.invoke(sync,p,(Object)new String[]{"remind"});
+   write.invoke(sync,pair);
+   for(String name:List.of(sourceName,aliasName)){
+    var e=new org.bukkit.event.player.AsyncPlayerPreLoginEvent(name,java.net.InetAddress.getLoopbackAddress(),name.equals(sourceName)?first:second);profile.invoke(sync,e);ok(e.getUniqueId().equals(first)&&e.getName().equals(sourceName),"Java pair uses selected canonical UUID/name for AuthMe: "+name);
+   }
+   Method refresh=type.getDeclaredMethod("refresh");refresh.setAccessible(true);refresh.invoke(sync);ok(((Map<?,?>)get(sync,"bindings")).containsKey(sourceName.toLowerCase()),"Java binding survives journal reload");
+   remove.invoke(sync,pair);write.invoke(sync,pePair);refresh.invoke(sync);ok(((Map<?,?>)get(sync,"bindings")).containsKey(".pairsourceTest".toLowerCase()),"PE dot-prefix name stored without YAML path splitting");remove.invoke(sync,pePair);
+   Method bind=type.getDeclaredMethod("bind",Player.class,account,account,boolean.class);bind.setAccessible(true);bind.invoke(sync,p,own,peer,true);
+   ok(data.getString("bindings."+sourceName.toLowerCase()+".state").equals("PREPARED"),"Java pair journals before identity activation");
+   Bukkit.getScheduler().runTaskLater(this,()->{
+    try{
+     ok(data.getString("bindings."+sourceName.toLowerCase()+".state").equals("ACTIVE"),"Java pair activates after save/disconnect delay");
+     command.invoke(sync,p,(Object)new String[]{"unlink","confirm"});ok(data.getString("bindings."+sourceName.toLowerCase()+".state").equals("UNLINKING"),"Java unlink blocks reconnect until complete");
+     Bukkit.getScheduler().runTaskLater(this,()->{
+      try{ok(!data.contains("bindings."+sourceName.toLowerCase()),"Java unlink removes mapping and restores separate identities");getLogger().info("SAME_PLATFORM_SYNC_SMOKE_PASS: optional opt-out, same-IP restriction, canonical login, dot-prefixed PE persistence, delayed Java binding and unlink");}
+      catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SAME_PLATFORM_SYNC_SMOKE_FAIL",e);}
+     },45);
+    }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SAME_PLATFORM_SYNC_SMOKE_FAIL",e);try{remove.invoke(sync,pair);}catch(Exception ignored){}}
+    finally{data.set("preferences."+first,null);try{Method save=type.getDeclaredMethod("save");save.setAccessible(true);save.invoke(sync);}catch(Exception ignored){}var cache=(fr.xephi.authme.data.auth.PlayerCache)getUnchecked(fr.xephi.authme.api.v3.AuthMeApi.getInstance(),"playerCache");cache.removePlayer(sourceName.toLowerCase());}
+   },70);
+  }catch(Throwable e){remove.invoke(sync,pair);remove.invoke(sync,pePair);throw e;}
+  var authConfig=YamlConfiguration.loadConfiguration(new java.io.File(m.getDataFolder().getParentFile(),"AuthMe/config.yml"));ok(authConfig.getInt("settings.restrictions.maxRegPerIp")==0&&authConfig.getBoolean("settings.restrictions.ForceSingleSession"),"unlimited IP registrations retain single-session authentication");
+ }
+ Object getUnchecked(Object obj,String field){try{return get(obj,field);}catch(Exception e){throw new RuntimeException(e);}}
  void namesCheck(MiaoServer m,World world)throws Exception {
   Object ui=get(m,"ui"),names=get(ui,"names");Class<?> type=names.getClass();
   Method set=type.getDeclaredMethod("set",Player.class,UUID.class,String.class);set.setAccessible(true);
