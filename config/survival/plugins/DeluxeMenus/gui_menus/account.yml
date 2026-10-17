@@ -19,10 +19,12 @@ items:
   link:
     material: IRON_BARS
     slot: 10
-    display_name: '&a可选同步 · 选择进度'
+    display_name: '&a可选同步 · 进度与用户名'
     lore:
     - '&7支持 PC/PE 互通及同 IP 同平台账号'
     - '&7选择一份进度共享，或保持各自进度'
+    - '&7实际用户名与皮肤来源可以单独选'
+    - '&7已绑定也可改用另一个账号名'
     - '&7验证另一个账号的服内密码后绑定'
     - '&c旧数据保留，物品金币不会叠加'
     left_click_commands:
@@ -38,8 +40,8 @@ items:
     lore:
     - '&c不会自动合并两份旧存档'
     - '&7一份共享进度只能一个账号在线'
-    - '&7同平台使用所选进度账号的服内密码'
-    - '&7跨平台使用 Java 账号的服内密码'
+    - '&7重连使用所选用户名账号的服内密码'
+    - '&7更换用户名不改变共享进度 UUID'
     left_click_commands:
     - '[close]'
     - '[player] guide linking'

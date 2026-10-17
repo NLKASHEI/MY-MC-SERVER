@@ -10,7 +10,7 @@ Windows 云服务器使用的 Paper 26.2 原版生存辅助服务端。Java 离�
 
 新增中文侧边栏、伙伴组队和自动同步的领地共享，指南针统一入口。自动备份每两小时一次，只保留最近三份；Java 列表使用温馨 MC 小屋图标。PE 指南针使用原生表单，侧边栏可选择成长数据并保存开关；主城保护不放行 OP。详见 [伙伴与侧边栏指南](docs/operations/community.md)。
 
-0.9.23：一键更新不再创建整服备份，定期备份继续交给 Backuper；保留校验、停服要求、配置及存档保护。旧引擎升级到本版可能仍备份最后一次。包含 0.9.22 的可选同步菜单修复，详见 [账号同步](docs/operations/crossplay-sync.md) 和 [更新指南](docs/operations/update-guide.md)。
+0.9.24：同步时可分别选择进度、实际用户名与皮肤来源；已绑定也可验证密码后更换名字，共享进度不变。继续取消整服更新备份，定期备份交给 Backuper。详见 [账号同步](docs/operations/crossplay-sync.md) 和 [更新指南](docs/operations/update-guide.md)。
 
 ## 快速使用
 

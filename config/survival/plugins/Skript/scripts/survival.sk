@@ -101,7 +101,8 @@ command /guide [<text>]:
         else if arg-1 is "linking":
             send "{@prefix} &e两个账号各注册登录一次，再用 /accountlink 打开可选同步面板。"
             send "&7支持 PC/PE 互通及同 IP 同平台账号；也可 /miao sync select 对方名字。"
-            send "&7先选择保留谁的进度，再按提示验证对方服内密码；取消则各自进度不变。"
+            send "&7分别选择进度、实际用户名与皮肤来源，再验证密码；取消则保持原样。"
+            send "&7重连使用所选用户名的服内密码；已绑定也能从 /accountlink 修改名字，进度不变。"
             send "&7共享进度只能一个账号在线；/miao sync unlink 解除说明；不叠加物品金币。"
         else if arg-1 is "fun":
             send "{@prefix} &e空手右键台阶、半砖或地毯坐下，潜行站起。"

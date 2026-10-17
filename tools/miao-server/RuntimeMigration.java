@@ -30,6 +30,7 @@ final class RuntimeMigration {
         MiningSetup.apply(plugin);
         AccountSyncSetup.apply(plugin);
         SyncMenuRepair.apply(plugin);
+        SyncIdentitySetup.apply(plugin);
         File marker = new File(plugin.getDataFolder(), "ui-fixes-v080.done");
         if (marker.exists()) return;
         try {

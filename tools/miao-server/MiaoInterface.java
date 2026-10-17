@@ -57,7 +57,7 @@ final class MiaoInterface implements Listener {
     String display(Player p) {
         if (!bedrock(p)) return names.nickname(p.getUniqueId(),p.getName());
         var f=FloodgateApi.getInstance().getPlayer(p.getUniqueId());
-        return "[PE]"+names.nickname(p.getUniqueId(),f!=null && !f.isLinked()?f.getUsername():p.getName());
+        return "[PE]"+names.nickname(p.getUniqueId(),sync.identityName(p.getUniqueId())!=null?p.getName():(f!=null && !f.isLinked()?f.getUsername():p.getName()));
     }
     void decorate(Player p) { p.setDisplayName("§b"+display(p)+"§r"); p.setPlayerListName("§b"+display(p)+"§r"); }
     private String path(Player p) { return "players."+p.getUniqueId(); }
@@ -378,7 +378,7 @@ final class MiaoInterface implements Listener {
             say(p,"欢迎来到 §6南可熙的神奇妙妙服§f！右键指南针选择世界。");
             String version=plugin.getDescription().getVersion();
             if(!version.equals(prefs.getString(path(p)+".update-notice-version"))) {
-                say(p,"服务器已更新到 §a"+version+"§f：新增单人发包豁免，管理员可用 /packetallow 管理；按 UUID 保存，登录成功后生效。");
+                say(p,"服务器已更新到 §a"+version+"§f：账号同步可分别选择进度、实际用户名与皮肤来源；已绑定账号也可从账号菜单修改名字，进度不变。");
                 prefs.set(path(p)+".update-notice-version",version);dirty=true;
             }
             sync.login(p);

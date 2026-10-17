@@ -8,7 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scoreboard.*;
 import me.ryanhamshire.GriefPrevention.*;
 public class MiaoSmoke extends JavaPlugin {
- public void onEnable(){Bukkit.getScheduler().runTaskLater(this,()->{if(getConfig().getBoolean("sync-only",false)){try{var m=(MiaoServer)Bukkit.getPluginManager().getPlugin("MiaoServer");syncCheck(m,Bukkit.getWorld("world"));samePlatformCheck(m,Bukkit.getWorld("world"));syncMenuCheck(m,Bukkit.getWorld("world"));uiCheck();}catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_FOCUSED_SMOKE_FAIL",e);}}else if(getConfig().getBoolean("mining-only",false)){try{var m=(MiaoServer)Bukkit.getPluginManager().getPlugin("MiaoServer");miningCheck(m,Bukkit.getWorld("world"));worldPolicyCheck(m);}catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"MINING_FOCUSED_SMOKE_FAIL",e);}}else if(getConfig().getBoolean("ui-only",false))uiCheck();else check();},40);}
+ public void onEnable(){Bukkit.getScheduler().runTaskLater(this,()->{if(getConfig().getBoolean("sync-only",false)){try{var m=(MiaoServer)Bukkit.getPluginManager().getPlugin("MiaoServer");syncCheck(m,Bukkit.getWorld("world"));samePlatformCheck(m,Bukkit.getWorld("world"));syncMenuCheck(m,Bukkit.getWorld("world"));syncIdentityCheck(m,Bukkit.getWorld("world"));uiCheck();}catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_FOCUSED_SMOKE_FAIL",e);}}else if(getConfig().getBoolean("mining-only",false)){try{var m=(MiaoServer)Bukkit.getPluginManager().getPlugin("MiaoServer");miningCheck(m,Bukkit.getWorld("world"));worldPolicyCheck(m);}catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"MINING_FOCUSED_SMOKE_FAIL",e);}}else if(getConfig().getBoolean("ui-only",false))uiCheck();else check();},40);}
  void uiCheck(){
   try{
    var plugin=Bukkit.getPluginManager().getPlugin("MiaoServer");var folder=new java.io.File(plugin.getDataFolder().getParentFile(),"DeluxeMenus/gui_menus");int count=0;
@@ -487,7 +487,7 @@ public class MiaoSmoke extends JavaPlugin {
    var stranger=new org.bukkit.event.player.AsyncPlayerPreLoginEvent("AnotherFixture",java.net.InetAddress.getLoopbackAddress(),javaId);profile.invoke(sync,stranger);ok(stranger.getUniqueId().equals(javaId),"unrelated login profile untouched");
    field.set(sync,Map.of("syncjavafixture",bc.newInstance("SyncJavaFixture",javaId,peId,peId,"PE source","PREPARED")));
    var pending=new org.bukkit.event.player.AsyncPlayerPreLoginEvent("SyncJavaFixture",java.net.InetAddress.getLoopbackAddress(),javaId);profile.invoke(sync,pending);ok(pending.getLoginResult()!=org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result.ALLOWED,"incomplete journal cannot admit player under wrong UUID");
-   Class<?> input=Class.forName("cn.nankexi.CrossplaySync$Input",true,m.getClass().getClassLoader());var ic=input.getDeclaredConstructors()[0];ic.setAccessible(true);Player p=actor(javaId,"SyncJavaFixture",world,world.getSpawnLocation(),false);
+   Class<?> input=Class.forName("cn.nankexi.CrossplaySync$Input",true,m.getClass().getClassLoader());var ic=input.getDeclaredConstructor(account,boolean.class,long.class);ic.setAccessible(true);Player p=actor(javaId,"SyncJavaFixture",world,world.getSpawnLocation(),false);
    ((Map)get(sync,"inputs")).put(javaId,ic.newInstance(pe,false,0L));
    var message=net.kyori.adventure.text.Component.text("private-password-fixture");var chat=new io.papermc.paper.event.player.AsyncChatEvent(false,p,new HashSet<>(),io.papermc.paper.chat.ChatRenderer.defaultRenderer(),message,message,net.kyori.adventure.chat.SignedMessage.system("test",null));
    Method capture=type.getDeclaredMethod("input",io.papermc.paper.event.player.AsyncChatEvent.class);capture.setAccessible(true);capture.invoke(sync,chat);ok(chat.isCancelled(),"even expired password input never broadcasts");
@@ -532,7 +532,7 @@ public class MiaoSmoke extends JavaPlugin {
   Bukkit.getScheduler().runTaskAsynchronously(this,()->{
    try{
     ok(auth.registerPlayer(peerName,"Fixture-Only-Password!42"),"temporary historical account registered");
-    var source=(fr.xephi.authme.datasource.DataSource)get(auth,"dataSource");var historical=source.getAuth(peerName);historical.setLastIp("127.0.0.1");historical.setLastLogin(System.currentTimeMillis());ok(source.updateSession(historical),"historical IP/login persisted in AuthMe");
+    var source=(fr.xephi.authme.datasource.DataSource)get(auth,"dataSource");var historical=source.getAuth(peerName);for(int wait=0;historical==null&&wait<100;wait++){Thread.sleep(50);historical=source.getAuth(peerName);}ok(historical!=null,"AuthMe queued registration became readable");historical.setLastIp("127.0.0.1");historical.setLastLogin(System.currentTimeMillis());ok(source.updateSession(historical),"historical IP/login persisted in AuthMe");
     Bukkit.getScheduler().runTask(this,()->{try{
      accounts.put(peerId,ac.newInstance(peerId,peerName,false,"stale-ip-cache",1L));
      // Reproduce DeluxeMenus [close]: its queued close must run before the new menu opens.
@@ -545,15 +545,57 @@ public class MiaoSmoke extends JavaPlugin {
       Bukkit.getScheduler().runTaskLater(MiaoSmoke.this,()->{try{
        ok(top[0]!=null&&top[0].getSize()==27,"click opens progress source choice");ok(top[0].getItem(11).getType()==Material.CHEST&&top[0].getItem(15).getType()==Material.ENDER_CHEST,"both progress sources available");tap.accept(11);
        Bukkit.getScheduler().runTaskLater(MiaoSmoke.this,()->{try{
-        ok(top[0]==null&&((Map<?,?>)get(sync,"inputs")).containsKey(id),"source click arms private password input");
+        ok(top[0]!=null&&top[0].getItem(11).getType()==Material.NAME_TAG,"progress source leads to independent username choice");tap.accept(11);
+        Bukkit.getScheduler().runTaskLater(MiaoSmoke.this,()->{try{
+        ok(top[0]==null&&((Map<?,?>)get(sync,"inputs")).containsKey(id),"username click arms private password input");
+        Object request=((Map<?,?>)get(sync,"inputs")).get(id);ok(!(boolean)get(request,"own")&&get(get(request,"identity"),"id").equals(id),"request keeps peer progress while selecting caller username");
         var message=net.kyori.adventure.text.Component.text("取消");var event=new io.papermc.paper.event.player.AsyncChatEvent(false,p,new HashSet<>(),io.papermc.paper.chat.ChatRenderer.defaultRenderer(),message,message,net.kyori.adventure.chat.SignedMessage.system("test",null));Method input=type.getDeclaredMethod("input",io.papermc.paper.event.player.AsyncChatEvent.class);input.setAccessible(true);input.invoke(sync,event);ok(event.isCancelled(),"cancel input is not broadcast");
         Bukkit.getScheduler().runTaskLater(MiaoSmoke.this,()->{try{ok(messages.stream().anyMatch(s->s.contains("已取消绑定")),"cancel handled without creating binding");ok(((Map<?,?>)get(sync,"bindings")).values().stream().noneMatch(b->b.toString().contains(peerName)),"cancel keeps independent progress");getLogger().info("SYNC_MENU_SMOKE_PASS: delayed open, AuthMe historical IP refresh, no remote heads, account/source clicks, private cancel");}catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_MENU_SMOKE_FAIL",e);}finally{cleanup.run();}},2);
        }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_MENU_SMOKE_FAIL",e);cleanup.run();}},2);
+      }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_MENU_SMOKE_FAIL",e);cleanup.run();}},2);
       }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_MENU_SMOKE_FAIL",e);cleanup.run();}},2);
      }catch(Throwable e){cancel();getLogger().log(java.util.logging.Level.SEVERE,"SYNC_MENU_SMOKE_FAIL",e);cleanup.run();}}}.runTaskTimer(MiaoSmoke.this,3,1);
     }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_MENU_SMOKE_FAIL",e);cleanup.run();}});
    }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_MENU_SMOKE_FAIL",e);Bukkit.getScheduler().runTask(this,cleanup);}
   });
+ }
+ void syncIdentityCheck(MiaoServer m,World world)throws Exception {
+  Object sync=get(get(m,"ui"),"sync");Class<?> type=sync.getClass(),account=Class.forName("cn.nankexi.CrossplaySync$Account",true,m.getClass().getClassLoader()),binding=Class.forName("cn.nankexi.CrossplaySync$Binding",true,m.getClass().getClassLoader());
+  var ac=account.getDeclaredConstructors()[0];ac.setAccessible(true);var bc=binding.getDeclaredConstructor(String.class,UUID.class,UUID.class,UUID.class,String.class,String.class,String.class,String.class,String.class,UUID.class);bc.setAccessible(true);
+  UUID progress=UUID.randomUUID(),identity=UUID.randomUUID();String a="Progress"+UUID.randomUUID().toString().substring(0,5),b="Look"+UUID.randomUUID().toString().substring(0,5);
+  Object peer=ac.newInstance(identity,b,false,"fixture",1L),old=bc.newInstance(a,progress,identity,progress,"PC progress fixture","ACTIVE","JAVA_PAIR",b,a,progress);
+  Method write=type.getDeclaredMethod("write",binding),remove=type.getDeclaredMethod("remove",binding),profile=type.getDeclaredMethod("profile",org.bukkit.event.player.AsyncPlayerPreLoginEvent.class),verify=type.getDeclaredMethod("verifyRename",Player.class,binding,account,String.class);for(Method method:List.of(write,remove,profile,verify))method.setAccessible(true);
+  UUID peSource=new UUID(0,Math.abs(UUID.randomUUID().getLeastSignificantBits())),peAlias=new UUID(0,Math.abs(UUID.randomUUID().getLeastSignificantBits()));
+  Object peRename=bc.newInstance(".IdSourceTest",peSource,peAlias,peSource,"PE progress fixture","RENAMING","PE_PAIR",".IdAliasTest",".IdAliasTest",peAlias);write.invoke(sync,peRename);
+  Method finishRename=type.getDeclaredMethod("finishRename",binding);finishRename.setAccessible(true);
+  Object cross=bc.newInstance("CrossIdentity",progress,identity,identity,"PE progress","ACTIVE","CROSSPLAY",".CrossAlias",".CrossAlias",identity);write.invoke(sync,cross);
+  for(String name:List.of("CrossIdentity",".CrossAlias")){var event=new org.bukkit.event.player.AsyncPlayerPreLoginEvent(name,java.net.InetAddress.getLoopbackAddress(),name.equals("CrossIdentity")?progress:identity);profile.invoke(sync,event);ok(event.getName().equals(".CrossAlias")&&event.getUniqueId().equals(identity),"crossplay can retain PE progress and select PE username");}remove.invoke(sync,cross);
+  var accounts=(Map<UUID,Object>)get(sync,"accounts");accounts.put(progress,ac.newInstance(progress,a,false,"fixture",1L));accounts.put(identity,peer);write.invoke(sync,old);
+  var auth=fr.xephi.authme.api.v3.AuthMeApi.getInstance();Player base=actor(progress,a,world,world.getSpawnLocation(),false);List<String> messages=new ArrayList<>();
+  Player player=(Player)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{Player.class},(o,method,args)->switch(method.getName()){case "isOnline"->true;case "sendMessage"->{if(args[0] instanceof String text)messages.add(text);yield null;}default->method.invoke(base,args);});
+  var api=net.skinsrestorer.api.SkinsRestorerProvider.get();String skinKey="fixture-"+identity;var skinId=net.skinsrestorer.api.property.SkinIdentifier.ofCustom(skinKey);var expectedSkin=net.skinsrestorer.api.property.SkinProperty.of(java.util.Base64.getEncoder().encodeToString("{\"textures\":{}}".getBytes(java.nio.charset.StandardCharsets.UTF_8)),"fixture-signature");
+  Runnable cleanup=()->{try{remove.invoke(sync,old);remove.invoke(sync,peRename);accounts.remove(progress);accounts.remove(identity);}catch(Exception e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_IDENTITY_CLEANUP_FAIL",e);}var cache=(fr.xephi.authme.data.auth.PlayerCache)getUnchecked(auth,"playerCache");cache.removePlayer(a.toLowerCase());Bukkit.getScheduler().runTaskAsynchronously(this,()->{auth.forceUnregister(b);api.getPlayerStorage().removeSkinIdOfPlayer(identity);api.getSkinStorage().removeSkinData(skinId);try{org.geysermc.floodgate.api.FloodgateApi.getInstance().getPlayerLink().unlinkPlayer(peAlias).get(10,java.util.concurrent.TimeUnit.SECONDS);}catch(Exception ignored){}});};
+  Bukkit.getScheduler().runTaskAsynchronously(this,()->{try{
+   ok(auth.registerPlayer(b,"Fixture-Only-Password!42"),"selected username has independent AuthMe credentials");
+   api.getSkinStorage().setCustomSkinData(skinKey,expectedSkin);api.getPlayerStorage().setSkinIdOfPlayer(identity,skinId);
+   Class<?> appearance=Class.forName("cn.nankexi.SyncAppearance",true,m.getClass().getClassLoader());Method resolve=appearance.getDeclaredMethod("resolve",net.skinsrestorer.api.SkinsRestorer.class,UUID.class,String.class);resolve.setAccessible(true);
+   ok(((Optional<?>)resolve.invoke(null,api,identity,b)).orElseThrow().equals(expectedSkin),"skin resolves from chosen original identity");ok(api.getPlayerStorage().getSkinIdOfPlayer(progress).isEmpty(),"skin resolution never rewrites progress account skin storage");
+   var links=org.geysermc.floodgate.api.FloodgateApi.getInstance().getPlayerLink();links.linkPlayer(peAlias,peSource,".IdSourceTest").get(10,java.util.concurrent.TimeUnit.SECONDS);finishRename.invoke(sync,peRename);var linked=links.getLinkedPlayer(peAlias).get(10,java.util.concurrent.TimeUnit.SECONDS);ok(linked.getJavaUniqueId().equals(peSource)&&linked.getJavaUsername().equals(".IdAliasTest"),"Floodgate rename changes username while keeping original PE progress UUID");
+   Bukkit.getScheduler().runTask(this,()->{try{
+    verify.invoke(sync,player,old,peer,"wrong-password");
+    new org.bukkit.scheduler.BukkitRunnable(){int ticks;boolean submitted;public void run(){try{
+     ok(++ticks<160,"rename password check and activation complete within timeout");
+     if(((Set<?>)get(sync,"working")).contains(progress))return;
+     if(!submitted){ok(messages.stream().anyMatch(s->s.contains("密码不正确")),"wrong target password is rejected");ok(((Map<?,?>)get(sync,"bindings")).get(a.toLowerCase()).equals(old),"wrong proof preserves binding");((Map<?,?>)get(sync,"attempts")).remove(identity.toString());verify.invoke(sync,player,old,peer,"Fixture-Only-Password!42");submitted=true;return;}
+     Object saved=((Map<?,?>)get(sync,"bindings")).get(a.toLowerCase());ok(get(saved,"state").equals("ACTIVE")&&get(saved,"identityName").equals(b)&&get(saved,"shared").equals(progress),"verified name changes while original progress UUID stays fixed");
+     for(String name:List.of(a,b)){var event=new org.bukkit.event.player.AsyncPlayerPreLoginEvent(name,java.net.InetAddress.getLoopbackAddress(),name.equals(a)?progress:identity);profile.invoke(sync,event);ok(event.getName().equals(b)&&event.getUniqueId().equals(progress),"both original names join as chosen username with source progress");}
+     Method refresh=type.getDeclaredMethod("refresh");refresh.setAccessible(true);refresh.invoke(sync);Object reloaded=((Map<?,?>)get(sync,"bindings")).get(a.toLowerCase());ok(get(reloaded,"identityName").equals(b)&&get(reloaded,"identityId").equals(identity),"separate identity survives journal reload");
+     for(String name:List.of(".IdSourceTest",".IdAliasTest")){var event=new org.bukkit.event.player.AsyncPlayerPreLoginEvent(name,java.net.InetAddress.getLoopbackAddress(),name.equals(".IdSourceTest")?peSource:peAlias);profile.invoke(sync,event);ok(event.getName().equals(".IdAliasTest")&&event.getUniqueId().equals(peSource),"both PE entries map to chosen name and original progress after rename");}
+     var data=(YamlConfiguration)get(sync,"data");data.set("bindings."+a.toLowerCase()+".identity-name",null);data.set("bindings."+a.toLowerCase()+".identity-id",null);refresh.invoke(sync);ok(get(((Map<?,?>)get(sync,"bindings")).get(a.toLowerCase()),"identityName").equals(a),"old binding journal defaults to legacy username");
+     getLogger().info("SYNC_IDENTITY_SMOKE_PASS: independent username/UUID, wrong/right password rename, both aliases, journal compatibility, original skin lookup without source overwrite");cancel();cleanup.run();
+    }catch(Throwable e){cancel();getLogger().log(java.util.logging.Level.SEVERE,"SYNC_IDENTITY_SMOKE_FAIL",e);cleanup.run();}}}.runTaskTimer(MiaoSmoke.this,2,1);
+   }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_IDENTITY_SMOKE_FAIL",e);cleanup.run();}});
+  }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_IDENTITY_SMOKE_FAIL",e);Bukkit.getScheduler().runTask(this,cleanup);}});
  }
  void samePlatformCheck(MiaoServer m,World world)throws Exception {
   Object sync=get(get(m,"ui"),"sync");Class<?> type=sync.getClass();var data=(YamlConfiguration)get(sync,"data");

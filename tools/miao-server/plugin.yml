@@ -1,10 +1,10 @@
 name: MiaoServer
 prefix: NLK
-version: 0.9.22
+version: 0.9.24
 main: cn.nankexi.MiaoServer
 api-version: '26.2'
 depend: [GriefPrevention, AuthMe, floodgate, WorldEdit, WorldGuard, Vault, Scythe, Multiverse-Core, Multiverse-Inventories]
-softdepend: [ViaVersion]
+softdepend: [ViaVersion, SkinsRestorer]
 loadbefore: [Backuper, DeluxeMenus, VeinMiner, AuraSkills, EconomyShopGUI, BlueMap]
 commands:
   packetallow:
