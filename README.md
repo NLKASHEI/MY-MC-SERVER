@@ -10,7 +10,7 @@ Windows 云服务器使用的 Paper 26.2 原版生存辅助服务端。Java 离�
 
 新增中文侧边栏、伙伴组队和自动同步的领地共享，指南针统一入口。自动备份每两小时一次，只保留最近三份；Java 列表使用温馨 MC 小屋图标。PE 指南针使用原生表单，侧边栏可选择成长数据并保存开关；主城保护不放行 OP。详见 [伙伴与侧边栏指南](docs/operations/community.md)。
 
-0.9.22：修复可选同步面板被延迟关闭、离线 UUID 头像查询超时和旧 IP 缓存；更新绑定指引。同 IP 多账号可自由注册，支持自愿选择进度同步（PC↔PE、同 IP Java↔Java、PE↔PE），也可保持各自进度。详见 [账号同步](docs/operations/crossplay-sync.md)。
+0.9.23：一键更新不再创建整服备份，定期备份继续交给 Backuper；保留校验、停服要求、配置及存档保护。旧引擎升级到本版可能仍备份最后一次。包含 0.9.22 的可选同步菜单修复，详见 [账号同步](docs/operations/crossplay-sync.md) 和 [更新指南](docs/operations/update-guide.md)。
 
 ## 快速使用
 
@@ -18,7 +18,7 @@ Windows 云服务器使用的 Paper 26.2 原版生存辅助服务端。Java 离�
 
 完整部署包：从 [GitHub Release](https://github.com/NLKASHEI/MY-MC-SERVER/releases/latest) 下载 ZIP 和 SHA256 校验文件。GitHub 自动生成的 Source code 仅是源码，不包含 Java 和插件。
 
-以后更新：服务器控制台输入 `stop`，退出后双击 **一键更新.bat**，程序自动获取我们发布的正式更新包、核验 SHA256、完整备份并替换变化的文件。存档、玩家数据、密钥、内存设置保留；本地改过的配置保留，冲突新版另存为 `.new`，详见 [更新指南](docs/operations/update-guide.md)。无需安装 Git、Python 或登录 GitHub。
+以后更新：服务器控制台输入 `stop`，退出后双击 **一键更新.bat**，程序自动获取正式更新包、核验 SHA256 并替换变化的文件，不自动创建整服备份。存档、玩家数据、密钥、内存设置保留；本地改过的配置保留，冲突新版另存为 `.new`，详见 [更新指南](docs/operations/update-guide.md)。无需安装 Git、Python 或登录 GitHub。
 
 下载完整部署包并解压到 Windows 服务器。阅读 Minecraft EULA，将 `servers/survival/eula.txt` 改为 `eula=true`，双击 `启动服务器.bat`。内存在 `server-settings.json` 中修改。云端放行 Java TCP 25565 和基岩 UDP 8585。
 
@@ -51,7 +51,7 @@ Windows 云服务器使用的 Paper 26.2 原版生存辅助服务端。Java 离�
 ## Model-invoked skills
 
 - [configure-minecraft](skills/engineering/configure-minecraft/SKILL.md)：配置插件、权限和互联。
-- [update-minecraft](skills/engineering/update-minecraft/SKILL.md)：候选更新、备份和回退。
+- [update-minecraft](skills/engineering/update-minecraft/SKILL.md)：候选更新、增量替换和数据保护。
 - [localize-minecraft](skills/productivity/localize-minecraft/SKILL.md)：玩家可见文本汉化。
 
 JAR 和 Java 保留各自上游许可证。仓库保存项目配置、脚本、文档和静态主城地图资产；不上传玩家运行数据或认证密钥。

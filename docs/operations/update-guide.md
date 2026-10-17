@@ -2,6 +2,8 @@
 
 ## 一键获取我们发布的更新
 
+0.9.23 起，按服主要求，两个更新脚本均不再调用整服备份。Backuper 仍每两小时备份、保留最近三份。更新器只暂存本次变更文件供复制失败撤回，成功后删除；不会扫描复制世界和数据库。旧云服第一次获取本版时仍运行旧引擎，可能执行最后一次旧备份；完成后未来更新自动采用新行为。若希望这一次也跳过，可先安装本版 `MY-MC-SERVER-updater.zip` 再更新。历史整服备份不自动删除。
+
 0.9.22 修复同步菜单跳转和离线头像查询，刷新历史账号 IP，并在首次启动替换旧绑定说明。只备份和替换说明书的已知文本（`.before-sync-menu-v0922`），不需要手动替换配置，不修改账号数据库、既有绑定或玩家存档。
 
 0.9.21 停服更新再启动，会将 AuthMe `settings.restrictions.maxRegPerIp` 合并为 `0`，并更新账号面板和提示开关；配置备份后缀 `.before-account-sync-v0921`。无需手动改云服配置，密码、账号和进度不因更新自动绑定。玩家自愿选择后才启用同平台/跨平台进度共享。
@@ -30,13 +32,13 @@
 
 维护者用 `scripts/build-update-rescue.ps1 -ReleaseTag v0.9.0` 从当前修复引擎构建救援 ZIP；固定 SHA 必须取已经发布的原更新包，不能重打包并替换旧 Release 资产。只需上传新救援 ZIP 与校验文件，不重新上传大型完整服务端。
 
-程序下载小型 `MY-MC-SERVER-update-v版本.zip`，包含维护脚本、说明、锁定清单和配置，不包含 Java、大型地图或运行数据；Paper 和插件只在 SHA256 不同时下载。压缩包及每个文件核验后创建完整停服备份，再按单文件清单替换。启动依赖由原启动流程管理。
+程序下载小型 `MY-MC-SERVER-update-v版本.zip`，包含维护脚本、说明、锁定清单和配置，不包含 Java、大型地图或运行数据；Paper 和插件只在 SHA256 不同时下载。压缩包及每个文件核验并确认停服后，按单文件清单替换，不创建整服备份。启动依赖由原启动流程管理。
 
 以下文件保留：世界区块、`level.dat`、玩家存档/背包、经济/登录/绑定/圈地数据库、权限数据、密钥、EULA、白名单、封禁列表、`server-settings.json` 及云端自行添加的插件。不会删除旧文件或解压初始主城。端口/MOTD 的 `server.properties`、出生点、Multiverse 世界表/背包分组及 WorldGuard 现有区域，即使没有改过也不自动覆盖；如本版调整这些内容，会提供新版供人工迁移。
 
-普通菜单、Skript、奖励表等配置与上次官方基线一致时自动更新；如果本地改过（包括插件启动时自行改写），保留本地文件，新版写到备份目录 `pending/原路径.new`，清单为 `pending-configs.json`。根目录 `.update-state.json` 记录版本和官方基线，更新后不要删除。遇到冲突可以先使用当前配置，按 `.new` 差异选择性合并，再启动。程序保留旧目录和新增的本地文件，不执行盲目同步或文件删除。
+普通菜单、Skript、奖励表等配置与上次官方基线一致时自动更新；如果本地改过（包括插件启动时自行改写），保留本地文件，新版写到 `updates/release-版本-时间-标识/pending/原路径.new`，旁边清单为 `pending-configs.json`。该目录仅保存更新记录和冲突配置，不是整服备份。根目录 `.update-state.json` 记录版本和官方基线，更新后不要删除。遇到冲突可以先使用当前配置，按 `.new` 差异选择性合并，再启动。程序保留旧目录和新增的本地文件，不执行盲目同步或文件删除。
 
-发生复制错误时自动回退本次替换，完整备份仍保留。每次成功会显示备份位置；玩家重新进入后若插件迁移异常，停服再使用下面的完整还原流程。检查新版而不应用：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/update-release.ps1 -CheckOnly`。禁止自动降级或跨 Minecraft 版本，Java 更换需人工迁移。程序不会自动停服、重启或处理更换内存设置。
+发生复制错误时自动回退本次替换；成功后清理临时旧文件，不提供更新时点的整服还原点。启动后若迁移异常，停服并选用已有的定期备份或手动备份；Backuper 备份按其格式恢复，下面的 restore-backup 脚本仅适用于原手动脚本格式。检查新版而不应用：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/update-release.ps1 -CheckOnly`。禁止自动降级或跨 Minecraft 版本，Java 更换需人工迁移。程序不会自动停服、重启或处理更换内存设置。
 
 旧版 0.4.0 首次接入：从 0.5.0 Release 下载 `一键更新.bat` 与 `update-release.ps1`，前者放旧服根目录，后者放 `scripts`，停服双击即可。旧完整包里的配置模板作为首次基线；不知道来源或已修改的配置宁可保留。
 
@@ -47,7 +49,7 @@
 1. 双击 `检查更新.bat` 获取版本报告。仅查询，不覆盖正式组件；特殊来源的 EssentialsX 开发构建和商店需要人工查上游。
 2. 在项目根目录运行 `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-updates.ps1 -Download` 下载候选更新到 `downloads/updates-时间`。
 3. 查看 `report.json` 与上游发布说明，确认所有候选支持 Paper 26.2、Java 25 和当前依赖。GitHub 最新版不等于兼容版本。删除不准备应用的 `candidates.json` 条目即可缩小更新范围。
-4. 云服控制台输入 `stop`，确认退出。运行 `scripts/apply-update.ps1 -Stage 候选目录`。脚本核验哈希、做完整停服备份，再只替换 JAR 和锁定清单，不覆盖配置。
+4. 云服控制台输入 `stop`，确认退出。运行 `scripts/apply-update.ps1 -Stage 候选目录`。脚本核验哈希并检查停服，只替换 JAR 和锁定清单，不覆盖配置、不自动备份。
 5. 启动，检查日志，完成客户端验收后恢复开放。若未通过，停服后运行 `scripts/restore-backup.ps1 -Backup backups/备份时间`，还原整个服务端及版本清单。旧状态另存，脚本不删除它。
 
 备份包含世界、账号、插件变量、权限和密钥，存放在自己的私有存储，定期复制到云主机之外。备份容量和保留周期由服主根据实际人数安排。

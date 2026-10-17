@@ -189,12 +189,12 @@ foreach ($file in $files) {
   }
 }
 Stopped
-$backup = Join-Path $root ('backups/release-update-' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N').Substring(0,6))
-Write-Host '正在创建完整停服备份，世界越大耗时越长……'
-& (Join-Path $PSScriptRoot 'backup.ps1') -Destination $backup
-Stopped
-$undo = Join-Path $backup 'update-files'
-$conflictRoot = Join-Path $backup 'pending'
+$record = Join-Path $root ('updates/release-' + $index.version + '-' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N').Substring(0,6))
+Write-Host '正在应用更新（不创建整服备份，定期备份由备份插件负责）……'
+# Only changed files are held temporarily for copy-failure rollback; never copy worlds/databases.
+$undo = Join-Path $work 'rollback'
+$conflictRoot = Join-Path $record 'pending'
+New-Item -ItemType Directory -Force $record | Out-Null
 $journal = @()
 try {
   foreach ($item in $changes) {
@@ -211,8 +211,8 @@ try {
     New-Item -ItemType Directory -Force (Split-Path $incoming) | Out-Null
     Copy-Item -LiteralPath $item.source -Destination $incoming
   }
-  $pending | Select-Object path,reason | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $backup 'pending-configs.json') -Encoding UTF8
-  [ordered]@{ version=$index.version; backup=$backup; pendingDirectory=$conflictRoot; baseline=$nextBaseline; changed=@($journal); updatedAt=(Get-Date).ToString('o') } | ConvertTo-Json -Depth 8 | Set-Content "$stateFile.tmp" -Encoding UTF8
+  $pending | Select-Object path,reason | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $record 'pending-configs.json') -Encoding UTF8
+  [ordered]@{ version=$index.version; backup=$null; updateDirectory=$record; pendingDirectory=$conflictRoot; baseline=$nextBaseline; changed=@($journal); updatedAt=(Get-Date).ToString('o') } | ConvertTo-Json -Depth 8 | Set-Content "$stateFile.tmp" -Encoding UTF8
   Move-Item -LiteralPath "$stateFile.tmp" -Destination $stateFile -Force
 } catch {
   foreach ($item in $journal) {
@@ -220,11 +220,16 @@ try {
     if ($item.existed) { Copy-Item -LiteralPath (SafePath $undo $item.path) -Destination $target -Force }
     elseif (Test-Path -LiteralPath $target) { Remove-Item -LiteralPath $target -Force }
   }
-  throw "更新失败，已回退本次替换的文件。备份：$backup。原因：$($_.Exception.Message)"
+  throw "更新失败，已回退本次替换的文件；未创建整服备份。原因：$($_.Exception.Message)"
+}
+# Delete only the individual rollback files this transaction created; no recursive world traversal.
+foreach ($item in $journal) {
+  $saved = SafePath $undo $item.path
+  if ($item.existed -and (Test-Path -LiteralPath $saved -PathType Leaf)) { Remove-Item -LiteralPath $saved -Force -ErrorAction Continue }
 }
 Write-Host "更新完成：v$($index.version)，替换 $($changes.Count) 个文件，保留 $($pending.Count) 个本地配置。"
-Write-Host "完整备份：$backup"
-if ($pending.Count) { Write-Host "待合并新版配置：$conflictRoot（.new 文件）；清单：$backup\pending-configs.json" }
+Write-Host '未创建更新备份；定期备份继续由备份插件执行。'
+if ($pending.Count) { Write-Host "待合并新版配置：$conflictRoot（.new 文件）；清单：$record\pending-configs.json" }
 Write-Host '存档、玩家数据库、密钥和内存设置保留。可双击 启动服务器.bat。'
 $completed = $true
 } finally {

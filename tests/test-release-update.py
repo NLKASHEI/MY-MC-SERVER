@@ -42,6 +42,7 @@ for name in ('README.md', 'AGENTS.md', 'GLOSSARY.md', 'CHANGELOG.md', 'server-se
 shutil.copytree(server / 'config/survival', server / 'servers/survival')
 engine = server / ('scripts/update-release-fixed.ps1' if args.rescue else 'scripts/update-release.ps1')
 shutil.copy2(ROOT / 'scripts/update-release.ps1', engine)
+write(server / 'scripts/backup.ps1', "throw 'Automatic update backup must never run'\n")
 if not args.rescue:
     shutil.copy2(ROOT / 'scripts/update-release.ps1', payload / 'scripts/update-release.ps1')
 jar = b'offline component fixture'
@@ -134,14 +135,17 @@ assert digest(server / 'server-settings.json') == settings_before
 assert all(digest(server / 'servers/survival' / p) == h for p, h in before.items())
 state = json.loads((server / '.update-state.json').read_text(encoding='utf-8-sig'))
 assert (Path(state['pendingDirectory']) / ('servers/survival/' + modified + '.new')).exists()
-assert (Path(state['backup']) / 'survival/world/level.dat').exists()
+assert state['backup'] is None
+assert not (server / 'backups').exists()
+assert Path(state['updateDirectory']).is_dir()
+assert not any(p.is_file() for p in (server / 'downloads').glob('release-update-*/rollback/**/*'))
 assert (server / '一键更新.bat').read_bytes() == (payload / '一键更新.bat').read_bytes()
 if args.rescue:
     assert digest(server / 'scripts/update-release.ps1') == digest(ROOT / 'scripts/update-release.ps1')
     assert (server / 'scripts/update-release.ps1.before-fast-update').exists()
     print('PASS: rescue entry repairs the normal updater after applying old release payload')
 print('PASS: UTF-8 manifest with literal Chinese BAT names under PS5.1')
-print('PASS: PS5.1 update, unchanged menu replaced, modified menu/ports/data retained, full backup')
+print('PASS: PS5.1 update without full backup; world/data/config preserved; rollback copies removed after success')
 if args.latest:
     permanent = (server / 'update-fast.bat').read_text(encoding='utf-8-sig')
     assert '-ReleaseTag' not in permanent and '-PinnedPackageSha256' not in permanent
@@ -178,4 +182,22 @@ assert not (server / 'scripts/created-for-test.ps1').exists()
 assert digest(server / '.update-state.json') == before_state
 assert all(digest(server / 'servers/survival' / p) == h for p, h in before.items())
 print('PASS: forced copy failure rolls back replaced/new files and keeps version/data')
+
+# The separate candidate updater must also leave scheduled backups in charge.
+candidate_stage = work / 'candidates'
+candidate_lock = json.loads((server / 'manifests/plugins.lock.json').read_text(encoding='utf-8-sig'))
+candidate = dict(candidate_lock[0])
+candidate['file'] = candidate['name'] + '.jar'
+candidate['version'] = 'fixture-updated'
+write(candidate_stage / candidate['file'], 'new candidate binary fixture')
+candidate['sha256'] = digest(candidate_stage / candidate['file'])
+write(candidate_stage / 'candidates.json', json.dumps([candidate]))
+write(server / 'scripts/backup.ps1', "throw 'Automatic update backup must never run'\n")
+shutil.copy2(ROOT / 'scripts/apply-update.ps1', server / 'scripts/apply-update.ps1')
+result = subprocess.run(['powershell.exe', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', str(server / 'scripts/apply-update.ps1'), '-Stage', str(candidate_stage)], capture_output=True, env=env)
+assert result.returncode == 0, result.stderr.decode(errors='replace')
+assert digest(server / 'servers/survival/plugins' / candidate['file']) == candidate['sha256']
+assert not (server / 'backups').exists()
+assert all(digest(server / 'servers/survival' / p) == h for p, h in before.items())
+print('PASS: candidate updater replaces selected component without invoking backups or touching data')
 print('Fixture retained:', work)

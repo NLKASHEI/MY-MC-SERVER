@@ -15,3 +15,5 @@
 secrets/
 /.update-state.json
 /.update-state.json.tmp
+# Local updater conflict records; may contain operator-specific configuration.
+updates/
