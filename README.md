@@ -10,7 +10,7 @@ Windows 云服务器使用的 Paper 26.2 原版生存辅助服务端。Java 离�
 
 新增中文侧边栏、伙伴组队和自动同步的领地共享，指南针统一入口。自动备份每两小时一次，只保留最近三份；Java 列表使用温馨 MC 小屋图标。PE 指南针使用原生表单，侧边栏可选择成长数据并保存开关；主城保护不放行 OP。详见 [伙伴与侧边栏指南](docs/operations/community.md)。
 
-0.9.21：同 IP 多账号可自由注册，账号菜单支持自愿选择进度同步（PC↔PE、同 IP Java↔Java、PE↔PE）；验证密码后才绑定，也可保持各自进度并关闭提醒。详见 [账号同步](docs/operations/crossplay-sync.md)。
+0.9.22：修复可选同步面板被延迟关闭、离线 UUID 头像查询超时和旧 IP 缓存；更新绑定指引。同 IP 多账号可自由注册，支持自愿选择进度同步（PC↔PE、同 IP Java↔Java、PE↔PE），也可保持各自进度。详见 [账号同步](docs/operations/crossplay-sync.md)。
 
 ## 快速使用
 

@@ -99,10 +99,10 @@ command /guide [<text>]:
             send "&7/fp stop：停止动作；/fp invsee：假人背包；/fp kick：移除。"
             send "&7仅生存维度使用，离线 15 秒后移除，背包保存；假人不领取金币或技能经验。"
         else if arg-1 is "linking":
-            send "{@prefix} &e先登录两个账号，点击账号菜单的绑定按钮，或使用 /accountlink。"
-            send "&7Java 输入 /linkaccount 手机Xbox名；PE 输入 /linkaccount Java账号名 验证码。"
-            send "&7可选择保留 PE 或 PC 进度，验证对方的服内密码；旧数据保留，不叠加背包金币。"
-            send "&7同一账号不能双端同时在线；/unlinkaccount 解除绑定。"
+            send "{@prefix} &e两个账号各注册登录一次，再用 /accountlink 打开可选同步面板。"
+            send "&7支持 PC/PE 互通及同 IP 同平台账号；也可 /miao sync select 对方名字。"
+            send "&7先选择保留谁的进度，再按提示验证对方服内密码；取消则各自进度不变。"
+            send "&7共享进度只能一个账号在线；/miao sync unlink 解除说明；不叠加物品金币。"
         else if arg-1 is "fun":
             send "{@prefix} &e空手右键台阶、半砖或地毯坐下，潜行站起。"
             send "&7空手右键玩家骑到头顶，最多叠 3 人；底下玩家潜行可甩下乘客。"

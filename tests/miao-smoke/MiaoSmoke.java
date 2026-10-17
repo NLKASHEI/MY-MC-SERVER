@@ -8,7 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scoreboard.*;
 import me.ryanhamshire.GriefPrevention.*;
 public class MiaoSmoke extends JavaPlugin {
- public void onEnable(){Bukkit.getScheduler().runTaskLater(this,()->{if(getConfig().getBoolean("sync-only",false)){try{var m=(MiaoServer)Bukkit.getPluginManager().getPlugin("MiaoServer");syncCheck(m,Bukkit.getWorld("world"));samePlatformCheck(m,Bukkit.getWorld("world"));uiCheck();}catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_FOCUSED_SMOKE_FAIL",e);}}else if(getConfig().getBoolean("mining-only",false)){try{var m=(MiaoServer)Bukkit.getPluginManager().getPlugin("MiaoServer");miningCheck(m,Bukkit.getWorld("world"));worldPolicyCheck(m);}catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"MINING_FOCUSED_SMOKE_FAIL",e);}}else if(getConfig().getBoolean("ui-only",false))uiCheck();else check();},40);}
+ public void onEnable(){Bukkit.getScheduler().runTaskLater(this,()->{if(getConfig().getBoolean("sync-only",false)){try{var m=(MiaoServer)Bukkit.getPluginManager().getPlugin("MiaoServer");syncCheck(m,Bukkit.getWorld("world"));samePlatformCheck(m,Bukkit.getWorld("world"));syncMenuCheck(m,Bukkit.getWorld("world"));uiCheck();}catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_FOCUSED_SMOKE_FAIL",e);}}else if(getConfig().getBoolean("mining-only",false)){try{var m=(MiaoServer)Bukkit.getPluginManager().getPlugin("MiaoServer");miningCheck(m,Bukkit.getWorld("world"));worldPolicyCheck(m);}catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"MINING_FOCUSED_SMOKE_FAIL",e);}}else if(getConfig().getBoolean("ui-only",false))uiCheck();else check();},40);}
  void uiCheck(){
   try{
    var plugin=Bukkit.getPluginManager().getPlugin("MiaoServer");var folder=new java.io.File(plugin.getDataFolder().getParentFile(),"DeluxeMenus/gui_menus");int count=0;
@@ -506,6 +506,53 @@ public class MiaoSmoke extends JavaPlugin {
     getLogger().info("SYNC_SMOKE_PASS: same-IP suggestion rules, both source directions, Paper UUID profile, partial-journal lock, private input capture, AuthMe password proof and actual Floodgate SQLite roundtrip/unlink");
    }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_SMOKE_FAIL",e);}
    finally {try{api.unlinkPlayer(peId).get(10,java.util.concurrent.TimeUnit.SECONDS);}catch(Exception ignored){}if(registered)auth.forceUnregister(name);}
+  });
+ }
+ void syncMenuCheck(MiaoServer m,World world)throws Exception {
+  Object ui=get(m,"ui"),sync=get(ui,"sync");Class<?> type=sync.getClass();
+  Class<?> account=Class.forName("cn.nankexi.CrossplaySync$Account",true,m.getClass().getClassLoader());var ac=account.getDeclaredConstructors()[0];ac.setAccessible(true);
+  UUID id=UUID.randomUUID(),peerId=UUID.randomUUID();String name="MenuCallerTest",peerName="menup"+UUID.randomUUID().toString().substring(0,6);
+  var auth=fr.xephi.authme.api.v3.AuthMeApi.getInstance();var cache=(fr.xephi.authme.data.auth.PlayerCache)get(auth,"playerCache");
+  var accounts=(Map<UUID,Object>)get(sync,"accounts");var data=(YamlConfiguration)get(sync,"data");
+  org.bukkit.inventory.Inventory[] top={null};List<String> messages=new ArrayList<>();
+  Player base=actor(id,name,world,world.getSpawnLocation(),false);
+  Player p=(Player)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{Player.class},(obj,method,args)->switch(method.getName()){
+   case "isOnline"->true;case "getFirstPlayed"->1L;case "getAddress"->new java.net.InetSocketAddress("127.0.0.1",25565);
+   case "openInventory"->{top[0]=(org.bukkit.inventory.Inventory)args[0];yield null;}case "closeInventory"->{top[0]=null;yield null;}
+   case "sendMessage"->{if(args[0] instanceof String s)messages.add(s);yield null;}default->method.invoke(base,args);
+  });
+  Runnable cleanup=()->{try{for(UUID key:List.of(id,peerId)){accounts.remove(key);data.set("accounts."+key,null);}((Map<?,?>)get(sync,"inputs")).remove(id);Method save=type.getDeclaredMethod("save");save.setAccessible(true);save.invoke(sync);}catch(Exception e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_MENU_CLEANUP_FAIL",e);}cache.removePlayer(name.toLowerCase());cache.removePlayer(peerName);Bukkit.getScheduler().runTaskAsynchronously(this,()->auth.forceUnregister(peerName));};
+  Method click=type.getDeclaredMethod("click",org.bukkit.event.inventory.InventoryClickEvent.class);click.setAccessible(true);
+  java.util.function.IntConsumer tap=slot->{try{
+   var inventory=top[0];var view=(org.bukkit.inventory.InventoryView)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{org.bukkit.inventory.InventoryView.class},(obj,method,args)->switch(method.getName()){
+    case "getTopInventory","getInventory"->inventory;case "getPlayer"->p;case "getType"->org.bukkit.event.inventory.InventoryType.CHEST;case "convertSlot"->args[0];default->null;
+   });
+   var event=new org.bukkit.event.inventory.InventoryClickEvent(view,org.bukkit.event.inventory.InventoryType.SlotType.CONTAINER,slot,org.bukkit.event.inventory.ClickType.LEFT,org.bukkit.event.inventory.InventoryAction.PICKUP_ALL);click.invoke(sync,event);ok(event.isCancelled(),"sync inventory items cannot be taken");
+  }catch(Exception e){throw new RuntimeException(e);}};
+  Bukkit.getScheduler().runTaskAsynchronously(this,()->{
+   try{
+    ok(auth.registerPlayer(peerName,"Fixture-Only-Password!42"),"temporary historical account registered");
+    var source=(fr.xephi.authme.datasource.DataSource)get(auth,"dataSource");var historical=source.getAuth(peerName);historical.setLastIp("127.0.0.1");historical.setLastLogin(System.currentTimeMillis());ok(source.updateSession(historical),"historical IP/login persisted in AuthMe");
+    Bukkit.getScheduler().runTask(this,()->{try{
+     accounts.put(peerId,ac.newInstance(peerId,peerName,false,"stale-ip-cache",1L));
+     // Reproduce DeluxeMenus [close]: its queued close must run before the new menu opens.
+     Bukkit.getScheduler().runTask(this,()->p.closeInventory());
+     m.onCommand(p,m.getCommand("accountlink"),"accountlink",new String[0]);ok(top[0]==null,"accountlink defers inventory open past old menu close");
+     new org.bukkit.scheduler.BukkitRunnable(){int tries;public void run(){try{
+      if(top[0]==null){ok(++tries<100,"account picker opens within five seconds");return;}cancel();ok(top[0].getSize()==54,"account picker remains open after scheduled close");
+      int slot=-1;for(int i=0;i<54;i++){var item=top[0].getItem(i);if(item==null)continue;ok(item.getType()!=Material.PLAYER_HEAD,"account picker never requests remote skull profiles");if(item.getItemMeta().getDisplayName().contains(peerName))slot=i;}
+      ok(slot>=0,"historical same-IP account replaces stale IP cache and is selectable");tap.accept(slot);
+      Bukkit.getScheduler().runTaskLater(MiaoSmoke.this,()->{try{
+       ok(top[0]!=null&&top[0].getSize()==27,"click opens progress source choice");ok(top[0].getItem(11).getType()==Material.CHEST&&top[0].getItem(15).getType()==Material.ENDER_CHEST,"both progress sources available");tap.accept(11);
+       Bukkit.getScheduler().runTaskLater(MiaoSmoke.this,()->{try{
+        ok(top[0]==null&&((Map<?,?>)get(sync,"inputs")).containsKey(id),"source click arms private password input");
+        var message=net.kyori.adventure.text.Component.text("取消");var event=new io.papermc.paper.event.player.AsyncChatEvent(false,p,new HashSet<>(),io.papermc.paper.chat.ChatRenderer.defaultRenderer(),message,message,net.kyori.adventure.chat.SignedMessage.system("test",null));Method input=type.getDeclaredMethod("input",io.papermc.paper.event.player.AsyncChatEvent.class);input.setAccessible(true);input.invoke(sync,event);ok(event.isCancelled(),"cancel input is not broadcast");
+        Bukkit.getScheduler().runTaskLater(MiaoSmoke.this,()->{try{ok(messages.stream().anyMatch(s->s.contains("已取消绑定")),"cancel handled without creating binding");ok(((Map<?,?>)get(sync,"bindings")).values().stream().noneMatch(b->b.toString().contains(peerName)),"cancel keeps independent progress");getLogger().info("SYNC_MENU_SMOKE_PASS: delayed open, AuthMe historical IP refresh, no remote heads, account/source clicks, private cancel");}catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_MENU_SMOKE_FAIL",e);}finally{cleanup.run();}},2);
+       }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_MENU_SMOKE_FAIL",e);cleanup.run();}},2);
+      }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_MENU_SMOKE_FAIL",e);cleanup.run();}},2);
+     }catch(Throwable e){cancel();getLogger().log(java.util.logging.Level.SEVERE,"SYNC_MENU_SMOKE_FAIL",e);cleanup.run();}}}.runTaskTimer(MiaoSmoke.this,3,1);
+    }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_MENU_SMOKE_FAIL",e);cleanup.run();}});
+   }catch(Throwable e){getLogger().log(java.util.logging.Level.SEVERE,"SYNC_MENU_SMOKE_FAIL",e);Bukkit.getScheduler().runTask(this,cleanup);}
   });
  }
  void samePlatformCheck(MiaoServer m,World world)throws Exception {

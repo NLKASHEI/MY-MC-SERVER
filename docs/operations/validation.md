@@ -1,5 +1,12 @@
 # 组装验收，2026-10-11
 
+## 0.9.22 同步面板修复，2026-10-17
+
+- Paper 26.2 / Java 25 启动与正常停服通过，Skript 脚本无加载错误；旧绑定说明按限定文本迁移，测试插件随后移除。
+- 新增 `SYNC_MENU_SMOKE_PASS`：模拟 DeluxeMenus 下一拍关闭，调用实际 `/accountlink` 处理器，确认新面板持续打开；真实 AuthMe 临时账号的历史 IP 替换旧缓存后进入候选；同步列表无联网头像。
+- 在运行的 Paper 中构造点击事件，验证账号列表→双方进度选择→私密输入→取消；取消消息不广播，也不创建绑定。玩家对象为测试替身，尚未用真实客户端复现并验收。
+- `SYNC_SMOKE_PASS`、`SAME_PLATFORM_SYNC_SMOKE_PASS`、`UI_LAYOUT_SMOKE_PASS` 通过；105 份 YAML、34 个插件哈希和 PowerShell 语法检查通过。未重置世界，既有 Windows Perflib/OSHI 环境警告与本次菜单修复无关。
+
 ## 0.9.21 可选同平台账号同步，2026-10-17
 
 - Paper 26.2 / Java 25 本地启动通过，`SYNC_SMOKE_PASS`、`SAME_PLATFORM_SYNC_SMOKE_PASS`、`UI_LAYOUT_SMOKE_PASS` 均通过；测试插件随后移除。

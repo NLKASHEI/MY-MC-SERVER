@@ -15,7 +15,9 @@ Java 菜单用下一条聊天收取密码，输入“取消”退出，两分钟
 
 `/unlinkaccount` 会引导确认，或 `/miao sync unlink confirm` 明确解除；两端重连后恢复各自原有 UUID。保留下来的那份进度包含绑定期间发生的变化；另一份独立旧进度仍是之前的内容。系统不把绑定期间的变化复制成两份。
 
-已有原 Floodgate 绑定不会被覆盖；需先解除，才能在新菜单重新选择来源。原 `/linkaccount` 验证码流程仍按 Floodgate 使用 Java 进度，要继承 PE 进度请用新菜单。
+已有原 Floodgate 绑定不会被覆盖；需先解除，才能在新菜单重新选择来源。请统一用 `/accountlink` 或 `/miao sync` 打开面板，或 `/miao sync select 对方名字` 直接选择账号。原 `/linkaccount` 是 Floodgate 跨平台验证码流程，不能用于 Java↔Java 或 PE↔PE 的本服同步。
+
+0.9.22 同步面板改用本地名称牌/草方块图标，不查询离线 UUID 的 Mojang 头像；等旧账号菜单关闭后再打开，避免新面板被一同关闭。每次打开列表异步刷新 AuthMe 历史登录 IP，保留刷新期间的新登录记录。日志中的 `Couldn't look up profile properties` 是头像查询失败，不能据此认定账号不存在。
 
 ## 运维
 

@@ -90,12 +90,15 @@ final class CrossplaySync implements Listener {
         String root="accounts."+a.id();data.set(root+".name",a.name());data.set(root+".pe",a.pe());data.set(root+".ip",a.ip());data.set(root+".first",a.first());
     }
     // Include authenticated historical accounts so the old device need not be online.
-    private void seed() {
-        List<Account> known=new ArrayList<>();for(OfflinePlayer p:Bukkit.getOfflinePlayers())if(p.getName()!=null)known.add(new Account(p.getUniqueId(),p.getName(),FloodgateApi.getInstance().isFloodgateId(p.getUniqueId()),"",p.getFirstPlayed()));
+    private void seed(){refreshHistory(()->{});}
+    private void refreshHistory(Runnable completed) {
+        Map<UUID,Account> before=new HashMap<>(accounts),known=new HashMap<>(accounts);
+        for(OfflinePlayer p:Bukkit.getOfflinePlayers())if(p.getName()!=null)known.put(p.getUniqueId(),new Account(p.getUniqueId(),p.getName(),FloodgateApi.getInstance().isFloodgateId(p.getUniqueId()),"",p.getFirstPlayed()));
         Bukkit.getScheduler().runTaskAsynchronously(plugin,()->{
             List<Account> found=new ArrayList<>();var auth=AuthMeApi.getInstance();
-            for(Account a:known)if(auth.isRegistered(a.name())&&auth.getLastLoginTime(a.name())!=null&&auth.getLastLoginTime(a.name()).isAfter(java.time.Instant.EPOCH))found.add(new Account(a.id(),a.name(),a.pe(),hashIp(auth.getLastIp(a.name())),a.first()>0?a.first():System.currentTimeMillis()));
-            main(()->{for(Account a:found)if(!accounts.containsKey(a.id()))record(a);save();});
+            try{for(Account a:known.values())if(auth.isRegistered(a.name())&&auth.getLastLoginTime(a.name())!=null&&auth.getLastLoginTime(a.name()).isAfter(java.time.Instant.EPOCH))found.add(new Account(a.id(),a.name(),a.pe(),hashIp(auth.getLastIp(a.name())),a.first()>0?a.first():System.currentTimeMillis()));}
+            catch(Exception e){plugin.getLogger().warning("Account history refresh failed; retaining cached candidates: "+e.getClass().getSimpleName());}
+            main(()->{for(Account a:found)if(accounts.get(a.id())==before.get(a.id()))record(a);save();completed.run();});
         });
     }
     static boolean candidate(Account own,Account peer,boolean sameIp) {
@@ -112,7 +115,7 @@ final class CrossplaySync implements Listener {
         if(peers.isEmpty())return;
         say(p,"检测到同 IP 的其他账号。可选择保留哪份进度并验证密码后同步；也可保持各自进度，完全自愿。关闭自动提示：/miao sync quiet。");
         if(ui.bedrock(p))picker(p,peers,0,"发现可同步的进度");
-        else for(Account q:peers)p.sendMessage(Component.text("[同步 "+label(q)+" 的进度]  点击选择，不会直接绑定").clickEvent(ClickEvent.runCommand("miao sync select "+q.id())));
+        else for(Account q:peers)p.sendMessage(Component.text("[同步 "+label(q)+" 的进度]  点击选择，不会直接绑定").clickEvent(ClickEvent.runCommand("/miao sync select "+q.id())));
     }
     private String label(Account a){return (a.pe()?"PE · ":"PC · ")+a.name();}
     void command(Player p,String[] a) {
@@ -127,8 +130,10 @@ final class CrossplaySync implements Listener {
             if(peer==null)peer=accounts.values().stream().filter(q->q.name().equalsIgnoreCase(a[1])).findFirst().orElse(null);
             if(peer==null||!candidate(own,peer,false)){say(p,"找不到可绑定账号；同平台账号需有相同 IP 的登录记录。");return;}choose(p,peer);return;
         }
-        List<Account> peers=accounts.values().stream().filter(q->candidate(own,q,false)&&binding(q.id())==null).sorted(Comparator.comparing((Account q)->!q.ip().equals(own.ip())).thenComparingLong(Account::first)).toList();
-        picker(p,peers,0,"选择要绑定的账号");
+        say(p,"正在读取已登录账号，请稍候；不会自动绑定。");
+        refreshHistory(()->{if(!p.isOnline()||!ui.authenticated(p)||binding(p.getUniqueId())!=null)return;
+            Account latest=current(p);List<Account> peers=accounts.values().stream().filter(q->candidate(latest,q,false)&&binding(q.id())==null).sorted(Comparator.comparing((Account q)->!q.ip().equals(latest.ip())).thenComparingLong(Account::first)).toList();
+            picker(p,peers,0,"选择要绑定的账号");});
     }
     private Holder panel(Player p,int size,String title){Holder h=new Holder(p);h.inventory=Bukkit.createInventory(h,size,title);for(int i=0;i<size;i++)put(h,i,Material.GRAY_STAINED_GLASS_PANE," ",()->{});return h;}
     private void put(Holder h,int slot,Material mat,String title,Runnable action,String... lore){ItemStack item=new ItemStack(mat);var meta=item.getItemMeta();meta.setDisplayName(title);meta.setLore(Arrays.asList(lore));item.setItemMeta(meta);h.inventory.setItem(slot,item);h.actions.put(slot,action);}
@@ -138,7 +143,7 @@ final class CrossplaySync implements Listener {
             var b=SimpleForm.builder().title(title).content("可选同步：请选择你自己拥有的另一个账号。\n支持 PC/PE 互通及同 IP 的同平台账号。\n验证对方密码后才会绑定；也可保持各自进度。");List<Runnable> actions=new ArrayList<>();
             for(Account q:peers.subList(start,end)){b.button(label(q));actions.add(()->choose(p,q));}if(page>0){b.button("上一页");actions.add(()->picker(p,peers,page-1,title));}if(end<peers.size()){b.button("下一页");actions.add(()->picker(p,peers,page+1,title));}b.button("暂不同步 / 返回指南针");actions.add(()->ui.command(p,new String[]{"menu"}));b.validResultHandler(r->playerMain(p,actions.get(r.clickedButtonId())));FloodgateApi.getInstance().sendForm(p.getUniqueId(),b.build());return;
         }
-        Holder h=panel(p,54,"§8可选同步 · 选择账号 · "+(page+1));for(int i=start;i<end;i++){Account q=peers.get(i);int offset=i-start,slot=10+offset/7*9+offset%7;put(h,slot,Material.PLAYER_HEAD,"§b"+label(q),()->choose(p,q),"§7必须验证这个账号的服内密码","§7下一步选择保留哪份进度","§7不想同步可返回，各自进度保留");ItemStack item=h.inventory.getItem(slot);var meta=(org.bukkit.inventory.meta.SkullMeta)item.getItemMeta();meta.setOwningPlayer(Bukkit.getOfflinePlayer(q.id()));item.setItemMeta(meta);}
+        Holder h=panel(p,54,"§8可选同步 · 选择账号 · "+(page+1));for(int i=start;i<end;i++){Account q=peers.get(i);int offset=i-start,slot=10+offset/7*9+offset%7;put(h,slot,q.pe()?Material.GRASS_BLOCK:Material.NAME_TAG,"§b"+label(q),()->choose(p,q),"§7必须验证这个账号的服内密码","§7下一步选择保留哪份进度","§7不想同步可返回，各自进度保留");}
         if(page>0)put(h,45,Material.ARROW,"§f上一页",()->picker(p,peers,page-1,title));if(end<peers.size())put(h,53,Material.ARROW,"§f下一页",()->picker(p,peers,page+1,title));put(h,49,Material.COMPASS,"§f暂不同步 / 返回指南针",()->ui.command(p,new String[]{"menu"}));p.openInventory(h.inventory);
         if(peers.isEmpty())say(p,"另一个账号需要至少完成一次注册登录；同平台需有相同 IP 的记录，不必同时在线。不同步也可正常游玩。");
     }
@@ -147,7 +152,7 @@ final class CrossplaySync implements Listener {
         String description="绑定 "+label(own)+" ↔ "+label(peer)+"\n\n自愿选择一份共享进度，另一份旧数据保留，不叠加。\n验证账号："+peer.name()+"\n"+(own.pe()==peer.pe()?"同平台绑定后，两账号使用所选进度账号的服内名字与密码。":"跨平台绑定后，两端使用 Java 账号的服内密码。")+"\n同一份进度不能同时在线。取消则各自进度不变。";
         boolean ownFirst=own.first()<peer.first();
         if(ui.bedrock(p)){var form=SimpleForm.builder().title("选择进度来源").content(description).button("保留 "+label(peer)+(ownFirst?"":"（先玩的账号，推荐）")).button("保留 "+label(own)+(ownFirst?"（先玩的账号，推荐）":"")).button("取消").validResultHandler(r->playerMain(p,()->{if(r.clickedButtonId()<2)password(p,peer,r.clickedButtonId()==1);})).build();FloodgateApi.getInstance().sendForm(p.getUniqueId(),form);return;}
-        Holder h=panel(p,27,"§8双端绑定 · 选择进度来源");put(h,11,Material.CHEST,"§a保留 "+label(peer),()->password(p,peer,false),ownFirst?"§7对方账号的进度":"§e先玩的账号，推荐","§7另一份旧数据保留；不叠加物品金币");put(h,15,Material.ENDER_CHEST,"§b保留 "+label(own),()->password(p,peer,true),ownFirst?"§e先玩的账号，推荐":"§7当前账号的进度","§7另一份旧数据保留；不叠加物品金币");put(h,22,Material.ARROW,"§f取消",()->command(p,new String[0]));p.openInventory(h.inventory);
+        Holder h=panel(p,27,"§8可选同步 · 选择进度来源");put(h,11,Material.CHEST,"§a保留 "+label(peer),()->password(p,peer,false),ownFirst?"§7对方账号的进度":"§e先玩的账号，推荐","§7另一份旧数据保留；不叠加物品金币");put(h,15,Material.ENDER_CHEST,"§b保留 "+label(own),()->password(p,peer,true),ownFirst?"§e先玩的账号，推荐":"§7当前账号的进度","§7另一份旧数据保留；不叠加物品金币");put(h,22,Material.ARROW,"§f取消",()->command(p,new String[0]));p.openInventory(h.inventory);
     }
     void cancelInput(Player p){inputs.remove(p.getUniqueId());}
     private void password(Player p,Account peer,boolean own) {

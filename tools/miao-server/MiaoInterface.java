@@ -157,7 +157,7 @@ final class MiaoInterface implements Listener {
     boolean command(Player p,String[] a) {
         if(!authenticated(p)){say(p,"请先完成登录。");return true;}
         if(a.length==0){openServiceMenu(p,"survival");return true;}
-        if(a[0].equals("link")||a[0].equals("sync")){sync.command(p,Arrays.copyOfRange(a,1,a.length));return true;}
+        if(a[0].equals("link")||a[0].equals("sync")){link(p,Arrays.copyOfRange(a,1,a.length));return true;}
         if(a[0].equals("sidebar"))return sidebar(p,Arrays.copyOfRange(a,1,a.length));
         if(a[0].equals("menu")){openServiceMenu(p,a.length>1?a[1]:"survival");return true;}
         if(a[0].equals("shop")){openShop(p,a.length>1?a[1]:null);return true;}
@@ -177,7 +177,8 @@ final class MiaoInterface implements Listener {
         if(bedrock(p))FloodgateApi.getInstance().sendForm(p.getUniqueId(),SimpleForm.builder().title("南可熙 · 在线地图").content("浏览器可查看三维地图和建筑。\n\n"+url+"\n\n若手机无法点击聊天链接，请复制地址到浏览器。地图更新有渲染延迟。").button("返回指南针").validResultHandler(r->main(p,()->openServiceMenu(p,"survival"))).build());
     }
     private void link(Player p,String[] args) {
-        sync.command(p,args);
+        // DeluxeMenus [close] schedules a next-tick close; open after it completes.
+        String[] requested=args.clone();Bukkit.getScheduler().runTaskLater(plugin,()->{if(p.isOnline()&&authenticated(p))sync.command(p,requested);},2L);
     }
     private void scanMenus() {
         File dir=new File(plugin.getDataFolder().getParentFile(),"DeluxeMenus/gui_menus");File[] files=dir.listFiles((d,n)->n.endsWith(".yml"));if(files==null)return;
