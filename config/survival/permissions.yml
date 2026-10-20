@@ -48,6 +48,10 @@ survival.player:
     multiverse.teleport.self.w.minecraft:lobby: true
     multiverse.teleport.self.w.minecraft:flat: true
     multiverse.teleport.self.w.minecraft:overworld: true
+    multiverse.access.architect: true
+    multiverse.access.minecraft:architect: true
+    multiverse.teleport.self.w.architect: true
+    multiverse.teleport.self.w.minecraft:architect: true
     multiverse.access.flat: true
     multiverse.access.lobby: true
     multiverse.access.world: true

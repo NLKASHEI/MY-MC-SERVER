@@ -25,6 +25,7 @@ final class MiaoInterface implements Listener {
     private final MiaoServer plugin;
     final PlayerNames names;
     final CrossplaySync sync;
+    final CreativeTools creativeTools;
     private final YamlConfiguration prefs = new YamlConfiguration();
     private final File file;
     private final Map<UUID, Long> started = new HashMap<>(), checkpoint = new HashMap<>();
@@ -48,6 +49,7 @@ final class MiaoInterface implements Listener {
         try { if (file.exists()) prefs.load(file); } catch(Exception e) { throw new IllegalStateException("Cannot read sidebar preferences",e); }
         sync=new CrossplaySync(p,this);
         names=new PlayerNames(p,this);
+        creativeTools=new CreativeTools(p,this);
         new BedrockCommandNames(p,this);
         scanMenus(); Bukkit.getPluginManager().registerEvents(this,p);
         Bukkit.getScheduler().runTaskTimer(p,()->{ for(Player player:Bukkit.getOnlinePlayers()) { flushTime(player); if(authenticated(player)) decorate(player); } save(); },1200,1200);
@@ -87,7 +89,7 @@ final class MiaoInterface implements Listener {
         long total=prefs.getLong(path(p)+".total-seconds",Integer.toUnsignedLong(p.getStatistic(Statistic.PLAY_ONE_MINUTE))/20)+pending;
         long session=(now-started.getOrDefault(p.getUniqueId(),now))/1_000_000_000L;
         double tps=Math.min(20,Bukkit.getTPS()[0]);
-        String world=switch(p.getWorld().getName()){case "flat"->"创造超平坦";case "mining"->"丰饶矿界";case "lobby"->"温馨主城";case "world_nether"->"下界";case "world_the_end"->"末地";default->"自由生存";};
+        String world=switch(p.getWorld().getName()){case "architect"->"云峦筑境";case "flat"->"创造超平坦";case "mining"->"丰饶矿界";case "lobby"->"温馨主城";case "world_nether"->"下界";case "world_the_end"->"末地";default->"自由生存";};
         Set<String> chosen=new LinkedHashSet<>(selected(p));
         List<String> order=List.of("player","world","team","total","session","balance","placed","mined","block","kills","fishing","deaths","distance","online","ping","tps");
         String lastGroup=""; int shown=0;
@@ -166,6 +168,7 @@ final class MiaoInterface implements Listener {
         if(a[0].equals("teaminvite")){inviteMenu(p,0);return true;}
         if(a[0].equals("map")){mapLink(p);return true;}
         if(a[0].equals("names")){names.command(p,Arrays.copyOfRange(a,1,a.length));return true;}
+        if(a[0].equals("build"))return creativeTools.command(p,Arrays.copyOfRange(a,1,a.length));
         if(a[0].equals("mining")){plugin.mining.command(p,a.length>1?a[1]:"status");return true;}
         return true;
     }
@@ -212,7 +215,7 @@ final class MiaoInterface implements Listener {
         });
     }
     private void openShop(Player p,String section) {
-        if(p.getWorld().getName().equals("flat")||p.getGameMode()==GameMode.CREATIVE||p.getGameMode()==GameMode.SPECTATOR){say(p,"请回到生存世界并使用生存模式交易。");return;}
+        if(Set.of("flat","architect").contains(p.getWorld().getName())||p.getGameMode()==GameMode.CREATIVE||p.getGameMode()==GameMode.SPECTATOR){say(p,"请回到生存世界并使用生存模式交易。");return;}
         if(section==null){openServiceMenu(p,"systemshop");return;}
         if(!Set.of("supplies","nlk_resources","nlk_farming","nlk_drops","nlk_technical").contains(section)||!p.hasPermission("economyshopgui.shop."+section)){say(p,"暂时无法打开该分类。");return;}
         main(p,()->{
@@ -391,7 +394,7 @@ final class MiaoInterface implements Listener {
     @EventHandler(priority=EventPriority.HIGHEST) public void world(PlayerChangedWorldEvent e) { if(LobbyGuard.lobby(e.getPlayer().getWorld()))e.getPlayer().setGameMode(GameMode.ADVENTURE); }
     @EventHandler public void quit(PlayerQuitEvent e) {Player p=e.getPlayer();flushTime(p);started.remove(p.getUniqueId());checkpoint.remove(p.getUniqueId());noTeleportUntil.remove(p.getUniqueId());save();}
     private void progress(Player p,Material material,String kind) {
-        if(!authenticated(p)||p.getGameMode()!=GameMode.SURVIVAL||java.util.Set.of("flat","lobby").contains(p.getWorld().getName()))return;
+        if(!authenticated(p)||p.getGameMode()!=GameMode.SURVIVAL||java.util.Set.of("flat","architect","lobby").contains(p.getWorld().getName()))return;
         for(String key:List.of(path(p)+".progress."+kind,path(p)+".blocks."+material+"."+kind))prefs.set(key,prefs.getLong(key)+1);dirty=true;
     }
     @EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true) public void place(BlockPlaceEvent e) {progress(e.getPlayer(),e.getBlock().getType(),"placed");}

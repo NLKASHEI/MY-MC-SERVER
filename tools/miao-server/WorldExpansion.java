@@ -96,6 +96,7 @@ final class WorldExpansion {
                 Location safe=new Location(world,x+0.5,feet,z+0.5);world.setSpawnLocation(safe);mining.setSpawnLocation(safe).get();
                 world.getPersistentDataContainer().set(new NamespacedKey(plugin,"mining-initialized"),org.bukkit.persistence.PersistentDataType.BYTE,(byte)1);
             }
+            ArchitectWorld.start(plugin);
             manager.saveWorldsConfig();
             plugin.getLogger().info("深层无结构超平坦和丰饶矿界就绪；矿界加入生存背包组，创造背包继续隔离。");
         }catch(Exception e){throw new IllegalStateException("Cannot initialize managed worlds",e);}

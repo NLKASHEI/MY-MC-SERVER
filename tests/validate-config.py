@@ -15,7 +15,7 @@ assert geyser['bedrock']['port'] == 8585
 assert geyser['advanced']['bedrock']['broadcast-port'] == 20013
 assert geyser['java']['auth-type'] == 'floodgate'
 aura = read('plugins/AuraSkills/config.yml')
-assert set(aura['disabled_worlds']) == {'lobby', 'flat'}
+assert set(aura['disabled_worlds']) == {'lobby', 'flat', 'architect'}
 assert aura['disable_in_creative_mode'] and aura['jobs']['enabled']
 assert not aura['jobs']['selection']['require_selection']
 fake = read('plugins/FakePlayer-CE/config.yml')
@@ -34,14 +34,15 @@ legacy = {w['read-only']['legacy-world-name'] for w in worlds.values()}
 groups = read('plugins/Multiverse-Inventories/groups.yml')['groups']
 assert set(groups['survival']['worlds']) == {'lobby', 'world', 'world_nether', 'world_the_end', 'mining'}
 assert set(groups['creative']['worlds']) == {'flat'}
+assert set(groups['architecture']['worlds']) == {'architect'}
 seen = set()
 for group in groups.values():
     members = set(group['worlds'])
-    assert members <= legacy | {'mining'}, 'Inventory groups must use legacy Bukkit names, not dimension keys; mining is created by the managed-world initializer'
+    assert members <= legacy | {'mining', 'architect'}, 'Inventory groups must use legacy Bukkit names; managed worlds are created at startup'
     assert not (seen & members), 'Conflicting inventory groups'
     assert group['shares'] == ['all']
     seen |= members
-assert seen == legacy | {'mining'}
+assert seen == legacy | {'mining', 'architect'}
 assert worlds['minecraft:flat']['gamemode'] == 'creative'
 flat_settings = json.loads(worlds['minecraft:flat']['read-only']['generator-settings'])
 assert sum(layer['height'] for layer in flat_settings['layers']) == 128

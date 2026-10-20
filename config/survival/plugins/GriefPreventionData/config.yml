@@ -10,6 +10,7 @@ GriefPrevention:
       world_the_end: Disabled
       lobby: Disabled
       flat: Disabled
+      architect: Disabled
       mining: Disabled
     PreventGlobalMonsterEggs: true
     PreventTheft: true

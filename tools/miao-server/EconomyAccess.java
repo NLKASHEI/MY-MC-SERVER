@@ -11,7 +11,7 @@ final class EconomyAccess implements Listener {
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true)
     public void command(PlayerCommandPreprocessEvent event) {
         var player=event.getPlayer();
-        if(!player.getWorld().getName().equals("flat")&&player.getGameMode()!=GameMode.CREATIVE&&player.getGameMode()!=GameMode.SPECTATOR)return;
+        if(!Set.of("flat","architect").contains(player.getWorld().getName())&&player.getGameMode()!=GameMode.CREATIVE&&player.getGameMode()!=GameMode.SPECTATOR)return;
         String command=event.getMessage().substring(1).split("\\s+",2)[0].toLowerCase(Locale.ROOT);
         command=command.substring(command.lastIndexOf(':')+1);
         if(COMMANDS.contains(command)) {

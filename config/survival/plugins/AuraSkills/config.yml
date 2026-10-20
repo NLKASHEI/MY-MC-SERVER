@@ -209,9 +209,11 @@ check_block_replace:
 blocked_worlds:
 - lobby
 - flat
+- architect
 disabled_worlds:
 - lobby
 - flat
+- architect
 disable_in_creative_mode: true
 data_validation:
   correct_over_max_level: false

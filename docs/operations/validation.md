@@ -1,5 +1,12 @@
 # 组装验收，2026-10-11
 
+## 0.9.25 云峦筑境与建筑便利命令，2026-10-20
+
+- Paper 26.2 / Java 25 实际生成并重启加载 architect，核对种子 8176667507634209290、创造/和平、独立 architecture 分组、背包和末影箱分享项；不属于 survival 或 creative 分组。`ARCHITECT_SMOKE_PASS` 通过，没有重置已有生存或矿界。
+- `CREATIVE_TOOLS_SMOKE_PASS` 验证两个建筑世界和平、切换自己创造/生存和飞行，以及离开建筑世界后拒绝入口；未授予全局权限。传送实现逐次核对目标已登录且同世界，仅移动发起人。
+- `UI_LAYOUT_SMOKE_PASS` 检查 16 个已注册菜单无格位冲突，世界探索通往 architect，PE 与 Java 读取相同入口；Skript 奖励的世界限制加载无错误。105 份 YAML、34 个插件哈希和 PowerShell 语法检查通过。
+- 客户端实际创造/生存切换、两个建筑世界往返背包及 TP、飞行退出仍待云服 Java/PE 验收，测试对象不等于实体客户端。首轮未开测试插件确认创建，后续增加运行检查，便利命令加入后再运行一次；保留本机既有 Perflib 环境告警及商店外部头像服务超时记录。
+
 ## 0.9.24 独立选择实际用户名与皮肤，2026-10-17
 
 - Paper 26.2 / Java 25 正常启停，账号指南 Skript 无加载错误。`SYNC_IDENTITY_SMOKE_PASS`、`SYNC_MENU_SMOKE_PASS`、`SYNC_SMOKE_PASS`、`SAME_PLATFORM_SYNC_SMOKE_PASS`、`UI_LAYOUT_SMOKE_PASS` 通过；随后移除测试插件。

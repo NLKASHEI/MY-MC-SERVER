@@ -133,7 +133,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
             else event.setRespawnLocation(RespawnSafety.spawn(main));
             return;
         }
-        if(LobbyGuard.lobby(world)||world.getName().equals("flat")){
+        if(LobbyGuard.lobby(world)||Set.of("flat","architect").contains(world.getName())){
             event.setRespawnLocation(world.equals(original.location().getWorld())?original.location():RespawnSafety.spawn(world));return;
         }
         if(original.personal()) {
@@ -293,7 +293,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
                 // Clean a transfer/leave journal before a new owner explicitly shares again.
                 reconcile();
                 Claim c = ownedClaim(p);
-                if (c == null || t == null || Set.of("flat", "lobby").contains(p.getWorld().getName())) { say(p, "请在生存区自己拥有的主领地内操作，并先加入队伍；子领地单独管理。"); break; }
+                if (c == null || t == null || Set.of("flat", "architect", "lobby").contains(p.getWorld().getName())) { say(p, "请在生存区自己拥有的主领地内操作，并先加入队伍；子领地单独管理。"); break; }
                 String r = "claims." + c.getID();
                     if(data.contains(r)) {
                         if(!t.equals(data.getString(r+".team"))){say(p,"这块领地已绑定其他队伍，请先取消共享。");break;}

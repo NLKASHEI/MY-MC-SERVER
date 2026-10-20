@@ -13,3 +13,8 @@ groups:
     - flat
     shares:
     - all
+  architecture:
+    worlds:
+    - architect
+    shares:
+    - all

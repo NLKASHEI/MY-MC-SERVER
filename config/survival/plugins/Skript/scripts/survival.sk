@@ -159,6 +159,8 @@ every 1 minute:
     loop all players:
         if metadata value "fakeplayer:spawned_at" of loop-player is set:
             continue
+        if name of world of loop-player is "flat" or "architect":
+            continue
         if gamemode of loop-player is creative:
             continue
         set {_id} to uuid of loop-player
@@ -177,6 +179,9 @@ command /reward:
     executable by: players
     trigger:
         if metadata value "fakeplayer:spawned_at" of player is set:
+            stop
+        if name of world of player is "flat" or "architect":
+            send "{@prefix} &c请先回生存或主城领取奖励。"
             stop
         if gamemode of player is creative:
             send "{@prefix} &c请先回生存或主城领取奖励。"

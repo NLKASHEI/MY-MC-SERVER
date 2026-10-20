@@ -6,7 +6,7 @@ size: 27
 items:
   lobby:
     material: BEACON
-    slot: 10
+    slot: 11
     display_name: '&b主城'
     lore:
     - '&7安全休闲区 · 建筑受保护'
@@ -32,13 +32,13 @@ items:
     - '[player] mv tp w:world'
   flat:
     material: BRICKS
-    slot: 14
+    slot: 13
     display_name: '&d创造超平坦'
     lore:
     - '&7自由建造 · 创造模式'
     - '&7无村庄等结构 · 128 格深地层'
     - '&c背包、末影箱、经验与生存隔离'
-    - '&7创造世界不可交易或领取金币'
+    - '&7和平 · /tp 玩家 /gamemode survival /fly'
     left_click_commands:
     - '[close]'
     - '[player] mv tp w:flat'
@@ -47,7 +47,7 @@ items:
     - '[player] mv tp w:flat'
   mining:
     material: DIAMOND_PICKAXE
-    slot: 16
+    slot: 15
     display_name: '&6丰饶矿界'
     lore:
     - '&7新区块石质层约 30% 矿石 · 煤铁铜为主'
@@ -75,153 +75,22 @@ items:
     material: BOOK
     display_name: '&6世界探索'
     lore:
-    - '&7四种世界，各有玩法'
+    - '&7五种世界，各有玩法'
     - '&7创造背包独立，矿界与生存共用'
     slot: 4
-  layout_0:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 0
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_1:
-    material: BROWN_STAINED_GLASS_PANE
-    slot: 1
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_2:
-    material: BROWN_STAINED_GLASS_PANE
-    slot: 2
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_3:
-    material: BROWN_STAINED_GLASS_PANE
-    slot: 3
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_5:
-    material: BROWN_STAINED_GLASS_PANE
-    slot: 5
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_6:
-    material: BROWN_STAINED_GLASS_PANE
-    slot: 6
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_7:
-    material: BROWN_STAINED_GLASS_PANE
-    slot: 7
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_8:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 8
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_9:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 9
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_11:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 11
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_13:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 13
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_15:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 15
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_17:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 17
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_18:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 18
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_19:
-    material: BROWN_STAINED_GLASS_PANE
-    slot: 19
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_20:
-    material: BROWN_STAINED_GLASS_PANE
-    slot: 20
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_21:
-    material: BROWN_STAINED_GLASS_PANE
-    slot: 21
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_23:
-    material: BROWN_STAINED_GLASS_PANE
-    slot: 23
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_24:
-    material: BROWN_STAINED_GLASS_PANE
-    slot: 24
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_25:
-    material: BROWN_STAINED_GLASS_PANE
-    slot: 25
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_26:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 26
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
+  architect:
+    material: SNOW_BLOCK
+    slot: 14
+    display_name: '&b云峦筑境'
+    lore:
+    - '&7山川建筑 · 创造模式 · 永久保留'
+    - '&7固定种子 8176667507634209290'
+    - '&c背包、末影箱、经验与生存独立'
+    - '&7不参与矿界重置，无门票或资源费'
+    - '&7和平 · /tp 玩家 /gamemode survival /fly'
+    left_click_commands:
+    - '[close]'
+    - '[player] mv tp w:architect'
+    right_click_commands:
+    - '[close]'
+    - '[player] mv tp w:architect'
