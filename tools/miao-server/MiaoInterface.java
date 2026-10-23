@@ -29,6 +29,7 @@ final class MiaoInterface implements Listener {
     final PlayerTitles titles;
     final ReleaseNews releaseNews;
     final CommunityLife community;
+    final DummyControls bots;
     private final YamlConfiguration prefs = new YamlConfiguration();
     private final File file;
     private final Map<UUID, Long> started = new HashMap<>(), checkpoint = new HashMap<>();
@@ -56,6 +57,7 @@ final class MiaoInterface implements Listener {
         titles=new PlayerTitles(p,this);
         releaseNews=new ReleaseNews(p);
         community=new CommunityLife(p,this);
+        bots=new DummyControls(p,this);
         new BedrockCommandNames(p,this);
         new BedrockPerformance(p,this);
         scanMenus(); Bukkit.getPluginManager().registerEvents(this,p);
@@ -177,6 +179,7 @@ final class MiaoInterface implements Listener {
         if(a[0].equals("menu")){openServiceMenu(p,a.length>1?a[1]:"survival");return true;}
         if(a[0].equals("shop")){openShop(p,a.length>1?a[1]:null);return true;}
         if(a[0].equals("sell")){openSell(p);return true;}
+        if(a[0].equals("bots"))return bots.command(p,Arrays.copyOfRange(a,1,a.length));
         if(a[0].equals("deathback")){deathBack(p);return true;}
         if(a[0].equals("land"))return plugin.land(p,Arrays.copyOfRange(a,1,a.length));
         if(a[0].equals("teaminvite")){inviteMenu(p,0);return true;}

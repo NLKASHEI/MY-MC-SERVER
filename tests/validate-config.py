@@ -19,7 +19,7 @@ assert set(aura['disabled_worlds']) == {'lobby', 'flat', 'architect'}
 assert aura['disable_in_creative_mode'] and aura['jobs']['enabled']
 assert not aura['jobs']['selection']['require_selection']
 fake = read('plugins/FakePlayer-CE/config.yml')
-assert fake['player-limit'] == 1 and fake['server-limit'] == 20
+assert fake['player-limit'] == 5 and fake['server-limit'] == 20
 assert not fake['http-admin']['enabled'] and not fake['restore-on-start']
 assert fake['follow-quiting-force'] and fake['after-spawn-commands']
 assert 'survivalbotrestore %p' in fake['after-spawn-commands']

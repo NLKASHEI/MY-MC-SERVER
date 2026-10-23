@@ -49,6 +49,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
 
     @Override public void onLoad() {
         RuntimeMigration.apply(this);
+        DummyControls.migrate(this);
         DatabaseBackups.migrate(this);
         // One migration for the explicitly requested schedule. Leave other backup settings intact.
         File marker = new File(getDataFolder(), "backup-schedule-v070.done");

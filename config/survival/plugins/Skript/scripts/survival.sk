@@ -94,7 +94,7 @@ command /guide [<text>]:
             send "&7//wand：选区工具；//copy 与 //paste：复制粘贴；//undo：撤销。"
             send "&7请分批操作并事先备份，不要给普通玩家 WorldEdit 通配权限。"
         else if arg-1 is "technical":
-            send "{@prefix} &e/fp spawn：在当前位置创建假人；每人限一个。"
+            send "{@prefix} &e/fp spawn：在当前位置创建假人；每人最多5个；指南针→生电工具箱→我的假人分别管理。"
             send "&7/fp attack continuous：持续攻击；/fp use continuous：持续使用。"
             send "&7/fp stop：停止动作；/fp invsee：假人背包；/fp kick：移除。"
             send "&7仅生存维度使用，离线 15 秒后移除，背包保存；假人不领取金币或技能经验。"

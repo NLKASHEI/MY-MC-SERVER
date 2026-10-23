@@ -6,78 +6,16 @@ items:
   spawn:
     material: ARMOR_STAND
     slot: 11
-    display_name: '&a召唤我的假人'
+    display_name: '&a创建假人'
     lore:
-    - '&7在当前机器旁创建，保持站定'
-    - '&7每人一个，离线后自动移除'
+    - '&7在当前位置创建，每人最多5个'
+    - '&7创建后从“我的假人”分别管理'
     left_click_commands:
     - '[close]'
-    - '[player] fp spawn'
+    - '[player] miao bots create'
     right_click_commands:
     - '[close]'
-    - '[player] fp spawn'
-  inventory:
-    material: CHEST
-    slot: 12
-    display_name: '&e假人背包'
-    lore:
-    - '&7放入工具、武器与补给'
-    left_click_commands:
-    - '[close]'
-    - '[player] fp invsee'
-    right_click_commands:
-    - '[close]'
-    - '[player] fp invsee'
-  attack:
-    material: IRON_SWORD
-    slot: 13
-    display_name: '&c持续攻击'
-    lore:
-    - '&7让自己的假人持续攻击'
-    - '&7工具仍受原版耐久规则约束'
-    left_click_commands:
-    - '[close]'
-    - '[player] fp attack continuous'
-    right_click_commands:
-    - '[close]'
-    - '[player] fp attack continuous'
-  use:
-    material: LEVER
-    slot: 14
-    display_name: '&b持续使用物品'
-    lore:
-    - '&7执行右键使用与交互动作'
-    left_click_commands:
-    - '[close]'
-    - '[player] fp use continuous'
-    right_click_commands:
-    - '[close]'
-    - '[player] fp use continuous'
-  stop:
-    material: REDSTONE_BLOCK
-    slot: 15
-    display_name: '&6停止所有动作'
-    lore:
-    - '&7让假人暂停操作'
-    left_click_commands:
-    - '[close]'
-    - '[player] fp stop'
-    right_click_commands:
-    - '[close]'
-    - '[player] fp stop'
-  kick:
-    material: BARRIER
-    slot: 20
-    display_name: '&c收回假人'
-    lore:
-    - '&7移除实体并保留背包'
-    - '&7重启后不会自动召回'
-    left_click_commands:
-    - '[close]'
-    - '[player] fp kick'
-    right_click_commands:
-    - '[close]'
-    - '[player] fp kick'
+    - '[player] miao bots create'
   vein:
     material: IRON_PICKAXE
     slot: 21
@@ -146,8 +84,8 @@ items:
     slot: 4
     display_name: '&b&l生电工具箱'
     lore:
-    - '&7上排：假人操作'
-    - '&7下排：回收假人、采集与生电补给'
+    - '&7上排：创建与管理自己的假人'
+    - '&7下排：采集开关与生电补给'
     left_click_commands: []
     right_click_commands: []
   layout_0:
@@ -318,3 +256,32 @@ items:
     lore: []
     left_click_commands: []
     right_click_commands: []
+  manage:
+    material: PLAYER_HEAD
+    slot: 13
+    display_name: '&b我的假人 · 分别管理'
+    lore:
+    - '&7先选择假人，再配置动作、间隔与背包'
+    - '&7支持朝向、移动、姿态、手持与实体设置'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao bots'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao bots'
+  bot_space_12:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 12
+    display_name: ' '
+  bot_space_14:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 14
+    display_name: ' '
+  bot_space_15:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 15
+    display_name: ' '
+  bot_space_20:
+    material: GRAY_STAINED_GLASS_PANE
+    slot: 20
+    display_name: ' '

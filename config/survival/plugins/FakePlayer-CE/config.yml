@@ -2,7 +2,7 @@ version: 24
 i18n:
   locale: zh
 server-limit: 20
-player-limit: 1
+player-limit: 5
 detect-ip: false
 name-template: ''
 name-prefix: Bot_

@@ -2,4 +2,4 @@ name: MiaoSmoke
 version: 1.0
 main: cn.nankexi.MiaoSmoke
 api-version: '26.2'
-depend: [MiaoServer, AuraSkills, EconomyShopGUI, WorldGuard, SkinsRestorer]
+depend: [MiaoServer, FakePlayer-CE, AuraSkills, EconomyShopGUI, WorldGuard, SkinsRestorer]
