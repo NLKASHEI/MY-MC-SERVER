@@ -150,10 +150,10 @@ items:
     - '&7未收购物品会退回；两端都能使用'
     left_click_commands:
     - '[close]'
-    - '[player] sellgui'
+    - '[player] miao sell'
     right_click_commands:
     - '[close]'
-    - '[player] sellgui'
+    - '[player] miao sell'
   income:
     material: GOLD_INGOT
     slot: 23

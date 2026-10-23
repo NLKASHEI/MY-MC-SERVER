@@ -1,0 +1,85 @@
+schema: 1
+shops:
+  nlk_resources:
+    COAL:
+      old: 0.3
+      new: 0.42
+    RAW_IRON:
+      old: 0.5
+      new: 0.7
+    IRON_INGOT:
+      old: 0.75
+      new: 0.8
+    RAW_COPPER:
+      old: 0.1
+      new: 0.14
+    COPPER_INGOT:
+      old: 0.15
+      new: 0.17
+    RAW_GOLD:
+      old: 1
+      new: 1.4
+    GOLD_INGOT:
+      old: 1.5
+      new: 1.6
+    REDSTONE:
+      old: 0.15
+      new: 0.18
+    LAPIS_LAZULI:
+      old: 0.3
+      new: 0.42
+    DIAMOND:
+      old: 8
+      new: 12
+    EMERALD:
+      old: 4
+      new: 4.2
+    QUARTZ:
+      old: 0.5
+      new: 0.7
+    AMETHYST_SHARD:
+      old: 0.25
+      new: 0.3
+  nlk_farming:
+    WHEAT:
+      old: 0.1
+      new: 0.11
+    CARROT:
+      old: 0.08
+      new: 0.09
+    POTATO:
+      old: 0.08
+      new: 0.09
+    BEETROOT:
+      old: 0.08
+      new: 0.09
+    SUGAR_CANE:
+      old: 0.03
+      new: 0.033
+    BAMBOO:
+      old: 0.01
+      new: 0.011
+    CACTUS:
+      old: 0.02
+      new: 0.022
+    MELON_SLICE:
+      old: 0.01
+      new: 0.011
+    PUMPKIN:
+      old: 0.1
+      new: 0.11
+    KELP:
+      old: 0.01
+      new: 0.011
+    COD:
+      old: 0.2
+      new: 0.24
+    SALMON:
+      old: 0.3
+      new: 0.36
+    TROPICAL_FISH:
+      old: 0.4
+      new: 0.6
+    PUFFERFISH:
+      old: 0.4
+      new: 0.6

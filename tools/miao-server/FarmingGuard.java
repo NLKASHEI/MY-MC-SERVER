@@ -34,7 +34,7 @@ public final class FarmingGuard implements Listener {
         return Math.abs((long)block.getX()-spawn.getBlockX())<=radius&&Math.abs((long)block.getZ()-spawn.getBlockZ())<=radius;
     }
     boolean allowed(Player player,Block block,boolean planting) {
-        if(!plugin.authenticated(player)||immutable(block))return false;
+        if(!plugin.authenticated(player)||(immutable(block)&&!SpawnGuard.mayEdit(player,block.getWorld())))return false;
         var query=WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery();
         if(!query.testBuild(BukkitAdapter.adapt(block.getLocation()),WorldGuardPluginAccess.player(player),planting?Flags.BLOCK_PLACE:Flags.BLOCK_BREAK))return false;
         return GriefPrevention.instance.allowBuild(player,block.getLocation(),block.getType())==null;

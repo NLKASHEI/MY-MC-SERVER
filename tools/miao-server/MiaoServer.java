@@ -118,6 +118,7 @@ public final class MiaoServer extends JavaPlugin implements Listener {
     public void respawnInDeathWorld(PlayerRespawnEvent event) {
         if(event.getRespawnReason()==PlayerRespawnEvent.RespawnReason.END_PORTAL) {
             Location original=endPortalSpawns.remove(event.getPlayer().getUniqueId());
+            if(MiningWorld.mine(event.getPlayer().getWorld())){event.setRespawnLocation(RespawnSafety.spawn(Objects.requireNonNull(Bukkit.getWorld(NamespacedKey.minecraft("mining")))));return;}
             if(original!=null)event.setRespawnLocation(original);
             return;
         }
@@ -230,12 +231,15 @@ public final class MiaoServer extends JavaPlugin implements Listener {
         if (changed) save();
     }
     @Override public boolean onCommand(CommandSender sender, Command command, String label, String[] a) {
+        if(command.getName().equals("communityadmin"))return ui.community.jobs.admin(sender,a);
+        if(command.getName().equals("titleadmin"))return ui.titles.admin(sender,a);
         if(command.getName().equals("packetallow")){if(packetExemptions==null){say(sender,"ViaVersion 未加载，发包豁免不可用。");return true;}return packetExemptions.command(sender,a);}
         if (!(sender instanceof Player p)) { say(sender, "MiaoServer 0.8.0：中文组队、侧边栏和服务器图标已加载。玩家使用 /team。"); return true; }
         if (dummy(p)) { say(p, "假人不能使用组队系统。"); return true; }
         if (command.getName().equals("sidebar")) return ui.sidebar(p, a);
         if (command.getName().equals("miao")) return ui.command(p, a);
         if (command.getName().equals("accountlink")) return ui.command(p, new String[]{"link"});
+        if (command.getName().equals("titles")){String[] forwarded=new String[a.length+1];forwarded[0]="titles";System.arraycopy(a,0,forwarded,1,a.length);return ui.command(p,forwarded);}
         if (command.getName().equals("land")) return land(p,a);
         if(!ui.authenticated(p)){say(p,"请先完成登录。");return true;}
         if(!p.hasPermission("survival.team")){say(p,"你没有使用组队系统的权限。");return true;}

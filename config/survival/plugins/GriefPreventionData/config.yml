@@ -12,6 +12,8 @@ GriefPrevention:
       flat: Disabled
       architect: Disabled
       mining: Disabled
+      mining_nether: Disabled
+      mining_the_end: Disabled
     PreventGlobalMonsterEggs: true
     PreventTheft: true
     HoppersRequireBuildTrust: false

@@ -32,6 +32,13 @@ final class RuntimeMigration {
         SyncMenuRepair.apply(plugin);
         SyncIdentitySetup.apply(plugin);
         ArchitectWorld.prepare(plugin);
+        MenuHierarchyRepair.apply(plugin);
+        TitlesSetup.apply(plugin);
+        CommunitySetup.apply(plugin);
+        RelicShopSetup.apply(plugin);
+        SellPriceSetup.apply(plugin);
+        MiningVeinSetup.apply(plugin);
+        MiningDimensions.prepare(plugin);
         File marker = new File(plugin.getDataFolder(), "ui-fixes-v080.done");
         if (marker.exists()) return;
         try {

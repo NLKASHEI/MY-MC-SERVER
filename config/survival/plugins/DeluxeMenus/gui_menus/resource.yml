@@ -6,7 +6,7 @@ items:
   enter:
     material: DIAMOND_PICKAXE
     slot: 11
-    display_name: '&a确认入场 · 100 金币'
+    display_name: '&a矿界主世界 · 200 金币'
     lore:
     - '&7支付门票后传送到安全出生点'
     - '&7已在矿界时不会再次收费'
@@ -18,7 +18,7 @@ items:
     - '[player] miao mining enter'
   statement:
     material: PAPER
-    slot: 13
+    slot: 14
     display_name: '&e查看本次采集与资源费'
     left_click_commands:
     - '[player] miao mining status'
@@ -50,11 +50,9 @@ items:
     slot: 4
     display_name: '&6丰饶矿界 · 采集须知'
     lore:
-    - '&7石质层约 30% 矿石 · 与生存共用背包'
-    - '&e门票 100 金币 · 重连不重复购票'
-    - '&7矿产每 3 份留 1 份，8 钻石留 2'
-    - '&7余数累计，退出不再扣背包'
-    - '&7带入物资和普通石土不收费'
+    - '&7三个维度共用门票与生存背包'
+    - '&e门票 200 金币 · 矿产预留 1/3'
+    - '&7连片矿脉 · 和平 · 死亡回生存'
     - '&c每 3 天北京时间 04:00 换种重置'
     - '&c不要建家：建筑、箱子和掉落物清空'
   layout_0:
@@ -123,20 +121,6 @@ items:
   layout_10:
     material: GRAY_STAINED_GLASS_PANE
     slot: 10
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_12:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 12
-    display_name: ' '
-    lore: []
-    left_click_commands: []
-    right_click_commands: []
-  layout_14:
-    material: GRAY_STAINED_GLASS_PANE
-    slot: 14
     display_name: ' '
     lore: []
     left_click_commands: []
@@ -211,3 +195,27 @@ items:
     lore: []
     left_click_commands: []
     right_click_commands: []
+  nether:
+    material: NETHERRACK
+    slot: 12
+    display_name: '&c矿界下界'
+    lore:
+    - '&7同一张门票 · 和平 · 死亡不掉落'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao mining nether'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao mining nether'
+  end:
+    material: END_STONE
+    slot: 13
+    display_name: '&e矿界末地'
+    lore:
+    - '&7同一张门票 · 和平 · 死亡不掉落'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao mining end'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao mining end'

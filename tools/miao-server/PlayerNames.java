@@ -89,6 +89,8 @@ final class PlayerNames implements Listener {
     }
     private void edit(Player p,UUID target,String account) {
         ui.sync.cancelInput(p);
+        ui.titles.cancelInput(p);
+        ui.community.cancelInput(p);
         String current=target==null?nicknames.getOrDefault(p.getUniqueId(),""):notes.getOrDefault(p.getUniqueId(),Map.of()).getOrDefault(target,"");
         if(ui.bedrock(p)) {
             var form=CustomForm.builder().title(target==null?"我的公开昵称":"私人备注 · "+account)
@@ -158,7 +160,8 @@ final class PlayerNames implements Listener {
         e.renderer((source,display,message,viewer)->{
             String name=viewer instanceof Player p?notes.getOrDefault(p.getUniqueId(),Map.of()).getOrDefault(target,publicName):publicName;
             Component alias=Component.text(name).hoverEvent(HoverEvent.showText(Component.text("实际账号："+account+"\n公开昵称："+publicName)));
-            return renderer.render(source,placeholder,message,viewer).replaceText(builder->builder.matchLiteral(token).replacement(alias));
+            Component badge=net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(ui.titles.prefix(target,"chat"));
+            return renderer.render(source,placeholder,message,viewer).replaceText(builder->builder.matchLiteral(token).replacement(badge.append(alias)));
         });
     }
     @EventHandler public void click(InventoryClickEvent e){if(!(e.getInventory().getHolder() instanceof Holder h))return;e.setCancelled(true);if(e.getWhoClicked() instanceof Player p&&h.owner.equals(p.getUniqueId())&&e.getRawSlot()>=0&&e.getRawSlot()<h.inventory.getSize()){Runnable action=h.actions.get(e.getRawSlot());if(action!=null)main(p,action);}}

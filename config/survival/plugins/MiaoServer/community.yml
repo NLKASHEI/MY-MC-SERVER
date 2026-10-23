@@ -1,0 +1,232 @@
+schema: 1
+landmarks:
+  per-player: 3
+  total-limit: 300
+limits:
+  player-open-orders: 5
+  total-open-orders: 300
+  max-player-reward: 1000000
+  system-coins-per-day: 10000
+player-orders:
+  materials: [COBBLESTONE, STONE, DEEPSLATE, COBBLED_DEEPSLATE, DIRT, SAND, GRAVEL, GLASS, OAK_LOG, SPRUCE_LOG, BIRCH_LOG, OAK_PLANKS, IRON_INGOT, COPPER_INGOT, GOLD_INGOT, COAL, CHARCOAL, REDSTONE, LAPIS_LAZULI, DIAMOND, EMERALD, QUARTZ, RAW_IRON, RAW_COPPER, RAW_GOLD, WHEAT, CARROT, POTATO, BEETROOT, SUGAR_CANE, BAMBOO, CACTUS, PUMPKIN, MELON_SLICE, COD, SALMON, STRING, BONE, GUNPOWDER, SLIME_BALL, LEATHER, PAPER, ROTTEN_FLESH]
+system-orders:
+  stone:
+    name: 石料补给
+    material: COBBLESTONE
+    quantity: 256
+    reward: 60
+  timber:
+    name: 橡木收购
+    material: OAK_LOG
+    quantity: 64
+    reward: 80
+  wheat:
+    name: 粮仓补货
+    material: WHEAT
+    quantity: 128
+    reward: 80
+  carrots:
+    name: 胡萝卜收购
+    material: CARROT
+    quantity: 128
+    reward: 64
+  potatoes:
+    name: 土豆收购
+    material: POTATO
+    quantity: 128
+    reward: 64
+  paper:
+    name: 甘蔗补给
+    material: SUGAR_CANE
+    quantity: 128
+    reward: 72
+  fuel:
+    name: 煤炭补给
+    material: COAL
+    quantity: 64
+    reward: 100
+  iron:
+    name: 铁料收购
+    material: RAW_IRON
+    quantity: 64
+    reward: 120
+quests:
+  mining:
+    name: 挖掘 256 个方块
+    metric: mined
+    target: 256
+    reward: 80
+  building:
+    name: 放置 96 个方块
+    metric: placed
+    target: 96
+    reward: 80
+  hunting:
+    name: 击败 24 只生物
+    metric: kills
+    target: 24
+    reward: 100
+  fishing:
+    name: 钓鱼 12 次
+    metric: fish
+    target: 12
+    reward: 100
+  walking:
+    name: 步行 1 公里
+    metric: walk_cm
+    target: 100000
+    reward: 80
+  exploring:
+    name: 探访 4 种群系
+    metric: explore
+    target: 4
+    reward: 100
+material-names:
+  COBBLESTONE: 圆石
+  STONE: 石头
+  DEEPSLATE: 深板岩
+  COBBLED_DEEPSLATE: 深板岩圆石
+  DIRT: 泥土
+  SAND: 沙子
+  GRAVEL: 沙砾
+  GLASS: 玻璃
+  OAK_LOG: 橡木原木
+  SPRUCE_LOG: 云杉原木
+  BIRCH_LOG: 白桦原木
+  OAK_PLANKS: 橡木木板
+  IRON_INGOT: 铁锭
+  COPPER_INGOT: 铜锭
+  GOLD_INGOT: 金锭
+  COAL: 煤炭
+  CHARCOAL: 木炭
+  REDSTONE: 红石粉
+  LAPIS_LAZULI: 青金石
+  DIAMOND: 钻石
+  EMERALD: 绿宝石
+  QUARTZ: 下界石英
+  RAW_IRON: 粗铁
+  RAW_COPPER: 粗铜
+  RAW_GOLD: 粗金
+  WHEAT: 小麦
+  CARROT: 胡萝卜
+  POTATO: 马铃薯
+  BEETROOT: 甜菜根
+  SUGAR_CANE: 甘蔗
+  BAMBOO: 竹子
+  CACTUS: 仙人掌
+  PUMPKIN: 南瓜
+  MELON_SLICE: 西瓜片
+  COD: 鳕鱼
+  SALMON: 鲑鱼
+  STRING: 线
+  BONE: 骨头
+  GUNPOWDER: 火药
+  SLIME_BALL: 黏液球
+  LEATHER: 皮革
+  PAPER: 纸
+  ROTTEN_FLESH: 腐肉
+
+relics:
+  iron_pickaxe:
+    material: IRON_PICKAXE
+    name: "&b恒久铁镐"
+    price: 1000000
+    lore:
+      - "&7原版材质属性 · 不损坏"
+  iron_axe:
+    material: IRON_AXE
+    name: "&b恒久铁斧"
+    price: 1000000
+    lore:
+      - "&7原版材质属性 · 不损坏"
+  iron_shovel:
+    material: IRON_SHOVEL
+    name: "&b恒久铁锹"
+    price: 1000000
+    lore:
+      - "&7原版材质属性 · 不损坏"
+  iron_hoe:
+    material: IRON_HOE
+    name: "&b恒久铁锄"
+    price: 1000000
+    lore:
+      - "&7原版材质属性 · 不损坏"
+  iron_sword:
+    material: IRON_SWORD
+    name: "&b恒久铁剑"
+    price: 1000000
+    lore:
+      - "&7原版材质属性 · 不损坏"
+  armored_wings:
+    material: ELYTRA
+    name: "<gradient:#f9a8d4:#a78bfa:#22d3ee:#fde68a><bold>✦ 闪耀之翼 ✦</bold></gradient>"
+    price: 1000000000
+    lore:
+      - "&7下界合金级防护 · 鞘翅飞行 · 不损坏"
+  diamond_pickaxe:
+    material: DIAMOND_PICKAXE
+    name: "&b恒久钻石镐"
+    price: 10000000
+    lore:
+      - "&7原版材质属性 · 不损坏"
+  diamond_axe:
+    material: DIAMOND_AXE
+    name: "&b恒久钻石斧"
+    price: 10000000
+    lore:
+      - "&7原版材质属性 · 不损坏"
+  diamond_shovel:
+    material: DIAMOND_SHOVEL
+    name: "&b恒久钻石锹"
+    price: 10000000
+    lore:
+      - "&7原版材质属性 · 不损坏"
+  diamond_hoe:
+    material: DIAMOND_HOE
+    name: "&b恒久钻石锄"
+    price: 10000000
+    lore:
+      - "&7原版材质属性 · 不损坏"
+  diamond_sword:
+    material: DIAMOND_SWORD
+    name: "&b恒久钻石剑"
+    price: 10000000
+    lore:
+      - "&7原版材质属性 · 不损坏"
+  netherite_pickaxe:
+    material: NETHERITE_PICKAXE
+    name: "&d恒久下界合金镐"
+    price: 100000000
+    lore:
+      - "&7原版材质属性 · 不损坏"
+  netherite_axe:
+    material: NETHERITE_AXE
+    name: "&d恒久下界合金斧"
+    price: 100000000
+    lore:
+      - "&7原版材质属性 · 不损坏"
+  netherite_shovel:
+    material: NETHERITE_SHOVEL
+    name: "&d恒久下界合金锹"
+    price: 100000000
+    lore:
+      - "&7原版材质属性 · 不损坏"
+  netherite_hoe:
+    material: NETHERITE_HOE
+    name: "&d恒久下界合金锄"
+    price: 100000000
+    lore:
+      - "&7原版材质属性 · 不损坏"
+  netherite_sword:
+    material: NETHERITE_SWORD
+    name: "&d恒久下界合金剑"
+    price: 100000000
+    lore:
+      - "&7原版材质属性 · 不损坏"
+  light_blocks:
+    material: LIGHT
+    name: "&e柔光方块 · 一组"
+    price: 500000
+    quantity: 64
+    lore:
+      - "&7隐形照明 · 64 个一组"

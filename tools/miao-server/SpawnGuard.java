@@ -19,12 +19,13 @@ final class SpawnGuard implements Listener {
         return Math.abs((long)block.getX()-spawn.getBlockX())<=radius&&Math.abs((long)block.getZ()-spawn.getBlockZ())<=radius;
     }
     private void notice(org.bukkit.entity.Player p){p.sendMessage("§6南可熙提醒您： §f这里是公共出生点保护区，请到外围建设。");}
+    static boolean mayEdit(org.bukkit.entity.Player p,World world){return p!=null&&p.isOp()&&!LobbyGuard.lobby(world)&&!p.hasMetadata("fakeplayer:spawned_at")&&fr.xephi.authme.api.v3.AuthMeApi.getInstance().isAuthenticated(p);}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true)
-    public void breaking(BlockBreakEvent e){if(protectedBlock(e.getBlock())){e.setCancelled(true);notice(e.getPlayer());}}
+    public void breaking(BlockBreakEvent e){if(protectedBlock(e.getBlock())&&!mayEdit(e.getPlayer(),e.getBlock().getWorld())){e.setCancelled(true);notice(e.getPlayer());}}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true)
-    public void placing(BlockPlaceEvent e){if(protectedBlock(e.getBlock())){e.setCancelled(true);notice(e.getPlayer());}}
+    public void placing(BlockPlaceEvent e){if(protectedBlock(e.getBlock())&&!mayEdit(e.getPlayer(),e.getBlock().getWorld())){e.setCancelled(true);notice(e.getPlayer());}}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true)
-    public void multi(BlockMultiPlaceEvent e){if(e.getReplacedBlockStates().stream().anyMatch(b->protectedBlock(b.getBlock()))){e.setCancelled(true);notice(e.getPlayer());}}
+    public void multi(BlockMultiPlaceEvent e){if(!mayEdit(e.getPlayer(),e.getBlock().getWorld())&&e.getReplacedBlockStates().stream().anyMatch(b->protectedBlock(b.getBlock()))){e.setCancelled(true);notice(e.getPlayer());}}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true)
     public void explosion(EntityExplodeEvent e){e.blockList().removeIf(this::protectedBlock);}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true)
@@ -40,9 +41,9 @@ final class SpawnGuard implements Listener {
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true)
     public void burn(BlockBurnEvent e){if(protectedBlock(e.getBlock()))e.setCancelled(true);}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true)
-    public void grow(StructureGrowEvent e){if(e.getBlocks().stream().anyMatch(b->protectedBlock(b.getBlock())))e.setCancelled(true);}
+    public void grow(StructureGrowEvent e){if(!mayEdit(e.getPlayer(),e.getWorld())&&e.getBlocks().stream().anyMatch(b->protectedBlock(b.getBlock())))e.setCancelled(true);}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true)
-    public void bucket(org.bukkit.event.player.PlayerBucketEmptyEvent e){if(protectedBlock(e.getBlock())){e.setCancelled(true);notice(e.getPlayer());}}
+    public void bucket(org.bukkit.event.player.PlayerBucketEmptyEvent e){if(protectedBlock(e.getBlock())&&!mayEdit(e.getPlayer(),e.getBlock().getWorld())){e.setCancelled(true);notice(e.getPlayer());}}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true)
-    public void bucket(org.bukkit.event.player.PlayerBucketFillEvent e){if(protectedBlock(e.getBlock())){e.setCancelled(true);notice(e.getPlayer());}}
+    public void bucket(org.bukkit.event.player.PlayerBucketFillEvent e){if(protectedBlock(e.getBlock())&&!mayEdit(e.getPlayer(),e.getBlock().getWorld())){e.setCancelled(true);notice(e.getPlayer());}}
 }

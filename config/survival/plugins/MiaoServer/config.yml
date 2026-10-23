@@ -37,8 +37,12 @@ spawn-protection:
   - flat
   - lobby
   - mining
+  - mining_nether
+  - mining_the_end
+bedrock:
+  send-view-distance: 8
 resource-world:
-  entry-fee: 100.0
+  entry-fee: 200.0
   tax-divisor: 3
   ore-coverage-percent: 30
   border-size: 6000

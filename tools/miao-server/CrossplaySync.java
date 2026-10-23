@@ -183,7 +183,7 @@ final class CrossplaySync implements Listener {
     private void renamePassword(Player p,Binding b,Account identity){
         if(!b.equals(binding(p.getUniqueId()))){say(p,"绑定已变化，请重新打开菜单。");return;}
         if(b.identityId().equals(identity.id())&&b.identityName().equals(identity.name())){say(p,"已经使用这个名字；正在按该账号刷新皮肤。");SyncAppearance.apply(plugin,p,b,()->b.equals(binding(p.getUniqueId())));return;}
-        ui.names.cancelInput(p);cancelInput(p);
+        ui.names.cancelInput(p);ui.titles.cancelInput(p);ui.community.cancelInput(p);cancelInput(p);
         say(p,"保留进度「"+b.source()+"」，实际用户名和皮肤改用「"+identity.name()+"」。请验证该账号的服内密码；成功后重连使用它的密码。");
         if(ui.bedrock(p)){
             var form=CustomForm.builder().title("验证用户名账号").label("进度保持："+b.source()+"\n新用户名："+identity.name()+"\n验证该账号的服内密码；不是 Xbox 密码。输入框显示文字，取消不修改。")
@@ -217,6 +217,8 @@ final class CrossplaySync implements Listener {
     }
     void cancelInput(Player p){inputs.remove(p.getUniqueId());}
     private void password(Player p,Account peer,boolean own,Account identity) {
+        ui.titles.cancelInput(p);
+        ui.community.cancelInput(p);
         ui.names.cancelInput(p);inputs.remove(p.getUniqueId());Account from=own?current(p):peer;
         say(p,"将同步「"+label(from)+"」的进度。现在验证「"+peer.name()+"」的服内密码，完成前不会切换数据。");
         say(p,"绑定后共用服内身份；重连使用「"+identity.name()+"」的服内密码，一次仅一个账号在线。取消则各自保留进度。");

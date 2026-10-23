@@ -4,37 +4,9 @@ open_command:
 - cd
 size: 45
 items:
-  lobby:
-    material: BEACON
-    slot: 11
-    display_name: '&b主城漫游'
-    lore:
-    - '&7安全休闲区，建筑受到保护'
-    - '&7与生存世界共用背包'
-    - '&f点击前往主城'
-    left_click_commands:
-    - '[close]'
-    - '[player] mv tp w:lobby'
-    right_click_commands:
-    - '[close]'
-    - '[player] mv tp w:lobby'
-  survival:
-    material: GRASS_BLOCK
-    slot: 12
-    display_name: '&a自由生存'
-    lore:
-    - '&7探索、建造与原版冒险'
-    - '&7主世界 / 下界 / 末地共用背包'
-    - '&f点击前往生存世界'
-    left_click_commands:
-    - '[close]'
-    - '[player] mv tp w:world'
-    right_click_commands:
-    - '[close]'
-    - '[player] mv tp w:world'
   flat:
     material: COMPASS
-    slot: 13
+    slot: 12
     display_name: '&d世界探索'
     lore:
     - '&7主城 · 生存 · 创造 · 丰饶矿界'
@@ -46,7 +18,7 @@ items:
     - '[openguimenu] worlds'
   homes:
     material: RED_BED
-    slot: 14
+    slot: 13
     display_name: '&f家园与传送点'
     lore:
     - '&7回家、设置家园、查看说明'
@@ -59,7 +31,7 @@ items:
     - '[player] homes-menu'
   travel:
     material: ENDER_PEARL
-    slot: 15
+    slot: 14
     display_name: '&b好友传送'
     lore:
     - '&7申请、接受与拒绝传送'
@@ -253,16 +225,6 @@ items:
     - '[close]'
     right_click_commands:
     - '[close]'
-  heading:
-    material: BOOK
-    slot: 4
-    display_name: '&6&l生存指南针'
-    lore:
-    - '&7南可熙的神奇妙妙服'
-    - '&7世界与传送 · 建设与经营 · 成长与休闲'
-    - '&e点击下方图标，开启你的旅程'
-    left_click_commands: []
-    right_click_commands: []
   layout_0:
     material: GRAY_STAINED_GLASS_PANE
     slot: 0
@@ -444,3 +406,41 @@ items:
     lore: []
     left_click_commands: []
     right_click_commands: []
+  community:
+    material: LODESTONE
+    slot: 11
+    display_name: '&b社区生活'
+    lore:
+    - '&7地标导航 · 悬赏 · 趣味委托'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao community'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao community'
+  report:
+    material: WRITTEN_BOOK
+    slot: 15
+    display_name: '&e个人小报'
+    lore:
+    - '&7看看最近的成长与收获'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao community report'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao community report'
+  titles:
+    material: NETHER_STAR
+    slot: 4
+    display_name: '&6&l称号殿堂'
+    lore:
+    - '&7里程碑自动解锁 · 老玩家上线补发'
+    - '&7金币称号商店 · 自由选择佩戴'
+    - '&7聊天 / TAB / 侧边栏可分别显示'
+    left_click_commands:
+    - '[close]'
+    - '[player] titles'
+    right_click_commands:
+    - '[close]'
+    - '[player] titles'

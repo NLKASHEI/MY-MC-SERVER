@@ -19,7 +19,7 @@ final class WorldExpansion {
         try {
             File plugins=plugin.getDataFolder().getParentFile();
             File file=new File(plugin.getDataFolder(),"config.yml");var y=load(file);
-            Map<String,Object> defaults=Map.of("resource-world.entry-fee",100.0,"resource-world.tax-divisor",3,"resource-world.ore-coverage-percent",30,"resource-world.border-size",6000,"resource-world.reset-period-days",3,"resource-world.reset-hour",4);
+            Map<String,Object> defaults=Map.of("resource-world.entry-fee",200.0,"resource-world.tax-divisor",3,"resource-world.ore-coverage-percent",30,"resource-world.border-size",6000,"resource-world.reset-period-days",3,"resource-world.reset-hour",4);
             for(var entry:defaults.entrySet())if(!y.contains(entry.getKey()))y.set(entry.getKey(),entry.getValue());
             var worlds=new ArrayList<>(y.getStringList("spawn-protection.worlds"));if(!worlds.contains("mining"))worlds.add("mining");y.set("spawn-protection.worlds",worlds);save(file,y);
             file=new File(plugins,"GriefPreventionData/config.yml");y=load(file);y.set("GriefPrevention.Claims.Mode.mining","Disabled");save(file,y);
@@ -47,7 +47,7 @@ final class WorldExpansion {
         }catch(Exception e){throw new IllegalStateException("Cannot prepare resource world configuration",e);}
     }
     static void start(MiaoServer plugin){start(plugin,null);}
-    private static void start(MiaoServer plugin,Long seed){
+    static void start(MiaoServer plugin,Long seed){
         var manager=MultiverseCoreApi.get().getWorldManager();
         File marker=new File(plugin.getDataFolder(),"flat-reset-v0918.done");
         try {
@@ -96,25 +96,13 @@ final class WorldExpansion {
                 Location safe=new Location(world,x+0.5,feet,z+0.5);world.setSpawnLocation(safe);mining.setSpawnLocation(safe).get();
                 world.getPersistentDataContainer().set(new NamespacedKey(plugin,"mining-initialized"),org.bukkit.persistence.PersistentDataType.BYTE,(byte)1);
             }
+            MiningDimensions.start(plugin,world.getSeed());
             ArchitectWorld.start(plugin);
             manager.saveWorldsConfig();
             plugin.getLogger().info("深层无结构超平坦和丰饶矿界就绪；矿界加入生存背包组，创造背包继续隔离。");
         }catch(Exception e){throw new IllegalStateException("Cannot initialize managed worlds",e);}
     }
-    static void resetMining(MiaoServer plugin){
-        try{
-            World world=Objects.requireNonNull(Bukkit.getWorld(NamespacedKey.minecraft("mining")));
-            if(!world.getPlayers().isEmpty())throw new IllegalStateException("Mining reset requires all players evacuated");
-            Path dimensions=Objects.requireNonNull(Bukkit.getWorld("world")).getWorldFolder().toPath().toRealPath().getParent().getParent();
-            Path target=world.getWorldFolder().toPath().toRealPath();
-            if(!dimensions.getFileName().toString().equals("dimensions")||!target.equals(dimensions.resolve("minecraft/mining").normalize()))throw new IllegalStateException("Unexpected mining dimension path; refusing reset: "+target);
-            if(!new File(plugin.getDataFolder(),"flat-reset-v0918.done").isFile())throw new IllegalStateException("Initial world migration incomplete");
-            long seed;do{seed=java.util.concurrent.ThreadLocalRandom.current().nextLong();}while(seed==world.getSeed());
-            var manager=MultiverseCoreApi.get().getWorldManager();
-            manager.deleteWorld(DeleteWorldOptions.world(manager.getWorld(world).get())).getOrThrow(f->new IllegalStateException("Mining deletion failed: "+f.getFailureReason()));
-            start(plugin,seed);
-        }catch(Exception e){throw new IllegalStateException("Cannot reset mining dimension",e);}
-    }
+    static void resetMining(MiaoServer plugin){MiningDimensions.reset(plugin);}
     private static YamlConfiguration load(File file)throws Exception{var y=new YamlConfiguration();if(file.exists())y.load(file);return y;}
     private static void save(File file,YamlConfiguration y)throws IOException{
         file=file.getAbsoluteFile();

@@ -1,12 +1,21 @@
 name: MiaoServer
 prefix: NLK
-version: 0.9.25
+version: 0.9.26
 main: cn.nankexi.MiaoServer
 api-version: '26.2'
 depend: [GriefPrevention, AuthMe, floodgate, WorldEdit, WorldGuard, Vault, Scythe, Multiverse-Core, Multiverse-Inventories]
-softdepend: [ViaVersion, SkinsRestorer]
+softdepend: [ViaVersion, SkinsRestorer, PlaceholderAPI]
 loadbefore: [Backuper, DeluxeMenus, VeinMiner, AuraSkills, EconomyShopGUI, BlueMap]
 commands:
+  communityadmin:
+    description: 社区交付核对
+    permission: miao.community.admin
+  titles:
+    description: 称号殿堂、里程碑补发与称号商店
+    aliases: [chenghao]
+  titleadmin:
+    description: 称号授予和购买核对
+    permission: miao.titles.admin
   packetallow:
     description: 管理 ViaVersion 单人发包豁免
     permission: miao.packetallow.admin
@@ -27,6 +36,10 @@ commands:
     description: 中文双端绑定流程
     permission: floodgate.command.linkaccount
 permissions:
+  miao.community.admin:
+    default: op
+  miao.titles.admin:
+    default: op
   survival.claims:
     default: true
   survival.team:

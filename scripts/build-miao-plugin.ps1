@@ -11,7 +11,7 @@ try {
   $jars = @(Get-ChildItem servers/survival/libraries -Recurse -Filter '*.jar') + @(Get-ChildItem servers/survival/plugins -File -Filter '*.jar')
   $cp = @($jars | ForEach-Object { $_.FullName.Substring($root.Length + 1).Replace('\','/') }) -join ';'
   $source = (@(Get-ChildItem tools/miao-server -Filter '*.java') | ForEach-Object { 'tools/miao-server/' + $_.Name }) -join ' '
-  if ($Smoke) { $source = 'tests/miao-smoke/MiaoSmoke.java'; $cp = 'servers/survival/plugins/MiaoServer.jar;' + $cp }
+  if ($Smoke) { $source = 'tests/miao-smoke/MiaoSmoke.java tests/miao-smoke/CommunitySmoke.java tests/miao-smoke/MiningFamilySmoke.java'; $cp = 'servers/survival/plugins/MiaoServer.jar;' + $cp }
   $argFile = $folder + '/javac.args'
   $line = '-encoding UTF-8 -classpath "' + $cp + '" -d ' + $folder + ' ' + $source
   [IO.File]::WriteAllText((Join-Path $root $argFile), $line, (New-Object Text.UTF8Encoding($false)))
@@ -24,6 +24,10 @@ try {
   } else {
     Copy-Item tools/miao-server/plugin.yml "$folder/plugin.yml"
     Copy-Item config/survival/plugins/MiaoServer/config.yml "$folder/config.yml"
+    Copy-Item config/survival/plugins/MiaoServer/titles.yml "$folder/title-catalog.yml"
+    Copy-Item config/survival/plugins/MiaoServer/community.yml "$folder/community.yml"
+    Copy-Item config/survival/plugins/MiaoServer/sell-prices.yml "$folder/sell-prices.yml"
+    Copy-Item config/survival/plugins/MiaoServer/release-notes.yml "$folder/release-notes.yml"
     Copy-Item config/survival/plugins/DeluxeMenus/gui_menus/survival.yml "$folder/menu-layout.yml"
     Copy-Item config/survival/plugins/DeluxeMenus/gui_menus/technical.yml "$folder/technical-menu.yml"
     Copy-Item config/survival/plugins/DeluxeMenus/gui_menus/vein.yml "$folder/vein-menu.yml"

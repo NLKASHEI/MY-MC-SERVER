@@ -10,7 +10,7 @@ Windows 云服务器使用的 Paper 26.2 原版生存辅助服务端。Java 离�
 
 新增中文侧边栏、伙伴组队和自动同步的领地共享，指南针统一入口。自动备份每两小时一次，只保留最近三份；Java 列表使用温馨 MC 小屋图标。PE 指南针使用原生表单，侧边栏可选择成长数据并保存开关；主城保护不放行 OP。详见 [伙伴与侧边栏指南](docs/operations/community.md)。
 
-0.9.25：新增“云峦筑境”永久创造山川世界，种子 8176667507634209290，背包与生存、超平坦均独立，从指南针世界探索进入。不参与矿界重置。继续取消整服更新备份，定期备份交给 Backuper。
+0.9.26：新增 [称号殿堂](docs/operations/titles.md)与[社区生活](docs/operations/community-life.md)：地标、悬赏、每日委托、小报和奇珍阁。矿界采用连片矿脉，200金币门票覆盖和平的三个维度，每三天一起重置。永久创造世界“云峦筑境”与生存、超平坦背包各自独立，不参与矿界重置。更新不做整服备份，定期备份交给 Backuper。
 
 ## 快速使用
 
@@ -22,7 +22,7 @@ Windows 云服务器使用的 Paper 26.2 原版生存辅助服务端。Java 离�
 
 下载完整部署包并解压到 Windows 服务器。阅读 Minecraft EULA，将 `servers/survival/eula.txt` 改为 `eula=true`，双击 `启动服务器.bat`。内存在 `server-settings.json` 中修改。云端放行 Java TCP 25565 和基岩 UDP 8585。
 
-按现有映射填写：Java `s9-4.yxjsmc.cn:20005` → TCP 25565；基岩 `s9-4.yxjsmc.cn:20013` → UDP 8585。用户已向云商确认映射支持 TCP+UDP，公网实际入服仍需部署后验收。3389 的远程桌面映射保持原用途。
+按现有映射填写：Java `s9-4.yxsjmc.cn:20005` → TCP 25565；基岩 `s9-4.yxsjmc.cn:20013` → UDP 8585。用户已向云商确认映射支持 TCP+UDP，公网实际入服仍需部署后验收。3389 的远程桌面映射保持原用途。
 
 新增 FakePlayer-CE 生电假人、AuraSkills 中文技能成长与 Floodgate 本地 SQLite 账号绑定。绑定后两端使用 Java 主账号的存档、金币、圈地和技能进度；先转移旧 PE 账号物品，再绑定，不能自动合并两份历史记录。详见 [双端与生电指南](docs/operations/crossplay-technical.md)。
 

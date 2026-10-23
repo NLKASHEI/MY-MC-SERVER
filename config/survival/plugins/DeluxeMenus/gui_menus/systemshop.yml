@@ -10,7 +10,7 @@ items:
     - '&7金币余额：&e%vault_eco_balance_fixed%'
   supplies:
     material: CHEST
-    slot: 11
+    slot: 10
     display_name: '&a基础补给'
     lore:
     - '&7方块、火把、食物与圈地工具'
@@ -23,7 +23,7 @@ items:
     - '[player] miao shop supplies'
   resources:
     material: DIAMOND
-    slot: 12
+    slot: 11
     display_name: '&b矿产交易'
     lore:
     - '&7煤、铁、铜、金、红石与宝石'
@@ -36,7 +36,7 @@ items:
     - '[player] miao shop nlk_resources'
   farming:
     material: WHEAT
-    slot: 13
+    slot: 12
     display_name: '&e农渔收购'
     lore:
     - '&7作物、竹子、海带与鱼获'
@@ -69,10 +69,10 @@ items:
     - '&c关闭窗口即出售，无法撤销'
     left_click_commands:
     - '[close]'
-    - '[player] sellgui'
+    - '[player] miao sell'
     right_click_commands:
     - '[close]'
-    - '[player] sellgui'
+    - '[player] miao sell'
   back:
     material: ARROW
     slot: 22
@@ -172,3 +172,15 @@ items:
     right_click_commands:
     - '[close]'
     - '[player] miao shop nlk_technical'
+  relics:
+    material: AMETHYST_SHARD
+    slot: 16
+    display_name: '&d奇珍阁'
+    lore:
+    - '&7不损坏工具 · 闪耀之翼'
+    left_click_commands:
+    - '[close]'
+    - '[player] miao community relics'
+    right_click_commands:
+    - '[close]'
+    - '[player] miao community relics'

@@ -4,8 +4,8 @@
 
 | 客户端 | 玩家填写 | 云机监听 | 映射协议 |
 |---|---|---|---|
-| Java | s9-4.yxjsmc.cn:20005 | 25565 | TCP |
-| PE / 基岩 | 地址 s9-4.yxjsmc.cn，端口 20013 | 8585 | UDP |
+| Java | s9-4.yxsjmc.cn:20005 | 25565 | TCP |
+| PE / 基岩 | 地址 s9-4.yxsjmc.cn，端口 20013 | 8585 | UDP |
 
 用户已向云商确认现有映射支持 TCP+UDP。服务端按上述目标监听 UDP 8585、公告公网 20013；部署时在 Windows 防火墙和云安全组放行 UDP 8585。公网实际连接未在本机验证。截图的 20004 → 3389 是远程桌面，不用于游戏。以后更改映射时对应修改 Geyser `bedrock.port`、`advanced.bedrock.broadcast-port` 和网络检测脚本。
 

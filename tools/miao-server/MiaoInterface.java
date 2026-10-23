@@ -26,6 +26,9 @@ final class MiaoInterface implements Listener {
     final PlayerNames names;
     final CrossplaySync sync;
     final CreativeTools creativeTools;
+    final PlayerTitles titles;
+    final ReleaseNews releaseNews;
+    final CommunityLife community;
     private final YamlConfiguration prefs = new YamlConfiguration();
     private final File file;
     private final Map<UUID, Long> started = new HashMap<>(), checkpoint = new HashMap<>();
@@ -50,7 +53,11 @@ final class MiaoInterface implements Listener {
         sync=new CrossplaySync(p,this);
         names=new PlayerNames(p,this);
         creativeTools=new CreativeTools(p,this);
+        titles=new PlayerTitles(p,this);
+        releaseNews=new ReleaseNews(p);
+        community=new CommunityLife(p,this);
         new BedrockCommandNames(p,this);
+        new BedrockPerformance(p,this);
         scanMenus(); Bukkit.getPluginManager().registerEvents(this,p);
         Bukkit.getScheduler().runTaskTimer(p,()->{ for(Player player:Bukkit.getOnlinePlayers()) { flushTime(player); if(authenticated(player)) decorate(player); } save(); },1200,1200);
     }
@@ -61,7 +68,12 @@ final class MiaoInterface implements Listener {
         var f=FloodgateApi.getInstance().getPlayer(p.getUniqueId());
         return "[PE]"+names.nickname(p.getUniqueId(),sync.identityName(p.getUniqueId())!=null?p.getName():(f!=null && !f.isLinked()?f.getUsername():p.getName()));
     }
-    void decorate(Player p) { p.setDisplayName("§b"+display(p)+"§r"); p.setPlayerListName("§b"+display(p)+"§r"); }
+    void decorate(Player p) { p.setDisplayName(titles.prefix(p.getUniqueId(),"chat")+"§b"+display(p)+"§r"); p.setPlayerListName(titles.prefix(p.getUniqueId(),"tab")+"§b"+display(p)+"§r"); }
+    long titleMetric(Player p,String metric){
+        if(metric.equals("seconds")){long now=System.nanoTime(),pending=(now-checkpoint.getOrDefault(p.getUniqueId(),now))/1_000_000_000L;return prefs.getLong(path(p)+".total-seconds",Integer.toUnsignedLong(p.getStatistic(Statistic.PLAY_ONE_MINUTE))/20)+pending;}
+        if(metric.equals("harvest")){long sum=0;for(String crop:List.of("WHEAT","CARROTS","POTATOES","BEETROOTS","NETHER_WART"))sum+=prefs.getLong(path(p)+".blocks."+crop+".mined");return sum;}
+        return prefs.getLong(path(p)+".progress."+metric);
+    }
     private String path(Player p) { return "players."+p.getUniqueId(); }
     private void say(Player p,String s) { p.sendMessage("§6南可熙提醒您： §f"+s); }
     private void main(Player p,Runnable r) { Bukkit.getScheduler().runTask(plugin,()->{ if(p.isOnline()&&authenticated(p)) r.run(); }); }
@@ -89,7 +101,7 @@ final class MiaoInterface implements Listener {
         long total=prefs.getLong(path(p)+".total-seconds",Integer.toUnsignedLong(p.getStatistic(Statistic.PLAY_ONE_MINUTE))/20)+pending;
         long session=(now-started.getOrDefault(p.getUniqueId(),now))/1_000_000_000L;
         double tps=Math.min(20,Bukkit.getTPS()[0]);
-        String world=switch(p.getWorld().getName()){case "architect"->"云峦筑境";case "flat"->"创造超平坦";case "mining"->"丰饶矿界";case "lobby"->"温馨主城";case "world_nether"->"下界";case "world_the_end"->"末地";default->"自由生存";};
+        String world=switch(p.getWorld().getName()){case "architect"->"云峦筑境";case "flat"->"创造超平坦";case "mining"->"丰饶矿界";case "mining_nether"->"矿界下界";case "mining_the_end"->"矿界末地";case "lobby"->"温馨主城";case "world_nether"->"下界";case "world_the_end"->"末地";default->"自由生存";};
         Set<String> chosen=new LinkedHashSet<>(selected(p));
         List<String> order=List.of("player","world","team","total","session","balance","placed","mined","block","kills","fishing","deaths","distance","online","ping","tps");
         String lastGroup=""; int shown=0;
@@ -110,6 +122,7 @@ final class MiaoInterface implements Listener {
                 default->null;
             };if(s!=null){result.add(s.replace("§f","§7").replaceFirst(" ","  §8› §r"));shown++;}
         }
+        String badge=titles.prefix(p.getUniqueId(),"sidebar");if(!badge.isEmpty()&&!result.isEmpty())result.set(0,"§8── "+badge+"§8──");
         return result;
     }
     boolean sidebar(Player p,String[] a) {
@@ -163,11 +176,15 @@ final class MiaoInterface implements Listener {
         if(a[0].equals("sidebar"))return sidebar(p,Arrays.copyOfRange(a,1,a.length));
         if(a[0].equals("menu")){openServiceMenu(p,a.length>1?a[1]:"survival");return true;}
         if(a[0].equals("shop")){openShop(p,a.length>1?a[1]:null);return true;}
+        if(a[0].equals("sell")){openSell(p);return true;}
         if(a[0].equals("deathback")){deathBack(p);return true;}
         if(a[0].equals("land"))return plugin.land(p,Arrays.copyOfRange(a,1,a.length));
         if(a[0].equals("teaminvite")){inviteMenu(p,0);return true;}
         if(a[0].equals("map")){mapLink(p);return true;}
         if(a[0].equals("names")){names.command(p,Arrays.copyOfRange(a,1,a.length));return true;}
+        if(a[0].equals("titles")){String[] request=Arrays.copyOfRange(a,1,a.length);Bukkit.getScheduler().runTaskLater(plugin,()->{if(p.isOnline()&&authenticated(p))titles.command(p,request);},2L);return true;}
+        if(a[0].equals("news")){releaseNews.show(p);return true;}
+        if(a[0].equals("community")){String[] request=Arrays.copyOfRange(a,1,a.length);Bukkit.getScheduler().runTaskLater(plugin,()->{if(p.isOnline()&&authenticated(p))community.command(p,request);},2L);return true;}
         if(a[0].equals("build"))return creativeTools.command(p,Arrays.copyOfRange(a,1,a.length));
         if(a[0].equals("mining")){plugin.mining.command(p,a.length>1?a[1]:"status");return true;}
         return true;
@@ -229,6 +246,14 @@ final class MiaoInterface implements Listener {
                 api.getMethod("openShopSection",Player.class,int.class,boolean.class).invoke(category,p,1,false);
             }catch(Exception e){plugin.getLogger().log(java.util.logging.Level.SEVERE,"打开系统商店失败",e);say(p,"商店暂时无法打开，请联系管理员查看日志。");}
         });
+    }
+    private void openSell(Player p){
+        Bukkit.getScheduler().runTaskLater(plugin,()->{
+            if(!p.isOnline()||!authenticated(p))return;
+            if(!community.trading(p)||!p.hasPermission("economyshopgui.sellgui")){say(p,"请回生存或主城出售物品。");return;}
+            try{var shop=Bukkit.getPluginManager().getPlugin("EconomyShopGUI");if(shop==null||!shop.isEnabled())throw new IllegalStateException("EconomyShopGUI unavailable");Class<?> type=Class.forName("me.gypopo.economyshopgui.objects.SellGUI",true,shop.getClass().getClassLoader());type.getMethod("open",Player.class).invoke(type.getConstructor().newInstance(),p);}
+            catch(Exception e){plugin.getLogger().log(java.util.logging.Level.SEVERE,"Cannot open sell inventory",e);say(p,"出售窗口暂不可用。");}
+        },2L);
     }
     private void deathBack(Player p) {
         if(!p.hasPermission("essentials.back")||!p.hasPermission("essentials.back.ondeath")){say(p,"暂时无法返回死亡点。");return;}
@@ -381,10 +406,12 @@ final class MiaoInterface implements Listener {
             say(p,"欢迎来到 §6南可熙的神奇妙妙服§f！右键指南针选择世界。");
             String version=plugin.getDescription().getVersion();
             if(!version.equals(prefs.getString(path(p)+".update-notice-version"))) {
-                say(p,"服务器已更新到 §a"+version+"§f：账号同步可分别选择进度、实际用户名与皮肤来源；已绑定账号也可从账号菜单修改名字，进度不变。");
+                releaseNews.show(p);
                 prefs.set(path(p)+".update-notice-version",version);dirty=true;
             }
             sync.login(p);
+            titles.login(p);decorate(p);
+            community.login(p);
             save();
         },20);
     }
@@ -399,5 +426,5 @@ final class MiaoInterface implements Listener {
     }
     @EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true) public void place(BlockPlaceEvent e) {progress(e.getPlayer(),e.getBlock().getType(),"placed");}
     @EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true) public void mine(BlockBreakEvent e) {progress(e.getPlayer(),e.getBlock().getType(),"mined");}
-    void stop() { for(Player p:Bukkit.getOnlinePlayers())flushTime(p);save(); }
+    void stop() { for(Player p:Bukkit.getOnlinePlayers())flushTime(p);save();titles.flush();community.stop(); }
 }

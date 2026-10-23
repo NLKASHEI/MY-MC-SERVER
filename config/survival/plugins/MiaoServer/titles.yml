@@ -1,0 +1,552 @@
+schema: 1
+custom-price: 100000
+titles:
+  first_light:
+    display: <gradient:#A8FFCF:#38C9FF><bold>【初见南风】</bold></gradient>
+    kind: milestone
+    icon: OAK_SAPLING
+    description: 初次与这片世界相遇；已有玩家上线自动补发
+    metric: joined
+    target: 1
+  warm_guest:
+    display: <gradient:#FFE6AA:#FFB347><bold>【小住片刻】</bold></gradient>
+    kind: milestone
+    icon: CLOCK
+    description: 累计登录在线 2 小时，含挂机与建筑区时间
+    metric: seconds
+    target: 7200
+  familiar:
+    display: <gradient:#A5F3FC:#818CF8><bold>【此间熟客】</bold></gradient>
+    kind: milestone
+    icon: CLOCK
+    description: 累计登录在线 10 小时，含挂机与建筑区时间
+    metric: seconds
+    target: 36000
+  old_friend:
+    display: <gradient:#C4B5FD:#F9A8D4><bold>【山海故人】</bold></gradient>
+    kind: milestone
+    icon: CLOCK
+    description: 累计登录在线 50 小时，含挂机与建筑区时间
+    metric: seconds
+    target: 180000
+  long_watch:
+    display: <gradient:#60A5FA:#C084FC><bold>【星河守望】</bold></gradient>
+    kind: milestone
+    icon: CLOCK
+    description: 累计登录在线 100 小时，含挂机与建筑区时间
+    metric: seconds
+    target: 360000
+  home_forever:
+    display: <gradient:#FDE68A:#FB7185><bold>【此心吾乡】</bold></gradient>
+    kind: milestone
+    icon: CLOCK
+    description: 累计登录在线 300 小时，含挂机与建筑区时间
+    metric: seconds
+    target: 1080000
+  stone_scout:
+    display: <gradient:#D1D5DB:#93C5FD><bold>【掘石新星】</bold></gradient>
+    kind: milestone
+    icon: DIAMOND_PICKAXE
+    description: 累计成功生存挖掘 1,000 个方块；依据已有服务端生存计数
+    metric: mined
+    target: 1000
+  deep_walker:
+    display: <gradient:#67E8F9:#2563EB><bold>【地心行者】</bold></gradient>
+    kind: milestone
+    icon: DIAMOND_PICKAXE
+    description: 累计成功生存挖掘 10,000 个方块；依据已有服务端生存计数
+    metric: mined
+    target: 10000
+  vein_master:
+    display: <gradient:#A78BFA:#F0ABFC><bold>【百脉宗师】</bold></gradient>
+    kind: milestone
+    icon: DIAMOND_PICKAXE
+    description: 累计成功生存挖掘 100,000 个方块；依据已有服务端生存计数
+    metric: mined
+    target: 100000
+  earth_sage:
+    display: <gradient:#FDE047:#F97316><bold>【万岩归宗】</bold></gradient>
+    kind: milestone
+    icon: DIAMOND_PICKAXE
+    description: 累计成功生存挖掘 1,000,000 个方块；依据已有服务端生存计数
+    metric: mined
+    target: 1000000
+  first_bricks:
+    display: <gradient:#FDBA74:#FDE68A><bold>【筑梦工匠】</bold></gradient>
+    kind: milestone
+    icon: BRICKS
+    description: 累计成功生存放置 500 个方块；建筑世界不累计
+    metric: placed
+    target: 500
+  craftsman:
+    display: <gradient:#86EFAC:#22D3EE><bold>【方寸匠心】</bold></gradient>
+    kind: milestone
+    icon: BRICKS
+    description: 累计成功生存放置 5,000 个方块；建筑世界不累计
+    metric: placed
+    target: 5000
+  sky_builder:
+    display: <gradient:#93C5FD:#E9D5FF><bold>【云上造物】</bold></gradient>
+    kind: milestone
+    icon: BRICKS
+    description: 累计成功生存放置 50,000 个方块；建筑世界不累计
+    metric: placed
+    target: 50000
+  city_architect:
+    display: <gradient:#FCD34D:#F472B6><bold>【万象筑师】</bold></gradient>
+    kind: milestone
+    icon: BRICKS
+    description: 累计成功生存放置 200,000 个方块；建筑世界不累计
+    metric: placed
+    target: 200000
+  hunter:
+    display: <gradient:#FCA5A5:#F97316><bold>【荒野猎手】</bold></gradient>
+    kind: milestone
+    icon: DIAMOND_SWORD
+    description: 累计击败生物 100 只；首次导入原版历史统计
+    metric: kills
+    target: 100
+  night_guard:
+    display: <gradient:#C084FC:#F87171><bold>【长夜破晓】</bold></gradient>
+    kind: milestone
+    icon: DIAMOND_SWORD
+    description: 累计击败生物 1,000 只；首次导入原版历史统计
+    metric: kills
+    target: 1000
+  battle_legend:
+    display: <gradient:#FDE047:#EF4444><bold>【万战归来】</bold></gradient>
+    kind: milestone
+    icon: DIAMOND_SWORD
+    description: 累计击败生物 10,000 只；首次导入原版历史统计
+    metric: kills
+    target: 10000
+  angler:
+    display: <gradient:#A7F3D0:#38BDF8><bold>【愿者上钩】</bold></gradient>
+    kind: milestone
+    icon: FISHING_ROD
+    description: 累计钓鱼收获 50 次；首次导入原版历史统计
+    metric: fish
+    target: 50
+  ocean_guest:
+    display: <gradient:#67E8F9:#818CF8><bold>【沧海钓客】</bold></gradient>
+    kind: milestone
+    icon: FISHING_ROD
+    description: 累计钓鱼收获 500 次；首次导入原版历史统计
+    metric: fish
+    target: 500
+  sea_legend:
+    display: <gradient:#C4B5FD:#F9A8D4><bold>【一竿星河】</bold></gradient>
+    kind: milestone
+    icon: FISHING_ROD
+    description: 累计钓鱼收获 2,000 次；首次导入原版历史统计
+    metric: fish
+    target: 2000
+  explorer:
+    display: <gradient:#A3E635:#2DD4BF><bold>【旅途初章】</bold></gradient>
+    kind: milestone
+    icon: BOOK
+    description: 完成 10 项原版非配方进度；已有进度自动补发
+    metric: advancements
+    target: 10
+  adventurer:
+    display: <gradient:#FDBA74:#F472B6><bold>【山海拾光】</bold></gradient>
+    kind: milestone
+    icon: BOOK
+    description: 完成 30 项原版非配方进度；已有进度自动补发
+    metric: advancements
+    target: 30
+  chronicle:
+    display: <gradient:#FDE68A:#C084FC><bold>【万象见证】</bold></gradient>
+    kind: milestone
+    icon: BOOK
+    description: 完成 60 项原版非配方进度；已有进度自动补发
+    metric: advancements
+    target: 60
+  mint_guest:
+    display: <gradient:#BBF7D0:#2DD4BF><bold>【薄荷来客】</bold></gradient>
+    kind: shop
+    icon: EMERALD
+    description: 金币永久解锁的装饰称号；购买不自动佩戴
+    price: 2000
+  sunset:
+    display: <gradient:#FDE68A:#FB7185><bold>【落日邮差】</bold></gradient>
+    kind: shop
+    icon: SUNFLOWER
+    description: 金币永久解锁的装饰称号；购买不自动佩戴
+    price: 5000
+  moon_letter:
+    display: <gradient:#BAE6FD:#C4B5FD><bold>【月下寄信】</bold></gradient>
+    kind: shop
+    icon: PAPER
+    description: 金币永久解锁的装饰称号；购买不自动佩戴
+    price: 10000
+  cloud_dream:
+    display: <gradient:#FBCFE8:#A5F3FC><bold>【云端筑梦】</bold></gradient>
+    kind: shop
+    icon: QUARTZ
+    description: 金币永久解锁的装饰称号；购买不自动佩戴
+    price: 20000
+  starlight:
+    display: <gradient:#818CF8:#F0ABFC><bold>【星海漫游】</bold></gradient>
+    kind: shop
+    icon: AMETHYST_SHARD
+    description: 金币永久解锁的装饰称号；购买不自动佩戴
+    price: 50000
+  golden_age:
+    display: <gradient:#FFF4B0:#FFAA00><bold>【鎏金流年】</bold></gradient>
+    kind: shop
+    icon: GOLD_INGOT
+    description: 金币永久解锁的装饰称号；购买不自动佩戴
+    price: 100000
+  galaxy:
+    display: <gradient:#60A5FA:#C084FC><bold>【银河执笔】</bold></gradient>
+    kind: shop
+    icon: NETHER_STAR
+    description: 金币永久解锁的装饰称号；购买不自动佩戴
+    price: 250000
+  festival:
+    display: <gradient:#FDE047:#FB7185><bold>【南风盛会】</bold></gradient>
+    kind: admin
+    icon: FIREWORK_ROCKET
+    description: 活动纪念，由管理员授予；不出售
+  walk_1:
+    display: <gradient:#86EFAC:#38BDF8><bold>【踏风旅人】</bold></gradient>
+    kind: milestone
+    metric: walk_cm
+    target: 1000000
+    icon: LEATHER_BOOTS
+    description: 当前进度 {progress}；达成后永久解锁
+  walk_2:
+    display: <gradient:#86EFAC:#38BDF8><bold>【山河过客】</bold></gradient>
+    kind: milestone
+    metric: walk_cm
+    target: 10000000
+    icon: LEATHER_BOOTS
+    description: 当前进度 {progress}；达成后永久解锁
+  walk_3:
+    display: <gradient:#86EFAC:#38BDF8><bold>【万里独行】</bold></gradient>
+    kind: milestone
+    metric: walk_cm
+    target: 100000000
+    icon: LEATHER_BOOTS
+    description: 当前进度 {progress}；达成后永久解锁
+  sprint_1:
+    display: <gradient:#FDE68A:#F97316><bold>【追风少年】</bold></gradient>
+    kind: milestone
+    metric: sprint_cm
+    target: 1000000
+    icon: SUGAR
+    description: 当前进度 {progress}；达成后永久解锁
+  sprint_2:
+    display: <gradient:#FDE68A:#F97316><bold>【疾影无踪】</bold></gradient>
+    kind: milestone
+    metric: sprint_cm
+    target: 10000000
+    icon: SUGAR
+    description: 当前进度 {progress}；达成后永久解锁
+  swim_1:
+    display: <gradient:#67E8F9:#2563EB><bold>【浪里白条】</bold></gradient>
+    kind: milestone
+    metric: swim_cm
+    target: 500000
+    icon: PRISMARINE_SHARD
+    description: 当前进度 {progress}；达成后永久解锁
+  swim_2:
+    display: <gradient:#67E8F9:#2563EB><bold>【深蓝漫游】</bold></gradient>
+    kind: milestone
+    metric: swim_cm
+    target: 5000000
+    icon: PRISMARINE_SHARD
+    description: 当前进度 {progress}；达成后永久解锁
+  elytra_1:
+    display: <gradient:#BAE6FD:#C084FC><bold>【乘风初翼】</bold></gradient>
+    kind: milestone
+    metric: elytra_cm
+    target: 1000000
+    icon: ELYTRA
+    description: 当前进度 {progress}；达成后永久解锁
+  elytra_2:
+    display: <gradient:#BAE6FD:#C084FC><bold>【云海逐光】</bold></gradient>
+    kind: milestone
+    metric: elytra_cm
+    target: 10000000
+    icon: ELYTRA
+    description: 当前进度 {progress}；达成后永久解锁
+  elytra_3:
+    display: <gradient:#BAE6FD:#C084FC><bold>【九霄游龙】</bold></gradient>
+    kind: milestone
+    metric: elytra_cm
+    target: 100000000
+    icon: ELYTRA
+    description: 当前进度 {progress}；达成后永久解锁
+  boat_1:
+    display: <gradient:#A5F3FC:#2DD4BF><bold>【一叶扁舟】</bold></gradient>
+    kind: milestone
+    metric: boat_cm
+    target: 1000000
+    icon: OAK_BOAT
+    description: 当前进度 {progress}；达成后永久解锁
+  boat_2:
+    display: <gradient:#A5F3FC:#2DD4BF><bold>【沧海横流】</bold></gradient>
+    kind: milestone
+    metric: boat_cm
+    target: 10000000
+    icon: OAK_BOAT
+    description: 当前进度 {progress}；达成后永久解锁
+  horse_1:
+    display: <gradient:#FDBA74:#FB7185><bold>【策马长歌】</bold></gradient>
+    kind: milestone
+    metric: horse_cm
+    target: 1000000
+    icon: SADDLE
+    description: 当前进度 {progress}；达成后永久解锁
+  horse_2:
+    display: <gradient:#FDBA74:#FB7185><bold>【踏遍山河】</bold></gradient>
+    kind: milestone
+    metric: horse_cm
+    target: 10000000
+    icon: SADDLE
+    description: 当前进度 {progress}；达成后永久解锁
+  rail_1:
+    display: <gradient:#D1D5DB:#FDE68A><bold>【铁轨旅客】</bold></gradient>
+    kind: milestone
+    metric: rail_cm
+    target: 500000
+    icon: MINECART
+    description: 当前进度 {progress}；达成后永久解锁
+  rail_2:
+    display: <gradient:#D1D5DB:#FDE68A><bold>【轨道星河】</bold></gradient>
+    kind: milestone
+    metric: rail_cm
+    target: 5000000
+    icon: MINECART
+    description: 当前进度 {progress}；达成后永久解锁
+  trade_1:
+    display: <gradient:#BBF7D0:#10B981><bold>【村庄熟客】</bold></gradient>
+    kind: milestone
+    metric: trades
+    target: 100
+    icon: EMERALD
+    description: 当前进度 {progress}；达成后永久解锁
+  trade_2:
+    display: <gradient:#BBF7D0:#10B981><bold>【绿宝石伯爵】</bold></gradient>
+    kind: milestone
+    metric: trades
+    target: 1000
+    icon: EMERALD
+    description: 当前进度 {progress}；达成后永久解锁
+  trade_3:
+    display: <gradient:#BBF7D0:#10B981><bold>【万商云集】</bold></gradient>
+    kind: milestone
+    metric: trades
+    target: 10000
+    icon: EMERALD
+    description: 当前进度 {progress}；达成后永久解锁
+  bred_1:
+    display: <gradient:#D9F99D:#4ADE80><bold>【田园牧歌】</bold></gradient>
+    kind: milestone
+    metric: bred
+    target: 50
+    icon: WHEAT
+    description: 当前进度 {progress}；达成后永久解锁
+  bred_2:
+    display: <gradient:#D9F99D:#4ADE80><bold>【万物生息】</bold></gradient>
+    kind: milestone
+    metric: bred
+    target: 500
+    icon: WHEAT
+    description: 当前进度 {progress}；达成后永久解锁
+  enchant_1:
+    display: <gradient:#C4B5FD:#F472B6><bold>【附魔学徒】</bold></gradient>
+    kind: milestone
+    metric: enchanted
+    target: 20
+    icon: ENCHANTING_TABLE
+    description: 当前进度 {progress}；达成后永久解锁
+  enchant_2:
+    display: <gradient:#C4B5FD:#F472B6><bold>【秘法织梦】</bold></gradient>
+    kind: milestone
+    metric: enchanted
+    target: 200
+    icon: ENCHANTING_TABLE
+    description: 当前进度 {progress}；达成后永久解锁
+  enchant_3:
+    display: <gradient:#C4B5FD:#F472B6><bold>【万法归一】</bold></gradient>
+    kind: milestone
+    metric: enchanted
+    target: 1000
+    icon: ENCHANTING_TABLE
+    description: 当前进度 {progress}；达成后永久解锁
+  raid_1:
+    display: <gradient:#FDE047:#EF4444><bold>【守村英雄】</bold></gradient>
+    kind: milestone
+    metric: raids
+    target: 1
+    icon: CROSSBOW
+    description: 当前进度 {progress}；达成后永久解锁
+  raid_2:
+    display: <gradient:#FDE047:#EF4444><bold>【不落之城】</bold></gradient>
+    kind: milestone
+    metric: raids
+    target: 10
+    icon: CROSSBOW
+    description: 当前进度 {progress}；达成后永久解锁
+  sleep_1:
+    display: <gradient:#C7D2FE:#F9A8D4><bold>【好梦常在】</bold></gradient>
+    kind: milestone
+    metric: sleep
+    target: 30
+    icon: BLUE_BED
+    description: 当前进度 {progress}；达成后永久解锁
+  sleep_2:
+    display: <gradient:#C7D2FE:#F9A8D4><bold>【枕星入眠】</bold></gradient>
+    kind: milestone
+    metric: sleep
+    target: 100
+    icon: BLUE_BED
+    description: 当前进度 {progress}；达成后永久解锁
+  dragon_1:
+    display: <gradient:#A78BFA:#F472B6><bold>【终焉破晓】</bold></gradient>
+    kind: milestone
+    metric: dragon
+    target: 1
+    icon: DRAGON_HEAD
+    description: 当前进度 {progress}；达成后永久解锁
+  dragon_2:
+    display: <gradient:#A78BFA:#F472B6><bold>【屠龙诗篇】</bold></gradient>
+    kind: milestone
+    metric: dragon
+    target: 10
+    icon: DRAGON_HEAD
+    description: 当前进度 {progress}；达成后永久解锁
+  wither_1:
+    display: <gradient:#9CA3AF:#FDE68A><bold>【凋零终结者】</bold></gradient>
+    kind: milestone
+    metric: wither
+    target: 1
+    icon: NETHER_STAR
+    description: 当前进度 {progress}；达成后永久解锁
+  wither_2:
+    display: <gradient:#9CA3AF:#FDE68A><bold>【不灭星火】</bold></gradient>
+    kind: milestone
+    metric: wither
+    target: 10
+    icon: NETHER_STAR
+    description: 当前进度 {progress}；达成后永久解锁
+  elder_1:
+    display: <gradient:#5EEAD4:#818CF8><bold>【深海镇守】</bold></gradient>
+    kind: milestone
+    metric: elder
+    target: 1
+    icon: PRISMARINE
+    description: 当前进度 {progress}；达成后永久解锁
+  biome_1:
+    display: <gradient:#A3E635:#38BDF8><bold>【万里寻踪】</bold></gradient>
+    kind: milestone
+    metric: biomes
+    target: 15
+    icon: MAP
+    description: 当前进度 {progress}；达成后永久解锁
+  biome_2:
+    display: <gradient:#A3E635:#38BDF8><bold>【山海图鉴】</bold></gradient>
+    kind: milestone
+    metric: biomes
+    target: 40
+    icon: MAP
+    description: 当前进度 {progress}；达成后永久解锁
+  wealth_1:
+    display: <gradient:#FDE68A:#F59E0B><bold>【小有积蓄】</bold></gradient>
+    kind: milestone
+    metric: balance
+    target: 10000
+    icon: GOLD_BLOCK
+    description: 当前进度 {progress}；达成后永久解锁
+  wealth_2:
+    display: <gradient:#FDE68A:#F59E0B><bold>【富甲一方】</bold></gradient>
+    kind: milestone
+    metric: balance
+    target: 100000
+    icon: GOLD_BLOCK
+    description: 当前进度 {progress}；达成后永久解锁
+  wealth_3:
+    display: <gradient:#FDE68A:#F59E0B><bold>【金海藏锋】</bold></gradient>
+    kind: milestone
+    metric: balance
+    target: 1000000
+    icon: GOLD_BLOCK
+    description: 当前进度 {progress}；达成后永久解锁
+  team_1:
+    display: <gradient:#FDBA74:#F0ABFC><bold>【并肩而行】</bold></gradient>
+    kind: milestone
+    metric: team_size
+    target: 2
+    icon: CAMPFIRE
+    description: 当前进度 {progress}；达成后永久解锁
+  team_2:
+    display: <gradient:#FDBA74:#F0ABFC><bold>【八方来客】</bold></gradient>
+    kind: milestone
+    metric: team_size
+    target: 8
+    icon: CAMPFIRE
+    description: 当前进度 {progress}；达成后永久解锁
+  harvest_1:
+    display: <gradient:#BEF264:#FACC15><bold>【稻香满仓】</bold></gradient>
+    kind: milestone
+    metric: harvest
+    target: 1000
+    icon: HAY_BLOCK
+    description: 当前进度 {progress}；达成后永久解锁
+  harvest_2:
+    display: <gradient:#BEF264:#FACC15><bold>【阡陌丰年】</bold></gradient>
+    kind: milestone
+    metric: harvest
+    target: 10000
+    icon: HAY_BLOCK
+    description: 当前进度 {progress}；达成后永久解锁
+  legend_builder:
+    display: <gradient:#FDE047:#FB7185><bold>【天工开物】</bold></gradient>
+    kind: milestone
+    metric: joined
+    target: 1
+    icon: NETHER_STAR
+    description: 多项里程碑共同达成；收藏进度 {owned}/{total}
+    requirements:
+      seconds: 180000
+      placed: 50000
+      mined: 10000
+  legend_wanderer:
+    display: <gradient:#67E8F9:#A78BFA><bold>【山海无涯】</bold></gradient>
+    kind: milestone
+    metric: joined
+    target: 1
+    icon: NETHER_STAR
+    description: 多项里程碑共同达成；收藏进度 {owned}/{total}
+    requirements:
+      walk_cm: 10000000
+      biomes: 40
+      advancements: 30
+  legend_hunter:
+    display: <gradient:#F87171:#C084FC><bold>【诸界行者】</bold></gradient>
+    kind: milestone
+    metric: joined
+    target: 1
+    icon: NETHER_STAR
+    description: 多项里程碑共同达成；收藏进度 {owned}/{total}
+    requirements:
+      dragon: 1
+      wither: 1
+      elder: 1
+      kills: 1000
+  legend_survivor:
+    display: <gradient:#FDE68A:#F0ABFC><bold>【南风传说】</bold></gradient>
+    kind: milestone
+    metric: joined
+    target: 1
+    icon: NETHER_STAR
+    description: 多项里程碑共同达成；收藏进度 {owned}/{total}
+    requirements:
+      seconds: 1080000
+      mined: 100000
+      placed: 50000
+      advancements: 60
+      fish: 500

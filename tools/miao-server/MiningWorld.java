@@ -32,9 +32,9 @@ final class MiningWorld implements Listener {
     private static final ZoneId ZONE=ZoneId.of("Asia/Shanghai");
     private record Admission(UUID transaction,double amount,UUID world){}
     private static final UUID AUTOMATION=UUID.nameUUIDFromBytes("NLK-mining-automation".getBytes(java.nio.charset.StandardCharsets.UTF_8));
-    static final Set<Material> ORES=Collections.unmodifiableSet(EnumSet.of(Material.COAL_ORE,Material.DEEPSLATE_COAL_ORE,Material.IRON_ORE,Material.DEEPSLATE_IRON_ORE,Material.COPPER_ORE,Material.DEEPSLATE_COPPER_ORE,Material.GOLD_ORE,Material.DEEPSLATE_GOLD_ORE,Material.REDSTONE_ORE,Material.DEEPSLATE_REDSTONE_ORE,Material.LAPIS_ORE,Material.DEEPSLATE_LAPIS_ORE,Material.DIAMOND_ORE,Material.DEEPSLATE_DIAMOND_ORE,Material.EMERALD_ORE,Material.DEEPSLATE_EMERALD_ORE));
+    static final Set<Material> ORES=Collections.unmodifiableSet(EnumSet.of(Material.COAL_ORE,Material.DEEPSLATE_COAL_ORE,Material.IRON_ORE,Material.DEEPSLATE_IRON_ORE,Material.COPPER_ORE,Material.DEEPSLATE_COPPER_ORE,Material.GOLD_ORE,Material.DEEPSLATE_GOLD_ORE,Material.REDSTONE_ORE,Material.DEEPSLATE_REDSTONE_ORE,Material.LAPIS_ORE,Material.DEEPSLATE_LAPIS_ORE,Material.DIAMOND_ORE,Material.DEEPSLATE_DIAMOND_ORE,Material.EMERALD_ORE,Material.DEEPSLATE_EMERALD_ORE,Material.NETHER_QUARTZ_ORE,Material.NETHER_GOLD_ORE,Material.ANCIENT_DEBRIS));
     static final Set<Material> MINERALS;
-    static {var set=EnumSet.copyOf(ORES);set.addAll(List.of(Material.COAL,Material.RAW_IRON,Material.RAW_COPPER,Material.RAW_GOLD,Material.REDSTONE,Material.LAPIS_LAZULI,Material.DIAMOND,Material.EMERALD));MINERALS=Collections.unmodifiableSet(set);}
+    static {var set=EnumSet.copyOf(ORES);set.addAll(List.of(Material.COAL,Material.RAW_IRON,Material.RAW_COPPER,Material.RAW_GOLD,Material.REDSTONE,Material.LAPIS_LAZULI,Material.DIAMOND,Material.EMERALD,Material.QUARTZ,Material.GOLD_NUGGET));MINERALS=Collections.unmodifiableSet(set);}
     MiningWorld(MiaoServer plugin,MiaoInterface ui){
         this.plugin=plugin;this.ui=ui;file=new File(plugin.getDataFolder(),"mining-ledger.yml");
         placedKey=new NamespacedKey(plugin,"mining-placed-ores");naturalKey=new NamespacedKey(plugin,"mining-natural-drop");
@@ -47,9 +47,10 @@ final class MiningWorld implements Listener {
         Bukkit.getScheduler().runTaskTimer(plugin,()->{retryRefunds();save();},100,100);
         Bukkit.getScheduler().runTaskTimer(plugin,this::clock,1,20);
     }
-    static boolean mine(World world){return world!=null&&world.getKey().equals(NamespacedKey.minecraft("mining"));}
+    static boolean mine(World world){return world!=null&&world.getKey().getNamespace().equals("minecraft")&&MiningDimensions.NAMES.contains(world.getKey().getKey());}
+    private UUID generation(){World main=Bukkit.getWorld(NamespacedKey.minecraft("mining"));return main==null?null:main.getUID();}
     private int divisor(){return plugin.getConfig().getInt("resource-world.tax-divisor",3);}
-    private double fee(){return plugin.getConfig().getDouble("resource-world.entry-fee",100);}
+    private double fee(){return plugin.getConfig().getDouble("resource-world.entry-fee",200);}
     private int resetDays(){return Math.max(1,plugin.getConfig().getInt("resource-world.reset-period-days",3));}
     private int resetHour(){return Math.max(0,Math.min(23,plugin.getConfig().getInt("resource-world.reset-hour",4)));}
     static ZonedDateTime firstReset(ZonedDateTime now,int days,int hour){return now.withZoneSameInstant(ZONE).toLocalDate().plusDays(days).atTime(hour,0).atZone(ZONE);}
@@ -67,14 +68,14 @@ final class MiningWorld implements Listener {
         try{
             World world=Bukkit.getWorld(NamespacedKey.minecraft("mining"));
             Location safe=RespawnSafety.spawn(Objects.requireNonNull(Bukkit.getWorld("world")));
-            for(Player p:world==null?List.<Player>of():new ArrayList<>(world.getPlayers())){
+            for(Player p:Bukkit.getWorlds().stream().filter(MiningWorld::mine).flatMap(w->w.getPlayers().stream()).toList()){
                 if(p.isDead())p.spigot().respawn();
                 if(mine(p.getWorld())&&!p.teleport(safe))throw new IllegalStateException("Cannot evacuate player "+p.getUniqueId());
             }
-            if(world!=null&&!world.getPlayers().isEmpty())throw new IllegalStateException("Mining world still contains players");
+            if(Bukkit.getWorlds().stream().filter(MiningWorld::mine).anyMatch(w->!w.getPlayers().isEmpty()))throw new IllegalStateException("Mining family still contains players");
             for(var entry:new ArrayList<>(pending.entrySet())){if(pending.remove(entry.getKey(),entry.getValue()))refund(entry.getKey(),entry.getValue());}
             ledger.set("reset-in-progress",true);dirty=true;save();
-            if(world==null)WorldExpansion.start(plugin);else WorldExpansion.resetMining(plugin);
+            WorldExpansion.resetMining(plugin);
             var players=ledger.getConfigurationSection("players");
             if(players!=null)for(String id:players.getKeys(false))if(ledger.getBoolean("players."+id+".active")){
                 ledger.set("players."+id+".active",false);ledger.set("players."+id+".reset-notice",true);
@@ -94,9 +95,9 @@ final class MiningWorld implements Listener {
     private boolean charge(Player p){try{return economy().withdrawPlayer(p,fee()).transactionSuccess();}catch(Exception e){plugin.getLogger().warning("矿界扣款失败，已拒绝入场："+p.getUniqueId()+" / "+e.getClass().getSimpleName());return false;}}
     private void attach(World world){
         if(!mine(world))return;
-        if(!world.getPopulators().contains(populator))world.getPopulators().add(populator);
+        if(world.getEnvironment()!=World.Environment.THE_END&&!world.getPopulators().contains(populator))world.getPopulators().add(populator);
         // Upgrade existing visits once; never bless a ticket after an interrupted/due reset.
-        if(!ledger.getBoolean("ticket-world-migrated")){
+        if(world.getKey().equals(NamespacedKey.minecraft("mining"))&&!ledger.getBoolean("ticket-world-migrated")){
             var players=ledger.getConfigurationSection("players");
             if(players!=null)for(String id:players.getKeys(false)){
                 String key="players."+id;
@@ -105,7 +106,7 @@ final class MiningWorld implements Listener {
             ledger.set("ticket-world-migrated",true);dirty=true;save();
         }
     }
-    private boolean validTicket(Player p){return mine(p.getWorld())&&ledger.getBoolean(path(p.getUniqueId())+".active")&&p.getWorld().getUID().toString().equals(ledger.getString(path(p.getUniqueId())+".world-id"));}
+    private boolean validTicket(Player p){return mine(p.getWorld())&&ledger.getBoolean(path(p.getUniqueId())+".active")&&generation()!=null&&generation().toString().equals(ledger.getString(path(p.getUniqueId())+".world-id"));}
     private boolean allowed(Player p){return ui.authenticated(p)&&validTicket(p)&&!resetting&&!ledger.getBoolean("reset-in-progress")&&System.currentTimeMillis()<ledger.getLong("next-reset");}
     @EventHandler public void initialize(WorldInitEvent event){if(mine(event.getWorld())){DhWorldLifecycle.initialized(event.getWorld());attach(event.getWorld());}}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true)
@@ -135,6 +136,7 @@ final class MiningWorld implements Listener {
         Player p=event.getPlayer();
         if(mine(p.getWorld())){
             if(resetting||ledger.getBoolean("reset-in-progress")||System.currentTimeMillis()>=ledger.getLong("next-reset")){p.teleport(RespawnSafety.spawn(Objects.requireNonNull(Bukkit.getWorld("world"))));return;}
+            if(mine(event.getFrom())&&allowed(p)){p.setGameMode(GameMode.SURVIVAL);return;}
             // Also guards world transfers not represented by PlayerTeleportEvent.
             Admission admission=pending.remove(p.getUniqueId());
             if(admission!=null&&!admission.world().equals(p.getWorld().getUID())){refund(p.getUniqueId(),admission);admission=null;}
@@ -149,7 +151,7 @@ final class MiningWorld implements Listener {
     }
     private void begin(Player p){
         String key=path(p.getUniqueId());
-        ledger.set(key+".visit",null);ledger.set(key+".active",true);ledger.set(key+".world-id",p.getWorld().getUID().toString());dirty=true;save();say(p,"已进入丰饶矿界，门票 "+fee()+" 金币；天然矿产每累计 "+divisor()+" 份预留 1 份，离开显示结算。重连不重复购票。");say(p,"此处不能建家，建筑和箱子会被重置清空！下次重置："+resetTime());
+        ledger.set(key+".visit",null);ledger.set(key+".active",true);ledger.set(key+".world-id",Objects.requireNonNull(generation()).toString());dirty=true;save();say(p,"已进入丰饶矿界，门票 "+fee()+" 金币；天然矿产每累计 "+divisor()+" 份预留 1 份，离开显示结算。重连不重复购票。");say(p,"此处不能建家，建筑和箱子会被重置清空！下次重置："+resetTime());
     }
     private void finish(Player p){
         String key=path(p.getUniqueId());if(!ledger.getBoolean(key+".active"))return;
@@ -168,9 +170,11 @@ final class MiningWorld implements Listener {
     @EventHandler(priority=EventPriority.MONITOR) public void respawn(PlayerRespawnEvent e){if(mine(e.getPlayer().getWorld())&&!mine(e.getRespawnLocation().getWorld()))Bukkit.getScheduler().runTask(plugin,()->{if(!mine(e.getPlayer().getWorld()))finish(e.getPlayer());});}
     void command(Player p,String action){
         if(!ui.authenticated(p))return;
-        if(action.equals("enter")){
-            if(mine(p.getWorld())){say(p,"你已在丰饶矿界，无需再次购票。");return;}
-            World target=Bukkit.getWorld(NamespacedKey.minecraft("mining"));
+        if(Set.of("enter","overworld","nether","end").contains(action)){
+            String destination=action.equals("nether")?"mining_nether":action.equals("end")?"mining_the_end":"mining";
+            if(mine(p.getWorld())&&!allowed(p)){say(p,"请先重新购买门票。");return;}
+            World target=Bukkit.getWorld(NamespacedKey.minecraft(destination));
+            if(target==p.getWorld()){say(p,"你已在这里。");return;}
             if(target==null){say(p,"矿界尚未就绪，请联系管理员。");return;}
             p.teleport(RespawnSafety.spawn(target));
         }else if(action.equals("leave")){
@@ -222,7 +226,7 @@ final class MiningWorld implements Listener {
     }
     @EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true) public void extend(BlockPistonExtendEvent e){if(mine(e.getBlock().getWorld()))moved(e.getBlocks(),e.getDirection());}
     @EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true) public void retract(BlockPistonRetractEvent e){if(mine(e.getBlock().getWorld()))moved(e.getBlocks(),e.getDirection().getOppositeFace());}
-    private String source(Block block){return block.getX()+":"+block.getY()+":"+block.getZ();}
+    private String source(Block block){return block.getWorld().getUID()+":"+block.getX()+":"+block.getY()+":"+block.getZ();}
     private void explosion(List<Block> blocks){
         var keys=new ArrayList<String>();for(Block b:blocks)if(mine(b.getWorld())&&ORES.contains(b.getType())){
             if(!placed(b)){String key=source(b);explosionSources.add(key);keys.add(key);}else mark(b,false);
@@ -247,7 +251,11 @@ final class MiningWorld implements Listener {
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void hopper(InventoryPickupItemEvent e){if(e.getItem().getPersistentDataContainer().has(naturalKey)){explosionPickup(e.getItem(),AUTOMATION);e.setCancelled(true);}}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void merging(ItemMergeEvent e){if(mine(e.getEntity().getWorld())&&e.getEntity().getPersistentDataContainer().has(naturalKey)!=e.getTarget().getPersistentDataContainer().has(naturalKey))e.setCancelled(true);}
     @EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true) public void dropped(PlayerDropItemEvent e){if(mine(e.getPlayer().getWorld()))e.getItemDrop().getPersistentDataContainer().remove(naturalKey);}
-    @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void portal(PlayerPortalEvent e){if(mine(e.getFrom().getWorld())){e.setCancelled(true);say(e.getPlayer(),"矿界不通往下界或末地，请用指南针返回生存。");}}
+    @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void portal(PlayerPortalEvent e){
+        if(!mine(e.getFrom().getWorld()))return;e.setCancelled(true);if(!allowed(e.getPlayer()))return;
+        String target=e.getFrom().getWorld().getEnvironment()!=World.Environment.NORMAL?"mining":e.getCause()==PlayerTeleportEvent.TeleportCause.END_PORTAL?"mining_the_end":"mining_nether";
+        Bukkit.getScheduler().runTask(plugin,()->{if(e.getPlayer().isOnline()&&allowed(e.getPlayer())){World world=Bukkit.getWorld(NamespacedKey.minecraft(target));if(world!=null)e.getPlayer().teleport(RespawnSafety.spawn(world));}});
+    }
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void portal(EntityPortalEvent e){if(mine(e.getFrom().getWorld()))e.setCancelled(true);}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void export(EntityTeleportEvent e){if(e.getEntity() instanceof Item item&&e.getTo()!=null&&!Objects.equals(e.getFrom().getWorld(),e.getTo().getWorld())&&item.getPersistentDataContainer().has(naturalKey)){explosionPickup(item,AUTOMATION);if(!item.isValid())e.setCancelled(true);}}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void interact(PlayerInteractEvent e){if(mine(e.getPlayer().getWorld())&&!allowed(e.getPlayer()))e.setCancelled(true);}
@@ -265,21 +273,31 @@ final class MiningWorld implements Listener {
         catch(IOException e){throw new IllegalStateException("Cannot persist mining ledger",e);}
     }
     void stop(){for(var entry:pending.entrySet())refund(entry.getKey(),entry.getValue());pending.clear();save();}
-    /** Target total ore coverage among original ore/stone; preserve existing deposits and all other blocks. */
+    /** Exact coverage budget, spent in connected same-material veins; never replaces existing ore. */
     private static final class OreBonus extends BlockPopulator {
         private final int percent;OreBonus(int percent){this.percent=percent;}
+        private String ore(Random random,int y,boolean nether){
+            int roll=random.nextInt(10000);
+            if(nether)return roll<10&&y<24?"ANCIENT_DEBRIS":roll<6500?"NETHER_QUARTZ_ORE":"NETHER_GOLD_ORE";
+            return roll<100?(y<0?"DIAMOND_ORE":"IRON_ORE"):roll<150?(y>=0?"EMERALD_ORE":"IRON_ORE"):roll<700?"GOLD_ORE":roll<1700?"REDSTONE_ORE":roll<2400?"LAPIS_ORE":roll<4600?"COPPER_ORE":roll<7400?"IRON_ORE":"COAL_ORE";
+        }
         @Override public void populate(WorldInfo info,Random random,int chunkX,int chunkZ,LimitedRegion region){
-            int baseX=chunkX<<4,baseZ=chunkZ<<4,min=info.getMinHeight();int[] candidates=new int[256*(info.getMaxHeight()-min)];int count=0,existing=0;
-            for(int x=baseX;x<baseX+16;x++)for(int z=baseZ;z<baseZ+16;z++)for(int y=info.getMinHeight()+1;y<info.getMaxHeight()-1;y++){
+            int baseX=chunkX<<4,baseZ=chunkZ<<4,min=info.getMinHeight(),capacity=256*(info.getMaxHeight()-min);int[] pool=new int[capacity],index=new int[capacity];Arrays.fill(index,-1);int count=0,existing=0;boolean nether=info.getEnvironment()==World.Environment.NETHER;
+            if(info.getEnvironment()==World.Environment.THE_END)return;
+            for(int x=baseX;x<baseX+16;x++)for(int z=baseZ;z<baseZ+16;z++)for(int y=min+1;y<info.getMaxHeight()-1;y++){
                 Material material=region.getType(x,y,z);if(ORES.contains(material))existing++;
-                else if(material==Material.STONE||material==Material.DEEPSLATE)candidates[count++]=((y-min)<<8)|((x&15)<<4)|(z&15);
+                else if(nether?material==Material.NETHERRACK:material==Material.STONE||material==Material.DEEPSLATE){int pos=((y-min)<<8)|((x&15)<<4)|(z&15);index[pos]=count;pool[count++]=pos;}
             }
-            int needed=Math.max(0,(int)Math.round((count+existing)*percent/100.0)-existing);
-            for(int i=0;i<Math.min(needed,count);i++){
-                int pick=i+random.nextInt(count-i),pos=candidates[pick];candidates[pick]=candidates[i];
-                int x=baseX+((pos>>4)&15),y=min+(pos>>8),z=baseZ+(pos&15);Material ground=region.getType(x,y,z);
-                int roll=random.nextInt(10000);String name=roll<100?(y<0?"DIAMOND_ORE":"IRON_ORE"):roll<150?(y>=0?"EMERALD_ORE":"IRON_ORE"):roll<700?"GOLD_ORE":roll<1700?"REDSTONE_ORE":roll<2400?"LAPIS_ORE":roll<4600?"COPPER_ORE":roll<7400?"IRON_ORE":"COAL_ORE";
-                region.setType(x,y,z,Material.valueOf((ground==Material.DEEPSLATE?"DEEPSLATE_":"")+name));
+            int needed=Math.min(count,Math.max(0,(int)Math.round((count+existing)*percent/100.0)-existing)),added=0;
+            while(added<needed&&count>0){
+                int seed=pool[random.nextInt(count)];String ore=ore(random,min+(seed>>8),nether);int vein=ore.equals("ANCIENT_DEBRIS")?2+random.nextInt(2):ore.equals("DIAMOND_ORE")||ore.equals("EMERALD_ORE")?3+random.nextInt(4):12+random.nextInt(25);List<Integer> frontier=new ArrayList<>();frontier.add(seed);int grown=0;
+                while(!frontier.isEmpty()&&grown<vein&&added<needed){
+                    int pick=random.nextInt(frontier.size()),pos=frontier.get(pick);frontier.set(pick,frontier.getLast());frontier.removeLast();if(pos<0||pos>=index.length||index[pos]<0)continue;
+                    int slot=index[pos],last=pool[--count];pool[slot]=last;index[last]=slot;index[pos]=-1;
+                    int lx=(pos>>4)&15,lz=pos&15,y=min+(pos>>8),x=baseX+lx,z=baseZ+lz;Material ground=region.getType(x,y,z);
+                    region.setType(x,y,z,Material.valueOf(!nether&&ground==Material.DEEPSLATE?"DEEPSLATE_"+ore:ore));added++;grown++;
+                    if(lx>0)frontier.add(pos-16);if(lx<15)frontier.add(pos+16);if(lz>0)frontier.add(pos-1);if(lz<15)frontier.add(pos+1);frontier.add(pos-256);frontier.add(pos+256);
+                }
             }
         }
     }

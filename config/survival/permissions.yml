@@ -39,6 +39,14 @@ survival.player:
     multiverse.access.minecraft:flat: true
     multiverse.access.minecraft:mining: true
     multiverse.access.mining: true
+    multiverse.access.mining_nether: true
+    multiverse.access.minecraft:mining_nether: true
+    multiverse.teleport.self.w.mining_nether: true
+    multiverse.teleport.self.w.minecraft:mining_nether: true
+    multiverse.access.mining_the_end: true
+    multiverse.access.minecraft:mining_the_end: true
+    multiverse.teleport.self.w.mining_the_end: true
+    multiverse.teleport.self.w.minecraft:mining_the_end: true
     multiverse.teleport.self.w.minecraft:mining: true
     multiverse.teleport.self.w.mining: true
     multiverse.access.minecraft:lobby: true
